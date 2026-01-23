@@ -1,0 +1,27 @@
+from pyspark.sql.functions import col,lit, count,countDistinct,sum,round
+from pyspark.sql import Window 
+data = [
+    {'name': 'Ankit Madan', 'age': 35, 'salary': 50000} ,
+    {'name': 'Mahesh', 'age': 25, 'salary': 76002},
+    {'name': 'Rajesh ', 'age': 27, 'salary': 450000},
+    {'name': 'Sumit ', 'age': 38, 'salary': 20000},
+    {'name': 'Saurabh ', 'age': 40, 'salary':50000}]
+
+df_emp=spark.createDataFrame(data,"name string , age int,salary int")
+
+w_running = Window.orderBy(col("salary").asc()) \
+                  .rowsBetween(Window.unboundedPreceding, Window.currentRow)
+w_all=Window.partitionBy(lit(1))
+# df_emp.dtypes
+# filter with sum and percentage for
+df_filter=df_emp.filter(col("salary")<=50000)
+
+df_new=df_filter.select("name","salary","age",
+                 sum("salary").over(w_all).alias("Total_Salary"),
+                 round((col("salary")/sum("salary").over(w_all)*lit(100)),2).alias("percentage"),
+                 sum("salary").over(w_running).alias("Cummulative_Salary")
+                 )
+                 
+df_new.display()
+
+  
