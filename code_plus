@@ -1,5 +1,5 @@
 from pyspark.sql.functions import col,lit, count,countDistinct,sum,round
-from pyspark.sql import Window 
+from pyspark.sql import Window
 data = [
     {'name': 'Ankit Madan', 'age': 35, 'salary': 50000} ,
     {'name': 'Mahesh', 'age': 25, 'salary': 76002},
@@ -23,5 +23,146 @@ df_new=df_filter.select("name","salary","age",
                  )
                  
 df_new.display()
+
+from pyspark.sql.functions import col, lag, datediff, sum as sf_sum
+from pyspark.sql import Window 
+from pyspark.sql import SparkSession
+
+spark=SparkSession.builder.getOrCreate()
+
+df_consecutive= spark.createDataFrame([("1","2025-01-01",100),
+			 ("2","2025-01-02",29),
+			 ("3","2025-01-03",150),
+			 ("4","2025-01-04",99),
+             ("5","2025-01-05",145),
+             ("6","2025-01-06",1499),
+			 ("7","2025-01-07",199),
+			 ("8","2025-01-08",188)],
+			["id","date","people"])
+
+df_consecutive.dtypes
+# Convert date column to date type
+df = df_consecutive.withColumn("date", col("date").cast("date"))
+
+# df.show()
+df_filtered = df.filter(col("people") >= 100)
+# df_filtered.show()
+
+w = Window.orderBy("date")
+
+
+df_groups = (
+    df_filtered
+      .withColumn("prev_date", lag("date").over(w))
+      .withColumn(
+          "new_group",
+          (datediff(col("date"), col("prev_date")) != 1).cast("int")
+      )
+)
+# df_groups.show()
+df_grouped = (
+    df_groups
+      .withColumn("group_id", sf_sum("new_group").over(w))
+)
+# df_grouped.show()
+
+df_result = (
+    df_grouped
+      .groupBy("group_id")
+      .count()
+      .filter(col("count") >= 3)
+      .join(df_grouped, "group_id")
+      .select("id", "date", "people")
+      .orderBy("date")
+)
+
+df_result.show()
+
+from pyspark.sql.functions import col, when, max, min, lit, concat_ws, sum,round,concat
+from pyspark.sql import Window
+from pyspark.sql import SparkSession
+df_volume = spark.createDataFrame([("a", 100), ("b", 200), ("c", 300), ("d", 400)], ["product", "amount"])
+w_total_amount = Window.partitionBy(lit(1))
+w_cummulative_amount = Window.orderBy(col("amount"))
+
+
+df_total = df_volume.select("product", "amount", sum(col("amount")).over(w_total_amount).alias("total_amount"),
+                   sum(col("amount")).over(w_cummulative_amount).alias("cummulative_amount"),
+                    # round((col("salary")/sum("salary").over(w_all)*lit(100)),2).alias("percentage"),
+                    concat(round((col("amount"))/sum(col("amount")).over(w_total_amount)*lit(100),2).cast("string"),lit("%")).alias("percentage"))
+                            
+df_total.display()
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, row_number,filter,lit,sum,when,min,max
+from pyspark.sql.window import Window
+
+spark = SparkSession.builder.getOrCreate()
+
+df_product = spark.createDataFrame([
+    (1, "samsung","bnbc","PRO01",500),
+    (2, "apple","dndj","PRO02",800),
+    (3, "vivo","snjb","PRO3",350),
+    (4, "oppo","snjb","PRO4",450),
+    (5, "xiaomi","snjb","PRO5",290),
+], ["prodid", "prodname","proddesc","prodcode","cost"])
+
+df_order = spark.createDataFrame([
+    (1, "nmc",1,"Noida",250),
+    (1, "nmc",2,"Delhi",280),
+    (1, "nmc",3,"Mumbai",140),
+    (1, "nmc",4,"Bangalore",450),
+    (1, "nmc",5,"Chennai",700),
+    (2, "nmc",5,"Hyderabad",600),
+    (2, "nmc",2,"Pune",700),
+], ["orderId", "ordername","productid","region","qty"])
+
+df_expr = df_product.join(
+    df_order,
+    df_product.prodid == df_order.productid,
+    "inner"
+)
+
+df_amounts_full = df_expr.select(
+    "prodname", "prodid", "prodcode", "orderId", "region", "qty",
+    (col("cost") * col("qty")).alias("amount_val")
+)
+
+w_min = Window.partitionBy("prodname").orderBy(col("amount_val").asc())
+w_max = Window.partitionBy("prodname").orderBy(col("amount_val").desc())
+
+# df_amounts_full.display()
+
+df_min = (df_amounts_full.withColumn("min_value", row_number().over(w_min))
+        .where(col("min_value") == 1)
+        .drop("min_value")
+      .withColumnRenamed("amount_val", "min_amount")
+      .withColumnRenamed("region", "min_region")
+      .withColumnRenamed("orderId", "min_orderId")
+      .withColumnRenamed("qty", "min_qty")
+      .select("prodname","prodcode","min_region","min_amount")
+)
+df_min.display()
+
+df_max =(df_amounts_full.withColumn("max_value",row_number().over(w_max))
+         .where(col("max_value")==1)
+         .drop("max_value")
+         .withColumnRenamed("amount_val","max_amount")
+         .withColumnRenamed("region","max_region")
+         .withColumnRenamed("orderId","max_orderId")
+         .withColumnRenamed("qty","max_qty")
+         .select("prodname","prodcode","max_region","max_amount")
+         )
+df_max.display()
+
+df_min_max = (
+    df_min
+    .join(df_max,df_min.prodname==df_max.prodname,                     
+                                                    "inner")
+    .select(df_min.prodname,df_min.prodcode,df_min.min_region,df_min.min_amount,df_max.max_region,df_max.max_amount))
+df_min_max.display()
+
+              
+
 
   
