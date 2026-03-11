@@ -1,0 +1,29 @@
+
+from pyspark.sql.functions import col
+import re
+spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")
+
+abc = (
+    spark.read.format("csv")
+         .option("header", "true")
+         .option("inferSchema", "true")
+         .load("Files/data_testing.csv")
+)
+# learning_approach
+# abc.show(10)
+
+# best practice approach dynamic solution to handle space column in pyspark
+abc = abc.toDF(*[
+    re.sub(r"[ ,;{}()\n\t=]+", "_", c).strip("_").lower()
+    for c in df.columns
+])
+# abc.show(5)
+
+# dfx=abc.withColumnRenamed("Division Code","division_code")
+# dfb= dfx.withColumnRenamed("Geounit Code","geo_unit")
+abc.write.format("delta").mode("append").option("mergeSchema", "true").option("delta.columnMapping.mode", "name").saveAsTable("dbo.abc")
+# df = abc.select(col("Division Code").alias("division_code"))
+
+# df.show(5)
+
+# df.write.format("delta").mode("overwrite").saveAsTable("dbo.abc")
