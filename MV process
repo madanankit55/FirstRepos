@@ -1,0 +1,118 @@
+-- Create schemas if needed
+CREATE SCHEMA IF NOT EXISTS silver;
+CREATE SCHEMA IF NOT EXISTS gold;
+
+-- Silver: Clean orders (enforce DQ) & enrich with product category
+CREATE OR REPLACE MATERIALIZED LAKE VIEW silver.orders_clean_enriched
+(
+  CONSTRAINT chk_amount_positive CHECK (amount > 0) ON MISMATCH DROP,
+  CONSTRAINT chk_valid_date      CHECK (order_date IS NOT NULL) ON MISMATCH FAIL
+)
+PARTITIONED BY (order_date)
+COMMENT "Cleaned orders with product attributes for analytics"
+AS
+WITH valid_orders AS (
+  SELECT
+      o.order_id,
+      o.customer_id,
+      CAST(o.order_ts AS DATE) AS order_date,
+      o.product_id,
+      CAST(o.quantity AS INT)   AS qty,
+      CAST(o.unit_price AS DECIMAL(18,2)) AS unit_price,
+      (CAST(o.quantity AS INT) * CAST(o.unit_price AS DECIMAL(18,2))) AS amount
+  FROM bronze.orders o
+  -- keep only deterministic expressions to preserve incremental eligibility
+  WHERE o.order_ts IS NOT NULL
+),
+products_dedup AS (
+  SELECT
+      p.product_id,
+      p.product_name,
+      p.category,
+      p.current_price
+  FROM bronze.products p
+  -- assume upstream has deduped; if not, add a deterministic row_number filter
+)
+SELECT
+  v.order_id,
+  v.customer_id,
+  v.order_date,
+  v.product_id,
+  d.product_name,
+  d.category,
+  v.qty,
+  v.unit_price,
+  v.amount
+FROM valid_orders v
+INNER JOIN products_dedup d
+  ON v.product_id = d.product_id;
+
+
+%%sql
+CREATE SCHEMA IF NOT EXISTS bronze;
+
+CREATE TABLE IF NOT EXISTS bronze.products (
+  product_id INT,
+  product_name STRING,
+  price DOUBLE
+);
+
+INSERT INTO bronze.products VALUES 
+  (101, 'Laptop', 1200.50),
+  (102, 'Smartphone', 699.99),
+  (103, 'Tablet', 450.00);
+
+
+
+%%sql
+CREATE TABLE IF NOT EXISTS bronze.orders (
+  order_id INT,
+  product_id INT,
+  quantity INT,
+  order_date DATE
+);
+
+INSERT INTO bronze.orders VALUES
+ (1001, 101, 2, '2025-06-01'),
+ (1002, 103, 1, '2025-06-02'),
+ (1003, 102, 3, '2025-06-03');
+
+
+
+%%sql
+CREATE SCHEMA IF NOT EXISTS silver;
+
+CREATE MATERIALIZED LAKE VIEW IF NOT EXISTS silver.cleaned_order_data AS
+SELECT 
+    o.order_id,
+    o.order_date,
+    o.product_id,
+    p.product_name,
+    o.quantity,
+    p.price,
+    o.quantity * p.price AS revenue
+FROM bronze.orders o
+JOIN bronze.products p 
+    ON o.product_id = p.product_id;
+
+
+
+%%sql
+CREATE SCHEMA IF NOT EXISTS gold;
+
+CREATE MATERIALIZED LAKE VIEW IF NOT EXISTS gold.product_sales_summary AS
+SELECT  
+    product_id,
+    product_name,
+    SUM(quantity) AS total_quantity_sold,
+    SUM(revenue) AS total_revenue,
+    ROUND(AVG(revenue), 1) AS average_order_value
+FROM silver.cleaned_order_data
+GROUP BY product_id, product_name;
+
+
+%%sql
+-- select * from gold.product_sales_summary
+select * from gold.product_sales_summary
+
+
