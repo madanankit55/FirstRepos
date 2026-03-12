@@ -1,0 +1,78 @@
+-- we need to prepare the config table when we want to copy all required from source to target table in one go.
+
+create table config_table
+( 
+Id IDENTITY int,
+Entity_Group nvarchar(100),
+Source_Schema nvarchar(100),
+Source_Table_Name nvarchar(100),
+Target_Schema nvarchar(100),
+Target_Table_Name nvarchar(100),
+is_active nvarchar(10),
+is_ready_execution nvarchar(10)
+)
+
+CREATE PROCEDURE USP_load
+AS
+
+
+BEGIN
+    DECLARE
+        @v_ID               INT,
+        @v_SourceViewSchema NVARCHAR(100),
+        @v_SourceViewName   NVARCHAR(100),
+        @v_TargetTableSchema NVARCHAR(100),
+        @v_TargetTableName  NVARCHAR(100),
+        @v_DelSQL           NVARCHAR(MAX),
+        @v_InsrtSQL         NVARCHAR(MAX)
+ 
+    BEGIN
+ 
+        DECLARE TableCursor CURSOR FOR
+        SELECT DISTINCT ID FROM UTL.CONTROL_TGT_DATA_LOAD WHERE IS_ACTIVE='Y' AND IS_READY_FOR_EXECUTION='Y'
+ 
+        OPEN TableCursor;
+        FETCH NEXT FROM TableCursor INTO @v_ID
+ 
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            SELECT
+                @v_TargetTableName  = TARGET_TABLE,
+                @v_SourceViewSchema = SOURCE_VIEW_SCHEMA,
+                @v_SourceViewName   = SOURCE_VIEW_NAME,
+                @v_TargetTableSchema= TARGET_TABLE_SCHEMA
+            FROM UTL.CONTROL_TGT_DATA_LOAD
+            WHERE IS_ACTIVE='Y' AND IS_READY_FOR_EXECUTION='Y' AND ID=@v_ID
+ 
+ 
+            IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA=@v_SourceViewSchema AND TABLE_NAME=@v_SourceViewName)
+                AND EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@v_TargetTableSchema AND TABLE_NAME=@v_TargetTableName)
+            BEGIN
+                SET @v_DelSQL = 'DELETE FROM ' + @v_TargetTableSchema + '.' + @v_TargetTableName
+           
+                EXEC sp_executesql @v_DelSQL
+ 
+                SET @v_InsrtSQL = 'INSERT INTO ' + @v_TargetTableSchema + '.' + @v_TargetTableName +'
+                                    SELECT * FROM '+ @v_SourceViewSchema + '.' + @v_SourceViewName
+ 
+                EXEC sp_executesql @v_InsrtSQL
+ 
+                PRINT @v_TargetTableName
+ 
+            END
+ 
+            --PRINT @v_TargetTableName
+ 
+            FETCH NEXT FROM TableCursor INTO @v_ID;
+       
+        END  
+ 
+        CLOSE TableCursor;
+        DEALLOCATE TableCursor;
+ 
+    END
+ 
+END
+GO
+ 
+ 
