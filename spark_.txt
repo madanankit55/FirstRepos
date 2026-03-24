@@ -1,0 +1,372 @@
+How do you check if two DataFrames are exactly identical?
+ 
+equals() method.
+ 
+How would you find the differences between two DataFrames, highlighting only the differing cells?
+ 
+How can you find rows present in one DataFrame but not in another?
+ 
+Explain the difference between df1 == df2 and df1.equals(df2).
+ 
+How do you handle missing values (NaNs) when comparing DataFrames?
+ 
+
+
+1) how to create the dataframe in pyspark
+
+data =[('Ankit Madan',25),('Vishal Sharma',20),('Mahesh Babu',26),('Chaman',30)]
+df= spark.CreationDataFrame(data,"name string, age int")
+display(df)
+
+df.schema : it shows schema structure of dataframe in pyspark.
+
+df.dtypes : it show data type of dataframe in pyspark.
+
+df.printSchema() : it show schema of dataframe in pyspark.
+
+---
+another way to create data while defining the schema 
+
+data = [{'name':'Ankit Madan','age':21},
+{'name':'Vishal Saxena','age':26},
+{'name':'Babu','age':29},
+{'name':'Subarno','age':38}
+]
+
+
+data = [(),()]
+
+data =[{'column_name':'value','column_name':''value'},
+{'column_name':'value','column_name':''value'}
+]
+
+df=spark.createDataFrame(data)
+
+2) how to select the columns in pyspark
+
+df1.select("column_name").display()
+
+from pyspark.sql.funtions import col
+
+-- how to do alias for column in pyspark
+
+df1.select (col("name").alias("Employee Name")).display()
+
+
+df1.select(df.name.alias("Employee Name")).display()
+
+
+3) how to rename the column in pyspark.
+
+df2= df1.withColumnRenamed("name","Employee Name")
+df2.select("Employee Name").display()
+
+
+
+df1=df1.\
+withColumnsRenamed({"name":"Employee Name",""})
+
+4) data transformation
+
+from pyspark.sql.functions import col,upper
+
+--- for single column
+df1=spark.createDataFrame(data)
+df2=df1.withColumn("average_age",col("age")/4)
+df2.show()
+
+-- for multiple columns transformation , if we use withcolumn usage consume more memory in dataframe. 
+df1.\
+	withColumn("name",upper("name")).\
+	withColumn("average_age",col("age")/4).\
+show()
+
+-- using select approach for data transformation
+
+df.select(
+		upper("name").alias("name"),
+		(col("average_age"),col("age")/4).\
+show()
+
+df.select (
+upper("name").alias("name"),
+(col("ag")
+
+5) cast datatype in pyspark
+
+
+6) filter the column values.
+
+df.filter(df.column_name=='filter_value') & (df.column_name=='ancd').show()
+
+7)
+
+Student_ID	Subjects
+123		hindi,eng,math
+101		math,hindi
+105
+ 
+ 
+ouput	
+123	hindi
+123	eng
+123	math
+101	math
+101	hindi
+105	null
+
+from pyspark.sql.functions import 
+
+
+df.select("student_id",
+explode("subject",',').alias("subject_name")
+
+).show()
+
+prodid
+prodname
+proddesc
+prodcode
+cost
+ 
+ 
+orders table:
+orderId
+ordername
+productid
+region
+qty 
+ 
+highest sold product
+highest sold product region wise
+
+df_product()
+df_orders()
+
+
+
+
+
+
+	
+from pyspark.sql.functions import col,sum,when,max,min,concat_ws,lit,struct
+from pyspark.sql import SparkSession
+from pyspark.sql import window
+
+spark=SparkSession.builder.getOrCreate()
+
+df_product=spark.createDataFrame([(1,"samsung","bnbc","PROD01",500),
+ (2, "apple","dndj","PRO02",800	),
+    (3, "vivo","snjb","PRO3",350),
+    (4, "oppo","snjb","PRO4",450),
+    (5, "xiaomi","snjb","PRO5",290)],
+["prodid", "prodname","proddesc","prodcode","cost"])
+df_product.show()
+
+-- how to join the two dataframes
+df_join = df_product.join(df_order,df_product.prodid==df_order.productid)
+
+
+-- how to transformation
+df_join.select("prodid","prodname","cost","qty","ordername","region",
+				when(col("qty")>500,"High Volume")
+				.when(col("qty")>300,"Medium Volume")
+				.otherwise("Low Volume")
+				.alias("Volume_Category"),
+				concat_ws("-",col("prodcode"),col("proddesc")).alias("Full_Description"),
+				struct(col("region"),col("prodname")).alias("region_struct"))
+				
+		-- how to aggregations		
+df_agg = (df_join.withColumn("amount_val",col("cost")*col("qty"))
+			.groupby("prodname")
+			.agg(max(col("amount_val")).alias("max_amount"),
+			min(col("amount_val")).alias("min_amount")
+			))
+
+-- how to filter the columns in pyspark
+
+i) df_filer=df_join.filter(col("aty")>50000)
+
+ii) df_new= (df.withColumn("min_value",row_number().over(w_min))
+				.where(col("min_value") == 1))
+
+-- how to use window functions in pyspark
+
+from pyspark.sql import window
+from pyspark.sql.functions import col,sum,when,lit,max,min,concat_ws
+
+
+-- how to total sum for salary amount_val
+
+w_get_total_salary = Window.partitionBy(lit(1))
+
+w_get_cummulative = Window.orderBy(col("salary").asc())\
+					.rowsBetween(Window.unboundedPreceding,Window.currentRow)
+					
+					
+-- how to get min value with product & amount_val
+
+w_get_min_value = Window.partitionBy(col("prodname")).orderBy(col("amount").asc())
+
+w_get_max_value = Window.partitionBycol("prodname")).orderBy(col("amount").desc()
+
+df= df_v.select("product","amount",sum(col("amount").over(w_get_total_salary)).alias("total_salary"),
+sum(col("amount").over(w_get_cummulative)).alias("cummulative_salary"),
+concat(round(col("amount"))/sum(col("amount").over(w_get_total_salary)*lit(100),2).cast("string"),lit("%")).alias("percentage"))
+
+-- how to get min and max values  
+ 
+ -- how to cast in pyspark
+ 
+ df_cast = df.withColumn("new_date",col("date").cast("date"))
+
+df_filter = df_cast.filter(col("people")>=100)
+
+w= Window.orderBy("date")
+
+df_gp = df.withColumn("previous_day",lag(col("")).over(w))
+
+
+from pyspark.sql import functions as F,Window
+from pyspark.sql import SparkSession
+
+spark=SparkSession.builder.getOrCreate()
+
+df = spark.createDataFrame([(1,"2025-01-01",100),
+[(2,"2025-01-01",100),
+[(3,"2025-01-01",100),
+[(4,"2025-01-01",100),
+[(5,"2025-01-01",100),
+[(6,"2025-01-01",100),
+[(7,"2025-01-01",100),
+[(8,"2025-01-01",100),
+],
+["id","date","people"])
+
+df_cast = df.withColumn("date",col("date").cast("date"))
+
+df_filtered = df_cast.filter(col("people")>=100)
+
+w = Window.orderBy("date")
+
+df_group = (
+df_filtered.withColumn("previous_day",lag(col("date")).over(w))
+			.withColumn("new_group", (datediff(col("date"),col("previous_day"))!=1).cast("integer"))
+			
+			)
+
+df_groupeed = (df_group.withcolumn("group_id",sum("new_group").over(w)))
+
+w_lit= Window.partitionBy("group_id")
+
+df_val = (df_group.select("id","product","people",count(lit(1)).over(w_lit).alias("no_of_vals").cast("integer")))
+
+df_consectitive_3 = (
+df_val.filter(col("no_of_vals")>=4).select("id","date","people")
+)
+
+
+
+
+
+
+
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F,window
+
+spark=SparkSession.builder.getOrCreate()
+
+df=spark.createDataFrame(
+[
+('02.1.2026',20),
+('5/01/2026',40),
+('19-1-2026',25),
+('8-2-2026',35),
+('02/19/2026',45),
+('02/11/2026',35),
+('18.2.2026',20),
+('25.2.2026',40)
+],
+["date","amount"]
+)
+
+df.dtypes
+
+df.show(truncate =False)
+
+df_out =(
+df.withColumn("has_slash",F.instr("date","/")>0)
+.withColumn("has_dot",F.instr("date",".">0))
+.withColumn("part", F.when(F.col("has_slash"),F.split("date","/")))
+.withcolumn("new_value",F.when(
+								F.col("has_slash") & (F.size("part")==3),
+								F.concat(
+								F.col("part")[1],F.lit("/"),
+								F.col("part")[0],F.lit("/"),
+								F.col("part")[2],F.lit("/")
+								)
+							)
+						.when(
+								F.col("has_slash"),
+								F.lit(None)
+							)
+						.when(
+								F.col("dot"),
+								F.regexp_replace("date",r"\.","-")
+						)
+						.otherwise(F.col("date"))
+			)
+			
+df_out.show(truncate=False)	
+
+--- advance example of unionbyname in pyspark
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+spark = SparkSession.builder.getOrCreate()
+
+df = spark.createDataFrame(
+[
+    ('A','B',100),
+    ('B','A',40),
+    ('A','C',30),
+    ('','A',25),
+    ('A','',30),
+    ('C','A',15)
+],
+["Col_A","Col_B","Amount"]
+)
+
+# 1. Normalize and sum A–B and B–A pairs
+df_norm = df.filter((F.col("Col_A") != "") & (F.col("Col_B") != "")) \
+    .withColumn("Col_low",  F.least("Col_A", "Col_B")) \
+    .withColumn("Col_high", F.greatest("Col_A", "Col_B")) \
+    .select(F.col("Col_low").alias("Col_A"),
+            F.col("Col_high").alias("Col_B"),
+            "Amount")
+
+summed = df_norm.groupBy("Col_A", "Col_B") \
+    .agg(F.sum("Amount").alias("Amount"))
+
+# 2. Capture rows where Col_A is empty
+df_colA_null = df.filter(F.col("Col_A") == "") \
+    .select("Col_A","Col_B","Amount")
+
+# 3. Capture rows where Col_B is empty
+df_colB_null = df.filter(F.col("Col_B") == "") \
+    .select("Col_A","Col_B","Amount")
+
+# 4. Union all three datasets
+df_all = summed.unionByName(df_colA_null, allowMissingColumns=True) \
+               .unionByName(df_colB_null, allowMissingColumns=True)
+
+df_all.show()
+
+
+
+
+
+
+

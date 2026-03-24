@@ -1,0 +1,2189 @@
+name,age, location
+'Ankit Madan',30,'Uttar Pradesh-Ghaziabad'
+'Deepak Mishra',28,'Uttar Pradesh-Noida'
+
+-- valuation of stock
+
+1) market capitalization = net profit * P/E Ratio = 3200(crore) * 100 = 3.2 lakh crore
+
+ex - Asian paints
+
+bull - bear case scenario
+
+let us assume 20% cagr for net profit for next three years in Asian paints
+
+3200 cr
+
+i) bear case : 5500 cr * 40 (P/E) = 2.2 lakh cr
+ii) base case : 5500 cr * 50 = 2.75 lakh cr
+iii) bull case : 5500 * 60 = 3.30 lakh cr
+
+2) debt to equity ratio 
+
+
+-- tableau --
+https://prod-useast-b.online.tableau.com/#/site/solenisproduction/home
+
+-- sql server -- 
+10.26.10.7
+
+-- Learning Notes -- 
+
+-- Snowflake --
+
+1) stored procedure
+
+create or replace procedure my_variable_sp()
+RETURN TEXT 
+LANGUAGE SQL
+AS
+DECLARE 
+txt_var text;
+BEGIN 
+RETURN txt_var;
+END
+
+How to run sp : CALL my_variable_sp();
+
+2) If we want to concat the two variable in snowflake, then we use the || 'pipe' 
+Ex - var1 || var2
+
+3) Types of Tables in Snowflake
+
+i) Temporary Tables: only exists within the session in which they were created and persist till the session end, they are not visible to other users, once session ends data purged. 
+
+CREATE TEMPORARY TABLE mytemptable (id NUMBER, creation_date DATE);
+
+ii) Transient Tables:  mainly used for transitory data, key difference is that they don't have any fail safe means it doesn't require any cost for maintainence purpose of data recovery.
+
+CREATE TRANSIENT TABLE mytemptable (id NUMBER, creation_date DATE);
+
+iii) External Tables: allow you to query data stored in an external stage,  external stage is not part of snowflake, we use the COPY INTO, external tables are read only format.
+
+iv) Iceberg Tables:
+
+v) Hybrid tables:
+
+4)
+
+-- Power BI DAX query ---
+
+1) how to calculate the sum for one product.
+
+ CALCULATE(SUM(Roll[Revenue]),KEEPFILTER(Roll[Vertical]="Pets"))
+
+2) how to get the min and max date column with group by columns.
+
+MinYearMonth =
+VAR _CategoryRegion = SUMMARIZE(SalesData, SalesData[Category], SalesData[Region])
+VAR _MinYearMonth = MINX(_CategoryRegion, FORMAT( MIN(SalesData[Date]), "yyyy-mm" ))
+RETURN _MinYearMonth
+
+MaxYearMonth =
+VAR _CategoryRegion = SUMMARIZE(SalesData, SalesData[Category], SalesData[Region])
+VAR _MaxYearMonth = MAXX(_CategoryRegion, FORMAT( MAX(SalesData[Date]), "yyyy-mm" ))
+RETURN _MaxYearMonth
+
+3) how to use lookupvalue ?
+
+INRtoUSD = 
+ VAR inrvalue = LOOKUPVALUE(Currency_val[ToUSD(Dollar)],Currency_val[Currency],"INR","")
+ VAR usdvalue = CALCULATE(SUM(expense[Amount]),KEEPFILTERS(expense[Currency]="INR"))
+ VAR Percent_Val= DIVIDE(usdvalue,inrvalue)
+ RETURN
+ Percent_Val
+
+4) how to show message when a table visual have no data , message should be shown in card visual.
+
+5) how to show table as an blank , until we select any value from the slicer.
+
+6) when we select the a value from slicer then table we will show 10 columns , we select b value from slicer then table we will show 9 columns.
+
+7) how to use dynamic RLS in power bi report?
+
+8) How to show sum for division on its one of columns.
+
+__central_d_22 = 
+CALCULATE(
+    SUM(Data[Primary Sales]),
+    FILTER(
+        Data,
+        Data[Division] = "Central" && YEAR(Data[Date]) = 2022)
+)
+
+Does Line chart support use  measure on x - axis : No it doesn't support it.
+
+9)  How to show dynamic column in line chart for multiple columns
+
+step1: we will create the field parameters , select the required which we want to call dynamically.
+step2: Line Chart x - axis will have date, y - axis will have total sales and small multiples we will have add the created parameters.
+
+10) How to create the Top/ Bottom as slicer & show the results in stacked column chart and tabular grid with rankx function.
+
+step1: create the rank measure
+
+_rank_product = 
+IF (
+    [__SelectionValue]="Top",
+ RANKX(
+            ALL(Data[Product]),
+            CALCULATE(SUM([Primary Sales])),
+            ,
+            DESC,
+            Dense
+        ),
+   RANKX(
+            ALL(Data[Product]),
+            CALCULATE(SUM([Primary Sales])),
+            ,
+            ASC,
+            Dense
+        )      
+        
+
+)      
+    
+
+step2: create the disconnected for slicer like top/bottom and also measure 
+
+__SelectionValue = SELECTEDVALUE(SelectionTable[Selection])
+
+step3: create the parameter table with numeric range and along with measure.
+
+NumericRange Value = SELECTEDVALUE('NumericRange'[NumericRange])
+
+step4: create measure for data labels for showing the data based on selected value for top/bottom and numeric range as an input value like top5/bottom5.
+
+__Data Labels = 
+VAR __selectednumeric = SELECTEDVALUE(NumericRange[NumericRange])
+RETURN
+IF (
+[_rank_product]<=__selectednumeric,CALCULATE(SUM(Data[Primary Sales])),BLANK()
+)
+
+step5: 
+
+__ Bar Format = 
+VAR __Seleectedvalue = SELECTEDVALUE(NumericRange[NumericRange])
+
+RETURN
+SWITCH(
+TRUE(),
+[_rank_product]<=__Seleectedvalue && SELECTEDVALUE(SelectionTable[Selection]) ="Top","#98A974",
+[_rank_product]<=__Seleectedvalue && SELECTEDVALUE(SelectionTable[Selection]) ="Bottom","#c34a36",
+"#E6E6E6"
+)
+
+b) write a dax query to show product name in Card with highest primary sales.
+
+__topproductname = 
+Concatenatex(
+TOPN(1,SUMMARIZE(Data,Data[Product],"Sales",SUM(Data[Primary Sales])),[Sales],DESC),
+Data[Product],", ",Data[Product],ASC)
+
+11) How to show measure on x -axis in cluster bar charts.
+
+step1: need to create the disconnected table.
+
+List of Measures = 
+DATATABLE(
+    "Measure Name" ,STRING,
+    "Measure Type", STRING,
+    {
+        {"Eastern","Sum"},
+        {"Southern","Sum"}
+    }
+)
+
+step2: create the measure in disconnected table
+
+Plot the Measure = 
+
+SWITCH(
+        SELECTEDVALUE('List of Measures'[Measure Type]),
+        "Sum",[__central_d_22],
+        "Sum",[__central_d_23],
+        BLANK()
+
+)
+
+step3: add the cluster bar charts on x - axis : measure name column and y - axis : Plot the Measure 
+
+12) Examples of SUM and SUMX Function in Dax query.
+
+SUMX : calculate the data row by row in a table & then sum the values.
+
+Input Table  								
+
+Category | Value | New Value						
+A	  250      250							
+A	  250      250
+A	  250      500
+A	  250      500
+B	  630      100
+B	  630      630
+B	  630      630
+C	  100      100
+C	  100      100
+
+Output Table
+
+Category | Sumofvalue| SUM by Category | Case2
+A		1250   250               750
+B		1890   630		 730	
+C                200   100		 100
+
+
+solution:
+
+SUM by Category = SUMX(VALUES('table_name'[category]),
+				CALCULATE(MAX('table_name'[Value]))
+)
+
+Case2 = SUMX(
+		SUMMARIZE(
+				'table_name','table_name'[Category],'table_name'[New Value]),			
+		'table_name'[New Value]
+)
+
+
+13) how to filter the data based on where condition with the help of dax query in power bi.
+
+FILTER Function give us the table as on output value, not the scalar values.
+
+WithLess = CALCULATE(SUM(Table_Filter[Ab]),FILTER(Table_Filter,Table_Filter[Color]="Red"))
+
+_usevalue = CALCULATE(VALUES(Table_Filter[Color]),FILTER(Table_Filter,Table_Filter[Color]="Red"))
+
+14) Write a dax query to show not exist from table a to table b in power bi.
+
+tablea				tableb
+
+ojective: how to retrieve the value from tablea which are matching in tableb.
+
+Step1: create measure
+
+__notexists = 
+COUNTAX(
+EXCEPT(VALUES(tablea[Id]),VALUES(tableb[Id])),tablea[Id])
+
+step2: create the grid table , drop the created the measure, id and open the filter visual for selected the table grid and select the is not blank for measure to show the data in table grid.
+
+15) How to use VALUES Function in dax query.
+
+VALUES: will always have scalar value means single value will come as an output for table/column.
+
+__values = 
+IF
+(
+HASONEVALUE('values'[Name]),VALUES('values'[Name]),
+COUNTROWS(VALUES('values'[Name]))
+)
+
+16) Write a dax query with slicer for top 5 product with rest other products and show their total also, means we need to show 6 rows as an output.
+
+step1: create the disconnected table with parameter for numeric range for slicer.
+
+step2: create the calculated table for product with other product(All product with others product).
+
+dax query.
+
+Allproducts = UNION(VALUES(producttable[Product]),{"Others"})
+
+step3: we create the relationship between product and allproduct table.
+
+many to one relationship with single for cross filter.
+
+step4: Now we create the measure for Total Sales.
+
+Total Sales = SUM(producttable[revenue])
+
+step5 : now we another measure to show calculation for selected slicer with top with other products.
+
+__Top Product = 
+
+VAR TopN_Value = 'TOPN'[TOPN Value]
+VAR TopN_Rows = TOPN(TopN_Value,ALL(Allproducts),[Total Sales])
+VAR TopN_Sales= CALCULATE([Total Sales],KEEPFILTERS(TopN_Rows))
+VAR OtherSales= CALCULATE([Total Sales],ALL(Allproducts)) - CALCULATE([Total Sales],TopN_Rows)
+RETURN
+IF(HASONEVALUE(Allproducts[Product]),
+IF(SELECTEDVALUE(Allproducts[Product])="Others",OtherSales,TopN_Sales),[Total Sales])
+
+17) Write a dax query to get the highest average point and show it in card.
+
+__highestpoint = MAXX(VALUES(empdetails[Employee Name]),[__avgemployeebyproduct])
+
+a) write a dax query to sumby product wise.
+
+__sumofemployeebyproduct = 
+CALCULATE(SUM(empdetails[Avg Point]),ALLEXCEPT(empdetails,empdetails[Employee Name]))
+
+
+b) write a dax query for average by product wise
+
+__avgemployeebyproduct = 
+CALCULATE(
+    AVERAGE(empdetails[Avg Point]),
+    ALLEXCEPT(empdetails, empdetails[Employee Name])
+)
+
+c) write a dax query for total sum for all product.
+
+__Total Point = CALCULATE(SUM(empdetails[Avg Point]),ALL(empdetails))
+ 
+18) What is context transition in dax query?
+
+When a row value becomes a column filter.
+
+19) Write a dax query for running sum for product.
+
+
+__runningsum = 
+VAR susm=
+RANKX(
+            ALL(Data[Product]),
+            CALCULATE(SUM([Primary Sales])),
+            ,
+            DESC,
+            Dense
+        )
+
+VAR RunningTotal=
+CALCULATE(SUM([Primary Sales]),
+FILTER(
+    ALL(Data[Product]),
+    susm>=RANKX(
+          ALL(Data[Product]),
+            CALCULATE(SUM([Primary Sales])),
+            ,
+            DESC,
+            Dense
+        )
+)
+
+)
+RETURN
+
+RunningTotal
+
+20) 
+
+
+
+-- Pyspark ---
+
+13) Co
+
+12) Regular Expressions
+
+
+
+
+11) Unity catalog and autoloader , 
+
+10) blob file reading code
+
+storage_account_name = 'nameofyourstorageaccount'
+storage_account_access_key = 'thekeyfortheblobcontainer'
+spark.conf.set('fs.azure.account.key.' + storage_account_name + '.blob.core.windows.net', storage_account_access_key)
+blob_container = 'yourblobcontainername'
+filePath = "wasbs://" + blob_container + "@" + storage_account_name + ".blob.core.windows.net/Sales/SalesFile.csv"
+salesDf = spark.read.format("csv").load(filePath, inferSchema = True, header = True)
+
+9) Advantages of Parquet file
+
+It stores data in columns, rather than rows, which enables more efficient data compression and faster query performance.
+
+8) difference b/w repartition vs coalesce
+
+The repartition() can be used to increase or decrease the number of partitions, but it involves heavy data shuffling across the cluster. On the other hand, coalesce() can be used only to decrease the number of partitions. In most of the cases, 
+esce() does not trigger a shuffle.
+
+7) how to merge two different dataframe with different data schema
+
+merged_df=df1.unionByName(df2)
+merged_df.show()
+
+6) remove duplicate records
+
+val distinctDF = df.distinct()
+
+5) basic architecture of PySpark
+
+The basic architecture of PySpark consists of three main components:
+Driver:
+The driver is the main component of PySpark. It is responsible for creating the SparkContext, which is the entry point to Spark. The driver also manages the execution of Spark applications.
+Executors:
+Executors are responsible for running the tasks that are assigned to them by the driver. Executors are typically located on worker nodes in the Spark cluster.
+Cluster Manager:
+The cluster manager is responsible for managing the cluster of worker nodes. It allocates resources to worker nodes and monitors their health.
+PySpark applications are written in Python and compiled to run on the JVM. Spark applications can be run in various modes, including local mode, cluster mode, and client mode.
+Local mode is the simplest mode to run PySpark applications. In local mode, the driver and executors run on the same machine. This mode is useful for testing and debugging PySpark applications.
+Cluster mode is the most common mode to run PySpark applications. In cluster mode, the driver runs on the client machine and the executors run on worker nodes in the cluster. This mode is used to run PySpark applications on large datasets.
+Client mode is similar to cluster mode, except that the driver remains on the client machine that submitted the application. This mode is useful for running PySpark applications on a cluster that is managed by a third party.
+PySpark provides a variety of APIs for data processing, including RDDs, DataFrames, and Datasets. RDDs are the basic data structure in PySpark. They are immutable distributed collections of data. DataFrames are a higher-level abstraction that provides a more structured view of data. Datasets are a more recent abstraction that provides a type-safe and optimized view of data.
+PySpark also provides a variety of libraries for machine learning, graph processing, and streaming data processing. These libraries make it easy to build and deploy powerful data processing applications.
+
+The PySpark architecture is designed to be scalable and fault-tolerant. PySpark applications can be run on clusters of thousands of nodes. PySpark also provides a variety of features that make it easy to recover from failures.
+PySpark is a powerful tool for processing large datasets in a distributed manner. It provides a high-level interface that makes it easy to write and run Spark applications. PySpark is also scalable and fault-tolerant, making it a good choice for production applications.
+
+4) Data Skew in Pyspark ?
+
+when the data are not balanced between worker nodes, we call data skewed, in spark data are split into the chunk of rows , then stored on worker nodes.
+
+common results of data skew are
+i) slow running stages/task
+ii) spilling data to disk
+iii) out of memory errors
+
+Handling Data Skew in Pyspark
+
+i) Custom Partitioning: Lets suppose 10 records for Germany, 4 - France, 3 - Italy,Now we want to partition data, else we will have data skew for our worker nodes.
+we partition our data based on year, so that we can work in faster ways , aswell as we have an 
+
+INSERT INTO Table (Country_Name,Year,Transaction_Value) VALUES ('Germany',2018,100)
+INSERT INTO Table (Country_Name,Year,Transaction_Value) VALUES ('Germany',2018,100)
+INSERT INTO Table (Country_Name,Year,Transaction_Value) VALUES ('Germany',2018,100)
+INSERT INTO Table (Country_Name,Year,Transaction_Value) VALUES ('Germany',2018,100)
+
+ii) Salting : It involves adding a random component, or ‘salt’, to the data to distribute it more evenly across partitions. 
+This results in a more balanced workload and improved performance.
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+from pyspark.sql.types import StringType
+
+# Create a Spark session
+spark = SparkSession.builder.appName("skewed_data_example").getOrCreate()
+# Create a list with skewed data
+skewed_data = ['A'] * 1000 + ['B'] * 100 + ['C'] * 10 + ['D']
+# Create a DataFrame with skewed data
+data = [(key,) for key in skewed_data]
+df = spark.createDataFrame(data, ["key"])
+
+# Show the initial distribution of the 'key' column
+print("Initial Distribution:")
+df.groupBy("key").count().show()
+
+# Identify the skewed key
+skewed_key = df.groupBy('key').count().orderBy('count', ascending=False).first()[0]
+
+# Add a random salt to the skewed key
+df = df.withColumn('salted_key', F.when(F.col('key') == skewed_key, F.concat(F.col('key'), F.lit('_'), F.rand())).otherwise(F.col('key')))
+
+# Repartition the data based on the salted key
+df = df.repartition('salted_key')
+
+# Show the final distribution after salting
+print("Distribution After Salting:")
+df.groupBy("salted_key").count().show()
+
+# Stop the Spark session
+spark.stop()
+
+iii) Dynamic Partition Pruning: enhancing the efficiency of queries by selecting only the necessary partitions to scan. 
+It helps in reducing the amount of data read during query execution, leading to faster response times and improved performance.
+
+Dynamic Partition Pruning works by analyzing the query predicates and intelligently determining which partitions need to be scanned based on the filter conditions. 
+This eliminates the need to scan all partitions, thus minimizing disk reads and improving query efficiency.
+
+Consider an analyst who wants to analyze sales data for a specific product category (e.g., electronics) during a particular date range (e.g., Black Friday week). 
+The query may look like this:
+
+SELECT *
+FROM transactions
+WHERE category = 'electronics'
+  AND transaction_date BETWEEN '2023-11-20' AND '2023-11-26'
+
+iv) Bucketing: Bucketing works by specifying a column and a number of buckets during the creation of the DataFrame. Spark then applies a hash function to the specified column 
+and divides the data into buckets corresponding to the hash values. The number of buckets remains fixed, so the distribution of data doesn’t change with the size of the data
+
+numBuckets = 100
+salesData.write.bucketBy(numBuckets, "customerId").sortBy("transactionId").saveAsTable("salesData_bucketed")
+Now, when you run a JOIN operation between salesData and another DataFrame customerInfo:
+
+customerInfo = spark.table("customerInfo")
+bucketedSalesData = spark.table("salesData_bucketed")
+result = bucketedSalesData.join(customerInfo, bucketedSalesData.customerId == customerInfo.customerId)
+
+Because salesData is bucketed by customerId, Spark can execute the join more efficiently. It knows that all rows with a particular customerId are located in the same bucket,
+so it can avoid shuffling all the data across the network and perform the operation on each bucket.
+This can drastically reduce the time and resources needed for this operation, especially for large datasets.
+
+v) Broadcasting Join: primarly used when we wanted to join two dataframe, one df with large data ,another df with lesser data.
+
+We will broadcast our small table in large table executor, so that we can join/merge or perform action which we want to do it.
+
+properties of broadcast join : spark.sql.autoBroadcastJoinThreshold set to 10MB.
+
+vi) Shuffle Hash Join: We do the partitioning of data , then shuffling , hashing and in  memory join.
+
+Ex - 
+
+df - order table column ( order_id,customer_id, amount) - we have record like 101,102,101,103,102
+ we will partition data based on customer_id 
+
+df - customer table column (customer_id, customer_name) 101,102,103
+
+Step1:  we will partition data for both df based on customer_id column
+
+order table will have 3 Node based on customer_id
+
+Node 1: 101,101
+Node 2: 102,102
+Node 3: 103
+
+similar to customer table will have 3 node based on customer_id
+
+Node 1: 101
+Node 2: 102
+Node 3: 103
+
+Step2: we will have hashing on the smaller table like customer table/df.
+
+step3 : we will the join based on customer_id
+
+3) Difference b/w partitioning and Bucketing
+
+i) Data Ingestion: Partitioning splits incoming data into manageable partitions that can be processed in parallel, where as bucketing organizes incoming data into fixed buckets based on hash functions
+applied on certains columns.
+ii) Data Processing: Balances load across the clusters by distributing data evenly, where as shuffle of data during operations like groupby, join and orderby. 
+
+2) Difference b/w Parquet and Arrow 
+
+i) Data Storage: parquet is disk based storage format, where as arrow is as in memory format.
+ii) Compression: parquet have more compression than arrow.
+iii) Query Speed: parquet provides efficient way to store the data, while reading the data thru parquet is slower than arrow due to disk storage.
+iv) Interoperability: Arrow is a cross language capabilities excellent for data exchange b/w different processes and systems like R , Python , Java, C++ and Javascripts, while parquet
+doesn't have any cross language support like arrow.
+
+1) difference b/w RDD and Dataframes
+
+
+-- ADF Interview Questions --
+
+1) there are two pipelines A and B, objective B pipeline should start once , A pipeline is executed, Incase A Pipeline Fails, then B should not run.
+
+2) I'm having data in csv file, but file is having some corrupt data also on it, i want to dissect the file with correct and incorrect data in two separate files as an o/p.
+
+3) Tumbling window vs scheduled triggers:  tumbling 
+
+4) how to iterate the excel file and have o/p file per sheet wise of csv. 
+
+answer: we will use the untill activity, we will have variable - counter=0, tempcounter , iserror
+under untill activity we will use 
+
+5) how to delete the file which are less than specific size. 
+
+answer: get metadata activity which will have the file name, 
+
+6) how to multiple array json file in adf. 
+
+answer : we will use flatten in unroll by : we select the array list of column which want to unroll.
+
+7) We have an csv file with data based on city wise Ex - 3 city like delhi, mumbai and chennai, we wanted to dissect csv file based on city wise o/p as 3 csv file.  
+
+8) difference b/w dedicated sql pool and serverless sql pool
+
+i) allow you to run a query and ingest data from business data lake files, whereas in serverless allow user to query their data lake files.
+ii) demand an infrastructure set up , whereas in serverless not required to set up an infrastructure or maintain clusters.
+iii) data is stored in relational tables, data is stored in data lake.
+iv) cost is managed by pausing sql pool, cost is automatically handled 
+
+9) show the steps you will process in Data flow to accomplish query.
+
+SELECT CUST.CUST_ID, UPPER(CUST.CUST_NAME), SUM(ORD.AMOUNT)
+FROM CUSTOMER CUST, ORDER ORD
+WHERE CUST.CUST_ID = ORD.CUST_ID
+GROUP BY CUST.CUST_ID, UPPER(CUST.CUST_NAME)
+ORDER BY CUST.CUST_ID
+
+10) How to run ADF Pipeline in batch process, let suppose i wanted to copy 100 tables from sql towards in ADLS Gen2, in a batch of 5 tables at a time, how can u achieve it ?
+
+11) How to get the list details of folder and files in container
+
+
+-- Data Warehousing Techniques ---
+
+OLAP (Online Analytical Processing) vs OLTP (Online Transaction Processing)
+
+1) OLAP is online database query management system , where OLTP is online database modification system 
+2) OLAP consist of historical data from various database, where OLTP consists of transaction data.
+3) OLAP is used for data mining, analytics and decision making where OLTP used for business task.
+4) OLAP serves the purpose of extract information for analysis and decision making where OLTP serves the purpose of CRUD operations.
+5) OLAP needs backup time to time as compared with OLTP, where OLTP takes backup and recovery process is maintained very rigorously.
+6) OLAP is mostly used for reading the data , its rarely the data, where OLTP is does CRUD operations.
+
+Star Schema vs Snowflake Schema
+
+1) star schema has denormalized dimension tables, while snowflake schema have normalized dimension tables.
+2) Star schema is easier to design, than snowflake schema.
+3) Star schema is more efficient to query than snowflake schema because of fewer INNER JOIN are used.
+
+Facts : describes as an quantitative transactional like measurement or the values ready for analysis.
+We store a value in fact table at the lowest levels of granularity. 
+
+Types of Fact Tables : 
+
+1) Transaction Fact Tables : usually used to represent an event which occurs at primary level.
+2) Snapshot Fact Tables : contains additive and semi additive facts, which is used describe and analyze the state of things at particular time.
+3) Accumulated Fact Tables : activities of the process with a beginning and end are represented as Accumulated Fact Tables.
+
+Factless Fact Tables : that captures relationship and events without containing any numerical or measurable facts, it consist of foreign key referencing various dimension tables.
+     id    name , start date,  end date	
+ex - 1001, abcd , 19/09/2023 , 22/09/2023
+
+Dimensions : store a information that dimensions of a fact and is joined by a foreign key to fact table.
+
+Type of Dimensions :
+
+1) Slowly Changing Dimensions : Dimension attributes here change slowly with time rather than changing at regular interval of time.
+
+a) SCD Type 0 : 
+b) Type 1
+c) Type 2 : have column like flag, fromdate, enddate
+d) Type 3 : have column like currentcolumn, previouscolumn
+e) Type 4
+f) Type 6 : is combination of 1,2,3
+
+2) Rapidly Changing Dimensions : dimension attributes change is a rapidly changing features.
+
+3) Junk Dimensions : that contains attributes that don't belong to any other dimensions, these attributes are usually text or flag or indicators.
+
+4) Stacked Dimensions : where two or more dimension are combined with an aspect.
+
+5) Deferred Dimensions : while loading a fact record, a dimension record may not be ready.
+
+6) Distorted Dimensions : 
+
+7) Degenerated Dimensions : when keep the attributes in the facts table , we don't create the separate dimension, to keep the information.
+
+8) Conformed Dimensions : are those dimension which is having relationship between two or fact tables.	
+
+9) Role Playing Dimensions : are those dimension which can play multiple role for a dimension table
+
+ex-  time dimension can have multiple role on order fact table like sometimes it have work as an shipping date and sometime it have work as an order date.
+
+Distributed Tables : appears as an single table, but rows are stored at 60 distribution, rows are distributed based on hash or round robin.
+
+Hash Distribution : mainly used for large tables like fact tables.
+
+Round Robin Distribution : mainly used for faster loading speed, used for smaller tables like dimension tables.
+
+Surrogate Key : column with unique identifier for each row.we can use data modeler like to create surrogate key on their tables.
+
+Heap Table : a table without a clustered Index.
+
+Can we call stored procedure from a function : not possible, because function doesn't have side effects, side effects is any action that changes the state of the database or system outside 
+the function, but we call function within the stored procedure.
+
+Nested Sp in SP, yes we can it.
+ 
+zubin balsara
+
+
+Unique and Non Unique Indexing: 
+
+
+ACID Properties : 
+
+1) Atomicity - a transaction consist of many steps, when all steps are completed, it reflect in the db
+2) Consistency - database will move from one consistent state to another  
+3) Isolation - every transaction will operate as it is only transaction in the system.
+4) Durability - once transaction is completed, the updated record must be available for all other transactions.
+
+Primary Key : uniquely identify every row in table.
+
+Properties of Primary Key
+
+1) no two rows can be primary key value.
+2) can't have null values.
+3) values of primary key column can't modified or updated.
+
+Composite Primary Key : When a table have two or columns as combined effect have an uniquely identifies as row are called composite primary key.
+
+Foreign Key : A relationship is build via foreign key column.
+
+Unique Key : Can have one null values.
+
+Candidate Key : identify each row of table is unique.
+
+Materialized Views : are disk based, mv gets update on specific duration.
+
+Constraints : enforce integrity of the database.
+
+Types of Constraints : Not Null, Check , Unique , Primary Key and Foreign Key.
+
+STUFF Function vs REPLACE Function
+
+1) used to insert a string into another string by deleting some characters specified, where as REPLACE instead of replacing specific characters, it replace existing characters of all 
+occurance. 
+
+Self Join : is a type of inner join which is performed mainly where the comparison between two columns of same table is required.
+
+	Join : return the cartesian product of the joined tables, cartesian product is a mutiplication in the set of theory that generate all ordered pairs of the given sets.
+
+Difference b/w Clustered Index and Non Clustered Index.
+
+1) Clustered Index will have one cluster Index per table because data rows can be only be stored in one physical order, whereas non clustered index can have multiple indexes per tables.
+2) Clustered Index will use sort tables only, therefore doesn't consume extra storage, Non Clustered Index are stored in different place with actual table, therefore
+use more space.
+
+Difference b/w CTE and Temp Tables
+i) CTE are not physically stored on disk, whereas temp tables are stored on disk.
+ii) CTEs exist only for the duration of query execution, whereas exists beyond the query execution
+iii) we can't explictly create, alter or drop the CTEs whereas we can create/alter/drop the temp tables.
+iv) CTEs are only accessible within the query that define them, whereas temp table can be accessed by multiple queries within the same batch.
+
+Replicated Tables : full copy of table 
+
+How to optimize the SQL Query 
+
+1) add missing indexes.
+2) check for unused indexes.
+3) avoid using multiple OR in the filter condition.
+4) avoid using select distinct.
+5) avoid using many joins.
+6) use select fields instead of *
+7) create joins with inner join ( not where)
+8) use wildcards at the end of a phrase only.
+
+Normalization: Normalization is the process of organizing data in a database in a way that minimizes redundancy and ensures data integrity.
+Ex - Facts and Dimension table 
+
+Denormalization is the process of adding redundant data to a database to improve performance.
+Ex - Transaction Data is an example of denormalization data.
+
+-- Slow Changing Dimensions -- 
+
+create table dbo.hash_demo1( id int not null, name varchar(25), address varchar(250),
+ HashValue as hashbytes ('SHA1',concat_ws('|',id,name,address)) CONSTRAINT PK_hash_demo1 PRIMARY KEY (Id));
+insert dbo.hash_demo1( id , name , address)
+values (1, 'bob', '123 A street'), 
+    (2, 'mark', '564 A street'),
+    (3, 'ricky', '75 A street'),
+    (4, 'ricky7', '5 A street')
+;
+select * from dbo.hash_demo1;
+
+update dbo.hash_demo1
+set address = '70 A street' 
+where id =1;
+
+
+1) SCD Type 2 
+
+schema creation 
+a) create table staging.scd2 ( Employee_Id nvarchar(250), Employee_Name nvarchar(250), Salary int, HRA int)
+
+ INSERT INTO staging.scd2 values ('101', 'Ankit Madan',5000,20)
+ INSERT INTO staging.scd2 values ('102', 'Darla Rajesh',7000,220)
+ INSERT INTO staging.scd2 values ('103', 'Pallabi Roy',8000,250)
+ INSERT INTO staging.scd2 values ('104', 'Suprith N',6500,120)
+ INSERT INTO staging.scd2 values ('105', 'Subarno Bose',11500,970)
+
+b) create table staging.table_target
+(Surrogate_Key int IDENTITY(1,1), Employee_Id nvarchar(250),Employee_Name nvarchar(250),Salary int,HRA int,StartDate datetime,EndDate datetime,Active_Flag nvarchar(5))
+
+c) create table staging.update_Employee_Id  (Employee_Id nvarchar(250))
+
+SQL Script 
+ -- insert --
+ insert into staging.table_target(Employee_Id,Employee_Name,Salary,HRA,StartDate,EndDate,Active_Flag)
+ select Employee_Id,Employee_Name,Salary,HRA,getdate(),NULL,'Y' from staging.scd2
+ where Employee_Id not in (select distinct Employee_Id from staging.table_target)
+-- update --
+INSERT INTO staging.update_Employee_Id(Employee_Id)
+ select b.Employee_Id from  
+ (
+ select Employee_Id,   HASHBYTES('SHA1',CONCAT_WS('|',Employee_Id,Employee_Name,Salary,HRA)) as Hash_Value_Target  from staging.table_target 
+ where Employee_Id in (select Distinct Employee_Id from staging.scd2)  and Active_Flag='Y' ) a,
+ (
+  select Employee_Id,   HASHBYTES('SHA1',CONCAT_WS('|',Employee_Id,Employee_Name,Salary,HRA)) as Hash_Value_Source  from staging.scd2 
+ where Employee_Id in (select Distinct Employee_Id from staging.table_target) ) b
+ where a.Employee_Id=b.Employee_Id and a.Hash_Value_Target!=b.Hash_Value_Source
+
+  update staging.table_target SET EndDate=getdate() where Employee_Id in (Select * from staging.update_Employee_Id) and Active_Flag='Y'
+ update staging.table_target SET Active_Flag ='N' where Employee_Id in (Select * from staging.update_Employee_Id) and Active_Flag='Y'
+ INSERT INTO staging.table_target(Employee_Id,Employee_Name,Salary,HRA,StartDate,EndDate,Active_Flag)
+ select Employee_Id,Employee_Name,Salary,HRA,getdate(),NULL,'Y' from staging.scd2
+ where Employee_Id  in (select * from staging.update_Employee_Id)
+ truncate table staging.update_employee_id
+-- delete of any record --
+ update staging.table_target SET EndDate =getdate() where Employee_Id in (select Employee_Id from staging.table_target where
+ Employee_Id NOT IN (select distinct Employee_Id from staging.scd2) and EndDate is null)
+ 
+ update staging.table_target SET Active_Flag ='N' where Employee_Id in (select Employee_Id from staging.table_target where
+ Employee_Id NOT IN (select distinct Employee_Id from staging.scd2) and Active_Flag ='Y')
+
+
+1) how to use dense rank formula in sql 
+
+create table work
+( Id int , Score int);
+
+insert into work values(1,20);
+insert into work values(2,30);
+insert into work values(3,40);
+insert into work values(4,40);
+
+select Score, DENSE_RANK() OVER (order by Score) as 'rnk' from work;
+
+2) How to get the only duplicate score for above query.
+
+select * from desi where Score IN ( select score from work group by Score Having count(Score)>1) 
+
+3) how to delete duplicate record from above query.(employee id using 
+
+Delete d1 from staging.desi d1 , staging.desi d2 
+where d1.Score=d2.Score and d1.Id>d2.Id	
+
+* first we use the cross join statement to get the all the values , then join table based on filter condition and compare d1 and d2.
+
+4) Top 3 salaries. 
+
+Create table  staging.Employee (id int, name varchar(255), salary int, departmentId int)
+Create table  staging.Department (id int, name varchar(255))
+
+insert into staging.Employee (id, name, salary, departmentId) values ('1', 'Joe', '85000', '1')
+insert into staging.Employee (id, name, salary, departmentId) values ('2', 'Henry', '80000', '2')
+insert into staging.Employee (id, name, salary, departmentId) values ('3', 'Sam', '60000', '2')
+insert into staging.Employee (id, name, salary, departmentId) values ('4', 'Max', '90000', '1')
+insert into staging.Employee (id, name, salary, departmentId) values ('5', 'Janet', '69000', '1')
+insert into staging.Employee (id, name, salary, departmentId) values ('6', 'Randy', '85000', '1')
+insert into staging.Employee (id, name, salary, departmentId) values ('7', 'Will', '70000', '1')
+
+insert into staging.Department (id, name) values ('1', 'IT')
+insert into staging.Department (id, name) values ('2', 'Sales')
+
+--- without dense rank
+
+select e1.Name as 'Employee', e1.Salary
+from Employee e1
+where 3 >
+(
+    select count(distinct e2.Salary)
+    from Employee e2
+    where e2.Salary > e1.Salary
+)
+
+-- with dense rank 
+
+select d.Name as Department, a. Name as Employee, a. Salary 
+from (
+select e.*, dense_rank() over (partition by DepartmentId order by Salary desc) as DeptPayRank 
+from staging.Employee e 
+) a 
+join staging.Department d
+on a.departmentId = d.Id 
+where DeptPayRank <=3;
+
+
+5) JOIN
+
+simple Equi Joins
+
+select * from t1 a
+JOIN (select name from t2 ) new
+ON a.date=new.date
+
+select * from t1 INNER JOIN
+
+select * from t1 INNER JOIN t2 ON t1.Id=t2.Id
+
+6) Cummulative summation
+
+CREATE TABLE [dbo].[int_orders](
+ [order_number] [int] NOT NULL,
+ [order_date] [date] NOT NULL,
+ [cust_id] [int] NOT NULL,
+ [salesperson_id] [int] NOT NULL,
+ [amount] [float] NOT NULL
+) ON [PRIMARY]
+GO
+INSERT [dbo].[int_orders] ([order_number], [order_date], [cust_id], [salesperson_id], [amount]) VALUES (30, CAST(N'1995-07-14' AS Date), 9, 1, 460)
+INSERT [dbo].[int_orders] ([order_number], [order_date], [cust_id], [salesperson_id], [amount]) VALUES (10, CAST(N'1996-08-02' AS Date), 4, 2, 540)
+INSERT [dbo].[int_orders] ([order_number], [order_date], [cust_id], [salesperson_id], [amount]) VALUES (40, CAST(N'1998-01-29' AS Date), 7, 2, 2400)
+INSERT [dbo].[int_orders] ([order_number], [order_date], [cust_id], [salesperson_id], [amount]) VALUES (50, CAST(N'1998-02-03' AS Date), 6, 7, 600)
+INSERT [dbo].[int_orders] ([order_number], [order_date], [cust_id], [salesperson_id], [amount]) VALUES (60, CAST(N'1998-03-02' AS Date), 6, 7, 720)
+INSERT [dbo].[int_orders] ([order_number], [order_date], [cust_id], [salesperson_id], [amount]) VALUES (70, CAST(N'1998-05-06' AS Date), 9, 7, 150)
+INSERT [dbo].[int_orders] ([order_number], [order_date], [cust_id], [salesperson_id], [amount]) VALUES (20, CAST(N'1999-01-30' AS Date), 4, 8, 1800)
+
+--- aggregating the sum of all values
+select salesperson_id,order_number,order_date,cust_id,sum(amount) over () from staging.int_orders
+-- aggregating the sum based on partitioning condition 
+select salesperson_id,order_number,order_date,cust_id,sum(amount) over (partition by salesperson_id) from staging.int_orders
+--doing all sum previous value to next value
+select salesperson_id,order_number,order_date,cust_id,amount,sum(amount) over (order by order_date ) from staging.int_orders
+--  doing all sum based partition condition
+select salesperson_id,order_number,order_date,cust_id,amount, sum(amount) over (partition by salesperson_id order by order_date) from staging.int_orders  
+-- previous 2 rows sum like that example
+select salesperson_id,order_number,order_date,cust_id,amount,sum(amount) over (order by order_date rows between 2 preceding and current row ) from staging.int_orders
+-- previous 2 and 1 preceding
+select salesperson_id,order_number,order_date,cust_id,amount,sum(amount) over (order by order_date rows between 2 preceding and 1 preceding) from staging.int_orders
+-- 1 preceding and 1 following
+select salesperson_id,order_number,order_date,cust_id,amount,sum(amount) over (order by order_date rows between 1 preceding and 1 following ) from staging.int_orders
+-- unbound preceding is similar to the doing all sum previous values to next value
+select salesperson_id,order_number,order_date,cust_id,amount,sum(amount) over (order by order_date rows between unbounded preceding and current row) from staging.int_orders
+-- doing lag without lag funtion with help of preceding function
+select salesperson_id,order_number,order_date,cust_id,amount,sum(amount) over (order by order_date rows between 1 preceding and 1 preceding ) from staging.int_orders
+-- doing lead without lead function with help of following function
+select salesperson_id,order_number,order_date,cust_id,amount,sum(amount) over (order by order_date rows between 1 following and 1 following ) from staging.int_orders
+
+7) Lead and Lag Function user for comparing the rows based on YOY
+
+lag(sales,1) over ( order by order_year) 
+
+8) DATE Function 
+
+a) DATEPART
+select datepart(year,'2023-02-23'), select datepart(month,'2023-02-23')
+b) DATEADD
+select dateadd(week,2,'2023-02-23')
+c) DATEDIFF
+select datediff(day, from , to) as daydiff from table_name
+
+9) How to handle NULL Values in SQL
+
+we can use isnull function or coalesce
+
+10) CASE Statement
+
+select , CASE WHEN emp_age <20 THEN 'Kids' 
+		WHEN emp_age >=20 and emp_age<=40 THEN 'Adults'
+		ELSE 'Old' END as 'New_Age_Bucket' from table_name
+
+
+
+ select 
+ CASE 
+ WHEN SHORT_TEXT like '%PR%' 
+ THEN SUBSTRING(SHORT_TEXT,PATINDEX('%PR[0-9][0-9][0-9][0-9][0-9][0-9]%',SHORT_TEXT),8)
+ ELSE 'xyz' 
+ END,SHORT_TEXT
+ from staging.Tab_PO_Tracker
+ where PURCHASE_DOC='0017263857'
+
+create table bn
+( day int, profit int)
+
+INSERT INTO bn values(1 , 100)
+INSERT INTO bn values(1, 100)
+INSERT INTO bn values(1, 200)
+INSERT INTO bn values(1, 300)
+INSERT INTO bn values(4, 500)
+INSERT INTO bn values(4, 5890)
+INSERT INTO bn values(4, 4878)
+INSERT INTO bn values(7, 372)
+INSERT INTO bn values(10, 367)
+INSERT INTO bn values(20, 78)
+INSERT INTO bn values(30, 3279)
+
+select SUM(a.profit) as 'Total_Profit', a.Days_Type  from
+(
+select case when  day<=10  THEN '1-10 Days' 
+  when day>=10 and day<=30 THEN '11- 30 Days'
+ELSE CAST(day as nvarchar(100)) END as 'Days_Type' , profit, day  from bn
+  )  a
+  group by a.Days_Type
+ 
+
+
+11) Convert Row into Columns
+
+select Emp_Id, 
+SUM(CASE WHEN comp='A' THEN Val END) as A,
+SUM(CASE WHEN comp='B' THEN Val END) as B,
+SUM(CASE WHEN comp='C' THEN Val END as C)  from table_name
+
+
+select a.PO_Number,a.Line_Number,a.S_Year,SUM(a.January) as January,SUM(a.February) as February ,SUM(a.March) as March,SUM(a.April) as April,
+SUM(a.May) as May, SUM(a.June) as June,SUM(a.July) as July,SUM(a.August) as August,SUM(a.September) as September,SUM(a.October) as October,SUM(a.November) as November,
+SUM(a.December) as December from  (
+select PO_Number,Line_Number,S_Year, MAX(isnull(CASE WHEN S_Month='January' THEN SOW_Value END,0)) as January,
+MAX(isnull(CASE WHEN S_Month='February' THEN SOW_Value END,0)) as February, MAX(isnull(CASE  WHEN S_Month='March' THEN SOW_Value END,0)) as March,
+MAX(isnull(CASE  WHEN S_Month='April' THEN SOW_Value END,0)) as April, MAX(isnull(CASE  WHEN S_Month='May' THEN SOW_Value END,0)) as May,
+MAX(isnull(CASE  WHEN S_Month='June' THEN SOW_Value END,0)) as June, MAX(isnull(CASE  WHEN S_Month='July' THEN SOW_Value END,0)) as July,
+MAX(isnull(CASE  WHEN S_Month='August' THEN SOW_Value END,0)) as August, MAX(isnull(CASE  WHEN S_Month='September' THEN SOW_Value END,0)) as September,
+MAX(isnull(CASE  WHEN S_Month='October' THEN SOW_Value END,0)) as October, MAX(isnull(CASE  WHEN S_Month='November' THEN SOW_Value END,0)) as November,
+MAX(isnull(CASE  WHEN S_Month='December' THEN SOW_Value END,0)) as December
+from reporting.Tab_Sow_History_Test where  Active_Flag=1
+group by PO_Number,Line_Number,S_Month,S_Year,SOW_Value,S_Year
+) a
+group by a.PO_Number,a.Line_Number,a.S_Year
+
+12) Add Column Statement
+
+ALTER Table   reporting.tab_accrualfinal_test  
+
+ADD CurrentMonth nvarchar(200)
+
+13) Create Stored Procedure	
+
+Create Procedure Getsp
+(
+@Pid int
+)
+AS 
+	BEGIN
+	SET NOCOUNT ON
+		select * from table t where t.Id=@Pid
+
+	END
+
+
+14) how to get header only from sql query 
+
+select top 0 column_name1, column_name2 from table_name
+
+15) How to get non digit values from sql query
+
+not like '%[0-9]%'
+
+16) Create a view
+
+Create view rpt.eu_reach_report_jw1
+as
+select * from table
+
+
+17) dynamic view
+	
+create or replace view KINAXIS1.INT_OUT.V_PLG_I_0076_IBP_700_SAFETYSTOCK_CLEANSED(
+                PRDID,LOCID,FORECAST_PER_DATE,SAFETY_STOCK_QTY,UOM,SAFETY_DAYS,LOADDATE,MTART,ZZNA_APOCHAR_19,BASE_PERIOD
+) as
+    WITH
+    mtart_filter as
+    (select key3 from kinaxis1.utilities.control_var where wricef = 'PLG_I_0076' and db_key = 'ECC_NA' and table_key = 'MARA' and field_key = 'MTART'
+    and key1 = 'Part_Type' and key2 = 'FILTER_INCLUDE'), 
+    base_period as
+    ( select key3,key4,int1 from kinaxis1.utilities.control_var where wricef = 'PLG_I_0076' and db_key = 'ECC_NA' and table_key = 'MARA' and field_key = 'ZZNA_APOCHAR_19'
+    and key1 = 'SNP_PLANNER'and key2 = 'FILTER_INCLUDE')
+    select ss.prdid as prdid, ss.locid as locid, ss.forecast_per_date as forecast_per_date, ss.safety_stock_qty as safety_stock_qty,ss.uom as uom,ss.safety_days as safety_days,
+           ss.loaddate as loaddate,mara.mtart as mtart,mara.zzna_apochar_19 as zzna_apochar_19,ifnull(bp.int1,(select int1 from kinaxis1.utilities.control_var where wricef = 'PLG_I_0076'
+ and db_key = ' ' and table_key = ' ' and field_key = ' ' and key1 = 'DEFAULTWEEKS' and key2 = 'FILTER_INCLUDE')) as base_period from
+           ibp.staging.ibp_na_safetystock as ss inner join kinaxis1.datashare.v_ecc_na__mara as mara on ss.prdid = ltrim(mara.matnr,0)
+   inner join mtart_filter on mara.mtart = mtart_filter.key3 left join base_period as bp on mara.mtart = bp.key3 and mara.zzna_apochar_19 = bp.key4
+           where loaddate in (select distinct loaddate from ibp.staging.ibp_na_safetystock order by loaddate desc limit 1)
+           and forecast_per_date  >= (select substr(CALENDER_WK,1,4)||substr(CALENDER_WK,6,2)||substr(CALENDER_WK,9,2) from
+ KINAXIS1.UTILITIES.T_CALENDAR_TIMEPROFILE where date = substr(to_varchar(sysdate()),1,10)) order by ss.prdid , ss.locid , ss.forecast_per_date;
+
+18)
+
+customer - customer_id pk , customer_name, details
+
+address - addrees_id pk, customer_id fk, address_details, start, end, flag =0,1
+
+
+o/p 
+harsh[1987]
+
+select NAME + '[' (substring(HIRE_DATE,1,4) + ']'
+
+ABCDS8992bKsjk
+hjh222hhjjJKSS222
+
+--- learning snowflake query ---
+
+
+select * from
+(
+select a.matnr,REPLACE(LTRIM(REPLACE(marc.MATNR,'0',' ')),' ','0') as MARC_MATNR,
+a.werks,a.mtart,a.xplantstatus,a.snp_id,a.current_status,marc.DISMM as DISMM,marc.DISPO,
+CASE WHEN (a.mtart in('N100','N102') and (a.snp_id  like 'O%' or a.snp_id like 'Y%')  and a.xplantstatus in ('E4','C0','C1','C2','B0') and marc.DISMM in('ND')) THEN 'INACTIVE'
+ELSE 'ACTIVE' END as New_Status
+from
+(  select eio.matnr as matnr,eio.werks as werks,mara.mtart as mtart,mara.mstae as xplantstatus,mara.zzna_apochar_19 as snp_id,
+iff(eio.inactive = 'X','INACTIVE','ACTIVE') as current_status from kinaxis1.datashare.v_ibp__eio_il as eio inner join kinaxis1.datashare.v_ecc_na__mara as mara
+on eio.matnr = REPLACE(LTRIM(REPLACE(mara.MATNR,'0',' ')),' ','0') where mara.Mtart in ('N100' ,'N102')
+) a
+INNER JOIN kinaxis1.datashare.v_ecc_na__marc as marc
+on a.matnr =REPLACE(LTRIM(REPLACE(marc.MATNR,'0',' ')),' ','0')
+) b
+where b.MATNR='104400807' and b.WERKS ='2292'
+
+delete from  reporting.Tab_Accrual_Report where Purchasing_Document='17583403' and Current_Month='february' and Current_Year=2023 
+and Clarity_Workplan_ID='PRO10648'
+
+
+Patch('reporting.Tab_Sap_Rawdata_Upload_Test',First(Filter('reporting.Tab_Sap_Rawdata_Upload_Test',Id=ThisItem.Id)),{'Purchasing Document':Purchase_Number.Text,ResourceName:ResourceName.Text,Fb_Tm_Report_Comments:Comments.Text,ProjectID:Project.Text,VALCOAreaCrcy:Value(Amount.Text),'PR/TR':'PR/TR'.Text,COSTCATEGORY:CostCategory.Text,'Document Number':Document_Number.Text});
+UpdateContext({Comment:false});
+Refresh('reporting.Tab_Sap_Rawdata_Upload_Test');
+
+--
+
+PART A) Gap and Islands
+
+create table ins (id int);
+INSERT INTO ins VALUES (1);
+INSERT INTO ins VALUES (2);
+INSERT INTO ins VALUES (4);
+INSERT INTO ins VALUES (5);
+INSERT INTO ins VALUES (6);
+INSERT INTO ins VALUES (9);
+INSERT INTO ins VALUES (10);
+INSERT INTO ins VALUES (11);
+INSERT INTO ins VALUES (12);
+INSERT INTO ins VALUES (14);
+INSERT INTO ins VALUES (15);
+
+query:
+
+a) how to get the series values.
+query:
+
+WITH CTE AS ( select *, ROW_NUMBER() OVER (order by id)  as 'n',
+             id-ROW_NUMBER() OVER (order by id) as 'v'
+             from ins)
+select min(id) as 'start_value', max(id) as 'end_value' from CTE group by v;
+
+b) how to find the gap values 
+
+WITH CTE AS (
+select *, LEAD(id) OVER(order by id ) as 'l' from ins)
+select id+1 as 'gap_start',
+l-1 as 'gap_end'
+from CTE where l<>id+1
+
+c) now we added 4 more values with duplicate number.
+INSERT INTO ins VALUES (2);
+INSERT INTO ins VALUES (12);
+INSERT INTO ins VALUES (12);
+INSERT INTO ins VALUES (13);
+
+how to get the series now?
+
+query:
+
+WITH CTE AS ( select *, ROW_NUMBER() OVER (order by id)  as 'n',
+             id - DENSE_RANK() OVER (order by id) as 'v'
+             from ins)
+select min(id) as 'start_value', max(id) as 'end_value' from CTE group by v;
+
+
+PART B) CHAR INDEX and Sub String Usage.
+
+objective: how to get the only last name for all the players
+
+create table players (player_name nvarchar(200))
+INSERT INTO players VALUES ('Virat Kohli');
+INSERT INTO players VALUES ('Rohit Sharma');
+INSERT INTO players VALUES ('Ross Taylor');
+INSERT INTO players VALUES ('Joe Root');
+INSERT INTO players VALUES ('Steven Smith');
+INSERT INTO players VALUES ('Kane Williamson');
+INSERT INTO players VALUES ('MS Dhoni');
+
+Query: 
+
+select
+substring(player_name,1,6) as 'subs',
+CharIndex(' ',player_name) as 'vals',player_name,
+substring(player_name,1,CharIndex(' ',player_name)-1) as 'First Name',
+substring(player_name,CharIndex(' ',player_name)+1,len(player_name)) as 'Last Name'
+from players;
+
+
+PART C) How to use of Replace Function with CONCAT and TRIM with getdate()
+
+CONCAT(YEAR(DATEADD(year,-2,GETDATE())),'/01') and FORMAT(GETDATE(),'yyyy/MM')
+
+A.YearMonth BETWEEN REPLACE(CONCAT('''', REPLACE(CONCAT(YEAR(DATEADD(year,-2,GETDATE())),'/01'), ',', ''','''), ''''), ' ', '')
+  AND REPLACE(CONCAT('''', REPLACE(FORMAT(GETDATE(),'yyyy/MM'), ',', ''','''), ''''), ' ', '')
+
+PART D) String Aggregations : used for combining multiple types of columns value into one column only.
+
+string_agg(column_name,)
+
+PART E) PATINDEX : mainly used when we want to fetch the a value from the string based on our requirement.
+
+SUBSTRING(SHORT_TEXT,PATINDEX('%PR[0-9][0-9][0-9][0-9][0-9][0-9]%',SHORT_TEXT),8)
+	
+CharIndex (start with  0 index ) Vs PATINDEX ( start with 1 index )
+
+PART F) Cummulative Summation
+
+CREATE TABLE int_orders(  order_number int ,  order_date date,  cust_id int ,  salesperson_id int ,  amount int ) 
+
+INSERT INTO int_orders VALUES (30, CAST(N'1995-07-14' AS Date), 9, 1, 460)
+INSERT INTO int_orders VALUES (10, CAST(N'1996-08-02' AS Date), 4, 2, 540)
+INSERT INTO int_orders VALUES (40, CAST(N'1998-01-29' AS Date), 7, 2, 2400)
+INSERT INTO int_orders VALUES (50, CAST(N'1998-02-03' AS Date), 6, 7, 600)
+INSERT INTO int_orders VALUES (60, CAST(N'1998-03-02' AS Date), 6, 7, 720)
+INSERT INTO int_orders VALUES (70, CAST(N'1998-05-06' AS Date), 9, 7, 150)
+INSERT INTO int_orders VALUES (20, CAST(N'1999-01-30' AS Date), 4, 8, 1800)
+
+query: 
+select *,
+SUM(amount) OVER (order by order_date) as 'cummulative_sum',
+SUM(amount) OVER() as 'total_sum',
+SUM(amount) OVER (PARTITION by salesperson_id order by order_date) as 'sum_by_salesperson',
+SUM(amount) OVER (PARTITION by salesperson_id) as 'partition',
+SUM(amount) OVER ( order by order_date rows between 1 preceding and 1 preceding ) as '_withlag',
+LAG(amount,1) OVER (order by order_date) as '_lag',
+SUM(amount) OVER (ORDER by order_date rows between 1 following and 1 following )  as '_withlead',
+LEAD(amount,1) OVER (order by order_date ) as '_lead'
+from int_orders
+
+
+PART G) How to use REPLICATE FUNCTION
+
+Select * , REPLICATE(str,count) from table_name
+
+
+SQL Practice Questions
+
+1) objective: who is reporting to whom 
+
+CREATE TABLE employees(
+   EMPLOYEE_ID int,
+   NAME Varchar(20),
+   PHONE_NUMBER varchar(20),
+   HIRE_DATE varchar(20),
+   MANAGER_ID int);
+
+INSERT INTO EMPLOYEES VALUES (100, 'ANURAG', 9889269997, '1987-06-17', '');
+INSERT INTO EMPLOYEES VALUES (101, 'harsh', 8789269986, '1987-06-20', 100);
+INSERT INTO EMPLOYEES VALUES (102, 'SUMIT', 7689269975, '1987-07-07', 103);
+INSERT INTO EMPLOYEES VALUES (103, 'RUHI', 9589269964, '1987-07-12', 101);
+INSERT INTO EMPLOYEES VALUES (104, 'KAE', 8489269953, '1987-07-23', 102);
+
+solution 1) cross join 
+
+select b.Name as Employee_Name,a.Name as Manager_Name from employees a , employees b 
+where a.Employee_ID = b.Manager_ID
+
+2) objective - want to have orders which not returned by any city
+
+create table namaste_orders (order_id int, city nvarchar(100),sales int);
+
+INSERT INTO namaste_orders values(1,'Mysore',100)
+INSERT INTO namaste_orders values(2,'Mysore',200)
+INSERT INTO namaste_orders values(3,'Bangalore',350)
+INSERT INTO namaste_orders values(4,'Bangalore',256)
+INSERT INTO namaste_orders values(5,'Mumbai',1167)
+INSERT INTO namaste_orders values(6,'Mumbai',1787)
+INSERT INTO namaste_orders values(7,'Mumbai',1278)
+
+create table namaste_returns ( order_id int, return_reason nvarchar(100));
+ 
+INSERT INTO namaste_returns values(3,'Wrong Item')
+INSERT INTO namaste_returns values(6,'bad quality')
+INSERT INTO namaste_returns values(7,'Wrong Item')
+
+select * from namaste_orders
+select * from namaste_returns
+
+query :
+select o.city,count(r.order_id) as no_returned_orders
+ from namaste_orders o LEFT JOIN namaste_returns r ON o.order_id=r.order_id
+group by  o.city
+having count(r.order_id)=0;
+
+3) objective - calculated the clocked_hour per employee id wise
+
+create table clocked_hours(empd_id int,swipe time,flag char)
+
+insert into clocked_hours values(11114,'08:30','I')
+insert into clocked_hours values(11114,'10:30','O')
+insert into clocked_hours values(11114,'11:30','I')
+insert into clocked_hours values(11114,'15:30','O')
+insert into clocked_hours values(11115,'09:30','I')
+insert into clocked_hours values(11115,'17:30','O')
+
+query:
+select b.empd_id , sum(b.clocked_hours) from
+(
+select a.empd_id,a.rn,min(a.swipe) as swipe_in ,max(a.swipe) as swipe_out
+,datediff(hour, min(a.swipe),max(a.swipe)) as clocked_hours
+from
+(
+select *,row_number() OVER (PARTITION by empd_id,flag order by swipe) as rn
+  from clocked_hours ) a
+  group by a.empd_id,a.rn
+) b
+group by b.empd_id
+
+4) objective/ o/p - 3 - new in source, 4 - mismatched and 5 - new in target
+
+create table source(id int, name varchar(5))
+
+create table target(id int, name varchar(5))
+
+insert into source values(1,'A'),(2,'B'),(3,'C'),(4,'D')
+
+insert into target values(1,'A'),(2,'B'),(4,'X'),(5,'F');
+
+query:
+select coalesce(s.id,t.id) as id,
+case when t.name is null THEN 'new in source'
+when s.name is null THEN 'new in target'
+ELSE 'mismatched' END as 'Comment'
+from source s FULL OUTER JOIN target t ON s.id=t.id
+where s.name!=t.name or s.name is null or t.name is null
+
+5) objective - find cid with origin and destination.
+
+CREATE TABLE flights
+(
+    cid VARCHAR(512),
+    fid VARCHAR(512),
+    origin VARCHAR(512),
+    Destination VARCHAR(512)
+);
+
+INSERT INTO flights (cid, fid, origin, Destination) VALUES ('1', 'f1', 'Del', 'Hyd');
+INSERT INTO flights (cid, fid, origin, Destination) VALUES ('1', 'f2', 'Hyd', 'Blr');
+INSERT INTO flights (cid, fid, origin, Destination) VALUES ('2', 'f3', 'Mum', 'Agra');
+INSERT INTO flights (cid, fid, origin, Destination) VALUES ('2', 'f4', 'Agra', 'Kol');
+
+query -
+select f1.cid,f1.origin as origin ,f2.destination as destination from flights f1 INNER JOIN flights f2 ON f1.destination =f2.origin
+where f1.cid=1
+
+
+6)  
+
+create table users (user_id int, join_date date, favorite_brand nvarchar(200))
+
+create table orders ( order_id int, order_date date, item_id int, buyer_id int, seller_id int)
+
+create table items (item_id int, item_brand nvarchar(200))
+
+
+insert into users values(1,2019-01-01,'Lenovo')
+insert into users values(2,2019-02-09,'Samsung')
+insert into users values(3,2019-01-19,'LG')
+insert into users values(4,2019-05-21,'HP')
+
+
+insert into orders values(1,2019-08-01,4,1,2)
+insert into orders values(2,2019-08-02,2,1,3)
+insert into orders values(3,2019-08-03,3,2,3)
+insert into orders values(4,2019-08-04,1,4,2)
+insert into orders values(5,2019-08-05,1,3,4)
+insert into orders values(6,2019-08-06,2,2,4)
+
+insert into items values(1,'Lenovo')
+insert into items values(2,'Samsung')
+insert into items values(3, 'LG')
+insert into items values(4,'HP')
+
+
+7) objective - wanted to have user id 3 or consective  people greater than 100
+
+Create table stadium ( id int, visit_date varchar(100), no_of_people int)
+
+insert into stadium values (1,'2017-07-01',100);
+insert into stadium values (2,'2017-07-02',29);
+insert into stadium values(3,'2017-07-03',150);
+insert into stadium values (4,'2017-07-04',99);
+insert into stadium values (5,'2017-07-05',145);
+insert into stadium values (6,'2017-07-06',1455);
+insert into stadium values (7,'2017-07-07',199);
+insert into stadium values (8,'2017-07-08',188);
+
+query :
+
+subquery:
+select b.id from
+(
+select a.id,a.no_of_people,diff,count(diff) OVER ( PARTITION by diff) as consd from
+(
+select id,no_of_people,ROW_NUMBER() OVER ( order by id asc) as rn
+, id-ROW_NUMBER() OVER( order by id asc) as diff
+from stadium
+where no_of_people>100
+  ) a
+) b
+  where b.consd>=3
+
+query: thru CTE
+
+WITH CTE AS (select *,
+id -ROW_NUMBER() OVER (order by id ) as 'diff' from stadium
+where no_of_people>=100),
+CTE1 AS (select id, count(1) OVER (order by diff) as 'diff' from CTE 
+group by id,diff  )
+select id from CTE1;
+
+
+8) output what will be the o/p for left outer join, right outer join and full outer join
+
+create table a ( city nvarchar(100))
+create table b ( city nvarchar(100))
+
+insert into a values('bangalore')
+insert into a values('bangalore')
+insert into a values('bangalore')
+insert into a values('bangalore')
+insert into a values('bangalore')
+
+insert into b values('bangalore')
+insert into b values('bangalore')
+insert into b values('bangalore')
+insert into b values('bangalore')
+insert into b values('bangalore')
+
+query 
+select count(a.city) from a FULL OUTER JOIN b ON a.city=b.city
+
+9) objective - how to get min & max value based on series sequence for a number
+create table prob(Name nvarchar(100),Sequence int)
+
+insert into prob values('A',1)
+insert into prob values('A',2)
+insert into prob values('A',3)
+insert into prob values('A',4)
+insert into prob values('A',7)
+insert into prob values('A',8)
+insert into prob values('A',10)
+insert into prob values('B',11)
+insert into prob values('B',13)
+insert into prob values('C',15)
+insert into prob values('C',16)
+insert into prob values('C',17)
+insert into prob values('C',18)
+
+query:
+
+select a.name,min(a.sequence) as mini,max(a.sequence) as maxi from
+(
+select *,ROW_NUMBER() OVER (PARTITION By Name Order by Sequence) as rn,
+sequence-ROW_NUMBER() OVER (PARTITION By Name Order by Sequence) as rng
+from prob
+  ) a
+  group by a.rng,a.name
+
+
+10)objective : how to get brand with same year with case scenario 
+
+i) customer1 = customer3and customer2= customer4 then only one pair should be shown
+ii) customer1! = customer3and customer2!= customer4 
+
+create table brand
+( brand1 nvarchar(100),brand2 nvarchar(100),Year int,customer1 int,customer2 int,customer3 int null,customer4 int null ) 
+
+insert into brand values ('apple','samsung',2020,1,2,1,2)
+insert into brand values ('samsung','apple',2020,1,2,1,2)
+insert into brand values ('apple','samsung',2021,1,2,5,3)
+insert into brand values ('samsung','apple',2021,5,3,1,2)
+insert into brand values ('google','',2020,5,9,null,null)
+insert into brand values ('oneplus','nothing',2020,5,9,6,3) 
+
+query: 
+
+select b.brand1,b.brand2,b.Year,b.customer1,b.customer2,b.customer3,b.customer4 from
+( select *,ROW_NUMBER() OVER ( PARTITION BY a.pair_list order by a.pair_list) as rn from
+( select CASE WHEN brand1< brand2  THEN concat(brand1,brand2,year)
+ELSE concat(brand2,brand1, year) END as pair_list ,* from brand
+  ) a ) b
+  where b.rn=1  or (b.customer1!=b.customer3 and b.customer2!=b.customer4) 
+
+11) objective - mountain hut and trails.
+wanted to have ski rope for 3 ways like staring , mid and end point with decreasing order altitude. 
+
+create table mountain_hut( Id int, Name nvarchar(100), Altitude int)
+create table trails ( hut1 int,hut2 int) 
+
+insert into mountain_hut values (1,'Dakonat',1900)
+insert into mountain_hut values (2,'Natisa',2100)
+insert into mountain_hut values (3,'Gajantut',1600)
+insert into mountain_hut values (4,'Rifat',782)
+insert into mountain_hut values (5,'Tupur',1370) 
+
+insert into trails values  (1,3)
+insert into trails values (3,2)
+insert into trails values (3,5)
+insert into trails values (4,5)
+insert into trails values (1,5)
+
+select * from mountain_hut;
+select * from trails; 
+
+query: 
+
+with cte_trails AS
+( select t.hut1 as Start_Hut,h.Name as Start_Hut_Name,h.Altitude as Start_Hut_Altitude, t.hut2 as End_Hut from mountain_hut h JOIN trails t ON h.id=t.hut1),
+cte_trails2 AS
+(
+select t2.*, h2.name as End_Hut_Name,h2.Altitude as End_Hut_Altitude,
+CASE WHEN Start_Hut_Altitude>h2.Altitude THEN 1 ELSE 0 END as 'Altitude_Flag'
+from cte_trails t2  JOIN mountain_hut h2 ON t2.End_Hut =h2.id ),
+cte_final AS (
+select CASE WHEN Altitude_Flag=1 THEN Start_Hut ELSE End_Hut END as 'Start_Hut',
+CASE WHEN Altitude_Flag=1 THEN Start_Hut_Name ELSE End_Hut_Name END as 'Start_Hut_Name',
+CASE WHEN Altitude_Flag=1 THEN End_hut ELSE Start_Hut END as 'End_Hut',
+CASE WHEN Altitude_Flag=1 THEN End_Hut_Name ELSE Start_Hut_Name END as 'End_Hut_Name'
+from cte_trails2 )
+select c1.Start_Hut_Name as Start_Point, c1.End_Hut_Name as Middle_Point, c3.End_Hut_Name as Last_Point from cte_final c1
+JOIN cte_final c3 ON c1.End_Hut=c3.Start_Hut;
+
+12) objective : how to fill the null values for category name
+
+Create table brand (Category nvarchar(100), Brand nvarchar(100));
+
+INSERT INTO brand VALUES ('Chocolate','KITKAT');
+INSERT INTO brand VALUES ('','Daily Milk');
+INSERT INTO brand VALUES ('','5 Star');
+INSERT INTO brand VALUES ('','Milkybar');
+INSERT INTO brand VALUES ('','Kissme');
+INSERT INTO brand VALUES ('Biscuit','Oreo');
+INSERT INTO brand VALUES ('','Parle');
+INSERT INTO brand VALUES ('','Snack');
+INSERT INTO brand VALUES ('','fifty fifty');
+INSERT INTO brand VALUES ('','Bar');
+
+query :
+
+WITH CTE AS (select *, ROW_NUMBER() OVER () as 'Id' from brand),
+CTE1 AS (select *,CASE WHEN Category <> '' THEN 1 ELSE 0 END as 'Flag' from CTE),
+CTE2 AS (select Id,category,brand,Flag FROM CTE1),
+CTE3 AS (select *,SUM(Flag) OVER (Order by Id) as 'val' from CTE2)
+select Id,First_Value(category) OVER (Partition BY val) as Category,brand from CTE3;
+
+13) objective : show those manager whose having more than 5 employees reporting to him
+
+Create table emp (Id int, Name nvarchar(100), Department nvarchar(100), Salary int, Manager_Id int);
+
+INSERT INTO emp VALUES (10,'John','IT',60000,'');
+INSERT INTO emp VALUES (20,'Rose','IT',60000,10);
+INSERT INTO emp VALUES (30,'Tom','Finance',50000,'');
+INSERT INTO emp VALUES (40,'Sam','Finance',70000,30);
+INSERT INTO emp VALUES (50,'Kumar','IT',40000,10);
+INSERT INTO emp VALUES (60,'Ram','IT',55000,10);
+INSERT INTO emp VALUES (70,'Akhila','Analytics',63000,10);
+INSERT INTO emp VALUES (80,'Prem','cloud',45000,10);
+
+query: 
+select c.Manager_Name,c.Employee_Reportees from 
+(
+select count(b.Manager_Name)  as 'Employee_Reportees',b.Manager_Name from 
+(
+select *,DENSE_RANK() OVER (PARTITION By a.Manager_Name order by a.Employee_Name)  as 'val' from 
+( select e2.Name as 'Employee_Name',e1.Name as 'Manager_Name'  from emp e1, emp e2 where e1.Id=e2.Manager_Id ) a
+  ) b 
+ group by b.Manager_Name ) c
+ where c.Employee_Reporting>=5;
+
+14)
+
+Create table Friendship (user1_id int, user2_id int);
+
+insert into Friendship values ('1', '2');
+insert into Friendship values('1', '3');
+insert into Friendship values('2', '3');
+insert into Friendship values('1', '4');
+insert into Friendship values('2', '4');
+insert into Friendship values('1', '5');
+insert into Friendship values('2', '5');
+insert into Friendship values ('1', '7');
+insert into Friendship values ('3', '7');
+insert into Friendship values ('1', '6');
+insert into Friendship values ('3', '6');
+insert into Friendship values('2', '6');
+
+query:
+
+15) objective : how to get two consective date or more date with qty less than 50 
+
+CREATE TABLE stock (
+ supplier_id INT,
+ product_id INT,
+ stock_quantity INT,
+ record_date datetime
+);
+
+INSERT INTO stock VALUES  (1, 1, 60, '2022-01-01');
+INSERT INTO stock VALUES  (1, 1, 40, '2022-01-02');
+ INSERT INTO stock VALUES (1, 1, 35, '2022-01-03');
+ INSERT INTO stock VALUES (1, 1, 45, '2022-01-04');
+INSERT INTO stock VALUES  (1, 1, 51, '2022-01-06');
+INSERT INTO stock VALUES  (1, 1, 55, '2022-01-09');
+ INSERT INTO stock VALUES (1, 1, 25, '2022-01-10');
+ INSERT INTO stock VALUES (1, 1, 48, '2022-01-11');
+ INSERT INTO stock VALUES (1, 1, 45, '2022-01-15');
+ INSERT INTO stock VALUES (1, 1, 38, '2022-01-16');
+INSERT INTO stock VALUES  (1, 2, 45, '2022-01-08');
+ INSERT INTO stock VALUES (1, 2, 40, '2022-01-09');
+INSERT INTO stock VALUES  (2, 1, 45, '2022-01-06');
+ INSERT INTO stock VALUES (2, 1, 55, '2022-01-07');
+ INSERT INTO stock VALUES (2, 2, 45, '2022-01-08');
+ INSERT INTO stock VALUES (2, 2, 48, '2022-01-09');
+ INSERT INTO stock VALUES (2, 2, 35, '2022-01-10');
+INSERT INTO stock VALUES  (2, 2, 52, '2022-01-15');
+ INSERT INTO stock VALUES (2, 2, 23, '2022-01-16');
+
+query:
+
+WITH cte1
+AS (
+ SELECT *
+ ,DATEPART(DAY, record_date) AS record_day
+ ,ROW_NUMBER() OVER (PARTITION BY supplier_id, product_id ORDER BY record_date) AS rn
+ FROM stock
+ WHERE stock_quantity < 50
+ )
+SELECT supplier_id, product_id, COUNT(1) AS no_of_days, MIN(record_date) AS starting_date
+FROM cte1
+GROUP BY supplier_id, product_id, (record_day - rn)
+HAVING COUNT(1) >= 2;
+
+16) objective: how to display no_matches_played,no_wins,no_losses
+
+create table icc_world_cup
+(
+Team_1 Varchar(20),
+Team_2 Varchar(20),
+Winner Varchar(20)
+);
+
+INSERT INTO icc_world_cup values('India','SL','India');
+INSERT INTO icc_world_cup values('SL','Aus','Aus');
+INSERT INTO icc_world_cup values('SA','Eng','Eng');
+INSERT INTO icc_world_cup values('Eng','NZ','NZ');
+INSERT INTO icc_world_cup values('Aus','India','India'); 
+
+query: 
+select a.TeamName, count(1)  as 'No_Matches_Played' , SUM(a.win_flag) as 'No_Matches_Won' , count(1) - SUM(a.win_flag) as 'No_Losses'  from (
+select  team_1 as 'TeamName',CASE WHEN team_1=winner then 1 Else 0 END as 'win_flag' from icc_world_cup
+UNION ALL select team_2 as 'TeamName', CASE WHEN team_2=winner THEN 1 ELSE 0 END as 'win_flag' from icc_world_cup) A
+group by a.TeamName order by No_Matches_Won DESC;
+
+17) objective: want to result with year with product_id with current_year_spend , previous_year_spend and yoy_%
+
+create table yoy(
+transaction_id int,
+product_id  int,
+spend  decimal,
+transaction_date datetime ); 
+
+INSERT INTO yoy VALUES (1341,123424,1500.60,'12/31/2019 12:00:00');
+INSERT INTO yoy VALUES (1423,123424,1000.20,'12/31/2020 12:00:00');
+INSERT INTO yoy VALUES (1623,123424,1246.44,'12/31/2021 12:00:00');
+INSERT INTO yoy VALUES (1322,123424,2145.32,'12/31/2022 12:00:00');
+INSERT INTO yoy VALUES (1344,234412,1800.00,'12/31/2019 12:00:00');
+INSERT INTO yoy VALUES (1435,234412,1234.00,'12/31/2020 12:00:00');
+INSERT INTO yoy VALUES (4325,234412,889.50,'12/31/2021 12:00:00');
+INSERT INTO yoy VALUES (5233,234412,2900.00,'12/31/2022 12:00:00');
+INSERT INTO yoy VALUES (2134,543623,6450.00,'12/31/2019 12:00:00');
+INSERT INTO yoy VALUES (1234,543623,5348.12,'12/31/2020 12:00:00');
+INSERT INTO yoy VALUES (2423,543623,2345.00,'12/31/2021 12:00:00');
+INSERT INTO yoy VALUES (1245,543623,5680.00,'12/31/2022 12:00:00');
+
+query: 
+
+WITH CTE1 AS (
+select product_id, YEAR(transaction_date) as 'Year', SUM(spend) as 'Current_Year_Spend', LAG(spend) OVER (ORDER By product_id)
+as 'Previous_Year_Spend' from yoy 
+group by product_id,transaction_date,spend)
+select product_id,Year,Current_Year_Spend,Previous_Year_Spend, (Previous_Year_Spend-Current_Year_Spend)/Previous_Year_Spend*100 as 'YOY%' from CTE1;
+
+18) objective: want to show record empid, empname, salary but min salary for all employee id 
+
+create table tablea (empid int, empname varchar(50), salary int);
+create table tableb (empid int, empname varchar(50), salary int);
+
+
+insert into tablea values(1,'AA',1000),(2,'BB',300);
+insert into tableb values(2,'BB',400),(3,'CC',100);
+
+query: 
+
+with CTE1 AS (select * from tablea union select * from tableb)
+select empid,empname,min(salary) as 'salary' from CTE1
+group by empid,empname;
+
+19)  objective: calculate lift capacity per user wise with Lift Capacity 1 - 300kg and L2 - 350Kg
+
+Create table Lift(id int , capacity_kg int);
+Create table passenger_list (Passenger_Name nvarchar(100), Weight_Kg int , Lift_Id int);
+
+INSERT INTO Lift Values(1, 300);
+INSERT INTO Lift Values(2, 350);
+
+INSERT INTO passenger_list Values ('Rahul',85,1);
+INSERT INTO passenger_list Values ('Adarsh',73,1);
+INSERT INTO passenger_list Values ('Riti',95,1);
+INSERT INTO passenger_list Values ('Viraj',80,1);
+INSERT INTO passenger_list Values ('Vimal',83,2);
+INSERT INTO passenger_list Values ('Neha',77,2);
+INSERT INTO passenger_list Values('Priti',73,2);
+INSERT INTO passenger_list Values ('Himanshi',85,2);
+
+Query: 
+WITH CTE AS (
+select *,SUM(weight_kg) OVER (PARTITION By Lift_Id order by weight_kg asc) as 'ss' from passenger_list),
+CTE1 AS (select *, CASE WHEN (ss<300 and lift_id=1) OR (ss<350 and lift_id=2) THEN 'N' ELSE 'Y' END as 'Required' from CTE)
+select   Lift_Id, STRING_AGG(Passenger_Name,',' ) WITHIN GROUP (Order by Passenger_Name)
+as 'Names' from CTE1
+where Required ='N' GROUP by  Lift_Id;
+
+20) objective: Median Google Search Frequency
+
+create table m (searches int , num_users int);
+
+INSERT INTO m VALUES (1,2);
+INSERT INTO m VALUES (2,2);
+INSERT INTO m VALUES (3,3);
+INSERT INTO m VALUES (4,1);
+
+query:
+WITH searches_expanded AS (
+  SELECT searches
+  FROM search_frequency
+  GROUP BY 
+    searches, 
+    GENERATE_SERIES(1, num_users))
+
+SELECT 
+  ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (
+    ORDER BY searches)::DECIMAL, 1) AS  median
+FROM searches_expanded;
+
+21) objective: how to get user_id with its new status
+
+create table ad (user_id nvarchar(100), status nvarchar(100));
+create table daily (user_id nvarchar(100), paid int);
+
+INSERT INTO ad VALUES ('bing','NEW');
+INSERT INTO ad VALUES ('yahoo','NEW');
+INSERT INTO ad VALUES ('alibaba','EXISTING');
+
+INSERT INTO daily VALUES('yahoo',45);
+INSERT INTO daily VALUES('alibaba',100);
+INSERT INTO daily VALUES('target',13);
+
+query: 
+
+SELECT   COALESCE(ad.user_id, daily.user_id) AS user_id,paid,
+  CASE  WHEN paid IS NULL THEN 'CHURN' 
+    WHEN paid IS NOT NULL AND ad.status IN ('NEW','EXISTING','RESURRECT') THEN 'EXISTING'
+    WHEN paid IS NOT NULL AND ad.status = 'CHURN' THEN 'RESURRECT'
+    WHEN paid IS NOT NULL AND ad.status IS NULL THEN 'NEW'
+  END AS new_status FROM ad FULL OUTER JOIN daily   ON ad.user_id = daily.user_id ORDER BY user_id;
+
+22) objective: total number of unique hackers who made at least 1 submission each day (starting on the first day of contest), and find the hackerid and name of the hacker who made
+ maximum number of submission each day.If more than one such hacker has a maximum number of submission , print the lowest hackerid.
+
+CREATE TABLE Submissions (
+ submission_date DATE,
+ submission_id INT PRIMARY KEY,
+ hacker_id INT,
+ score INT
+);
+
+INSERT INTO Submissions (submission_date, submission_id, hacker_id, score) VALUES
+('2016-03-01', 8494, 20703, 0),
+('2016-03-01', 22403, 53473, 15),
+('2016-03-01', 23965, 79722, 60),
+('2016-03-01', 30173, 36396, 70),
+('2016-03-02', 34928, 20703, 0),
+('2016-03-02', 38740, 15758, 60),
+('2016-03-02', 42769, 79722, 25),
+('2016-03-02', 44364, 79722, 60),
+('2016-03-03', 45440, 20703, 0),
+('2016-03-03', 49050, 36396, 70),
+('2016-03-03', 50273, 79722, 5),
+('2016-03-04', 50344, 20703, 0),
+('2016-03-04', 51360, 44065, 90),
+('2016-03-04', 54404, 53473, 65),
+('2016-03-04', 61533, 79722, 15),
+('2016-03-05', 72852, 20703, 0),
+('2016-03-05', 74546, 38289, 0),
+('2016-03-05', 76487, 62529, 0),
+('2016-03-05', 82439, 36396, 10),
+('2016-03-05', 90006, 36396, 40),
+('2016-03-06', 90404, 20703, 0);
+
+query: 
+WITH CTE AS (select submission_date,hacker_id,count(*) as no_submission,  DENSE_RANK() OVER ( order by submission_date ) as 'rn' from Submissions
+group by hacker_id,submission_date),
+CTE1 AS (select *, CASE WHEN no_submission= count(*) OVER (PARTITION By hacker_id order by submission_date ) THEN 1 ELSE 0 END as 'Flag' from CTE),
+CTE2 AS ( select *, SUM (Flag) OVER (PARTITION By submission_date ) as 'uni_cnt', ROW_NUMBER() OVER (PARTITION By submission_date order by no_submission desc, hacker_id) as 'rn2' FROM CTE1)     
+select submission_date, uni_cnt, hacker_id from CTE2 where rn2=1;
+
+23) objective: find out callers whose first and last call was to same person on given date
+
+create table phonelog( Callerid int, Recipientid int, Datecalled datetime );
+insert into phonelog(Callerid, Recipientid, Datecalled) values
+(1, 2, '2019-01-01 09:00:00.000'), (1, 3, '2019-01-01 17:00:00.000'),
+(1, 4, '2019-01-01 23:00:00.000'), (2, 5, '2019-07-05 09:00:00.000'),
+(2, 3, '2019-07-05 17:00:00.000'), (2, 3, '2019-07-05 17:20:00.000'),
+(2, 5, '2019-07-05 23:00:00.000'), (2, 3, '2019-08-01 09:00:00.000'),
+(2, 3, '2019-08-01 17:00:00.000'), (2, 5, '2019-08-01 19:30:00.000'),
+(2, 4, '2019-08-02 09:00:00.000'), (2, 5, '2019-08-02 10:00:00.000'),
+(2, 5, '2019-08-02 10:45:00.000'), (2, 4, '2019-08-02 11:00:00.000');
+
+query: 
+
+24) objective: find the avg transaction and show the transaction which are more than 10000 transaction
+
+create table trans(customer_id int , customer_name nvarchar(100),transactions int ,product_category nvarchar(100));
+INSERT INTO trans VALUES (1, ALICE, 12000, Electronics); 
+INSERT INTO trans VALUES (2, BOB, 9000, Home Appliances);
+INSERT INTO trans VALUES (3, CHARLIE, 15000, Fashion);
+INSERT INTO trans VALUES (4, DANIEL, 8000, Electronics);
+INSERT INTO trans VALUES (5, EMMA, 11000, Fashion);
+INSERT INTO trans VALUES (6, FRANK, 13000, Home Appliances);
+INSERT INTO trans VALUES (7, GINA, 10000, Electronics);
+INSERT INTO trans VALUES (8, HENRY, 14000, Fashion);
+INSERT INTO trans VALUES (9, ISABELLA, 9500, Home Appliances);
+INSERT INTO trans VALUES (10, JACK, 10500, Electronics);
+
+Query: 
+WITH CTE AS (select *, AVG(transactions) OVER (PARTITION by product_category order by product_category) as 'avgs' from vsasg
+group by customer_id,customer_name,transactions,product_category)
+select product_category,LOWER(customer_name),transactions,avgs from CTE where transactions>10000;
+
+25) objective: highest salaried employee from each department who is manager.
+
+create table emp (id int, name nvarchar(100), department int, manager_id nvarchar(30), salary int);
+
+INSERT INTo emp VALUES (1,'Virat','IT','',8000);
+INSERT INTo emp VALUES (2,'Rohit','IT','',8000);
+INSERT INTo emp VALUES (3,'Pant','Finance','1',7000);
+INSERT INTo emp VALUES (4,'Rahul','Finance','2',6000);
+INSERT INTo emp VALUES (5,'Sanju','HR','1',5000);
+INSERT INTo emp VALUES (6,'Rinku','HR','3',4000);
+INSERT INTo emp VALUES (7,'Bumrah','Admin','',7000);
+INSERT INTo emp VALUES (8,'Shami','Admin','7',6000);
+INSERT INTo emp VALUES (9,'Siraj','BPO','3',5000);
+INSERT INTo emp VALUES (10,'Axar','BPO','1',5500);
+
+Query:
+
+26) objective: get through students which have maximum two mandatory course,maintain across 2.5 gpa.
+
+CREATE TABLE students (
+    student_id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    major VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE courses (
+    course_id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    credits INT NOT NULL,
+    major VARCHAR(100) NOT NULL,
+    mandatory VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE enrollments (
+    student_id INT NOT NULL REFERENCES students(student_id),
+    course_id INT NOT NULL REFERENCES courses(course_id),
+    semester VARCHAR(50) NOT NULL,
+    grade CHAR(1) NOT NULL,
+    gpa NUMERIC(2, 1) NOT NULL
+);
+
+INSERT INTO students (student_id, name, major) VALUES
+(1, 'Alice', 'Computer Science'),
+(2, 'Bob', 'Computer Science'),
+(3, 'Charlie', 'Mathematics'),
+(4, 'David', 'Mathematics');
+
+INSERT INTO courses (course_id, name, credits, major, mandatory) VALUES
+(101, 'Algorithms', 3, 'Computer Science', 'true'),
+(102, 'Data Structures', 3, 'Computer Science', 'true'),
+(103, 'Calculus', 4, 'Mathematics', 'true'),
+(104, 'Linear Algebra', 4, 'Mathematics', 'true'),
+(105, 'Machine Learning', 3, 'Computer Science', 'false'),
+(106, 'Probability', 3, 'Mathematics', 'false'),
+(107, 'Operating Systems', 3, 'Computer Science', 'false'),
+(108, 'Statistics', 3, 'Mathematics', 'false');
+
+INSERT INTO enrollments (student_id, course_id, semester, grade, gpa) VALUES
+(1, 101, 'Fall 2023', 'A', 4.0),
+(1, 102, 'Spring 2023', 'A', 4.0),
+(1, 105, 'Spring 2023', 'A', 4.0),
+(1, 107, 'Fall 2023', 'B', 3.5),
+(2, 101, 'Fall 2023', 'A', 4.0),
+(2, 102, 'Spring 2023', 'B', 3.0),
+(3, 103, 'Fall 2023', 'A', 4.0),
+(3, 104, 'Spring 2023', 'A', 4.0),
+(3, 106, 'Spring 2023', 'A', 4.0),
+(3, 108, 'Fall 2023', 'B', 3.5),
+(4, 103, 'Fall 2023', 'B', 3.0),
+(4, 104, 'Spring 2023', 'B', 3.0);
+
+query: 
+
+27) objective: get the order date , then ship date  with amount.
+
+create table xys (order_date varchar(100) , ship_date varchar(100) , amount int) 
+INSERT INTO xys VALUES ('2024-01-01','2024-01-05',100 );
+INSERT INTO xys VALUES ('2024-01-02','2024-01-06',150 );
+INSERT INTO xys VALUES ('2024-01-03','2024-01-07',200 );
+INSERT INTO xys VALUES ('2024-01-04','2024-01-08',250 );
+INSERT INTO xys VALUES ('2024-01-05','2024-01-09',300 );
+
+query: 
+
+WITH leftval AS (select x1.order_date,x1.amount as 'Total Sales by Order date',
+x2.amount  as 'Total Sales by Ship Order Date' from xys x1 LEFT JOIN xys x2 ON x1.order_date=x2.ship_date),
+rightval AS (
+select x2.ship_date,x1.amount as 'Total Sales by Order date',
+x2.amount  as 'Total Sales by Ship Order Date' from xys x1 RIGHT JOIN xys x2 ON x1.order_date=x2.ship_date)
+select * from leftval UNION 
+select * from rightval;
+
+28) objective: get the new price value for transaction
+
+create table price(product_id int, newprice int, changedate varchar(100))
+INSERT INTO price VALUES (1,10,'11-08-2024');
+INSERT INTO price VALUES (1,20,'12-08-2024');
+INSERT INTO price VALUES (2,20,'14-08-2024');
+INSERT INTO price VALUES (1,40,'16-08-2024');
+INSERT INTO price VALUES (2,50,'15-08-2024');
+INSERT INTO price VALUES (3,90,'18-08-2024');
+
+query: 
+
+29) objective: how to get the missing value from source as an o/p for us. 
+
+create table source (custname varchar(100), product varchar(100));
+
+INSERT INTO source VALUES ('John','AC');
+INSERT INTO source VALUES ('Sara','Purse');
+INSERT INTO source VALUES ('Sara','Purse');
+INSERT INTO source VALUES ('Tom','Mobile');
+INSERT INTO source VALUES ('Tom','Mobile');
+INSERT INTO source VALUES ('Tom','Mobile');
+INSERT INTO source VALUES ('Tom','Laptop');
+
+
+create table target (custname varchar(100), product varchar(100));
+
+INSERT INTO target VALUES ('John','AC');
+INSERT INTO target VALUES ('Sara','Purse');
+INSERT INTO target VALUES ('Tom','Mobile');
+INSERT INTO target VALUES ('Tom','Mobile');
+INSERT INTO target VALUES ('Tom','Laptop');
+
+query: 
+WITH s AS (
+select custname,product, count(product) as 'p' from source group by custname,product ),
+t AS (
+select custname,product, count(product) as 's' from target group by custname,product )
+select s1.custname,s1.product from s s1, t  t1 where s1.custname=t1.custname and s1.product=t1.product and s1.p<>t1.s
+
+
+30) objective: find the duplicate 
+
+create table employees_details (
+    emp_id int,
+    emp_name varchar(50),
+    mgr_id int,
+    salary int
+);
+
+insert into employees_details (emp_id, emp_name, mgr_id, salary) values 
+(1, 'yogesh', 2, 32000),
+(2, 'ravi', 3, 50000),
+(3, 'harsha', 7, 63000),
+(4, 'yogesh', 1, 28000),
+(5, 'harsha', 3, 75000),
+(1, 'yogesh', 2, 32000),
+(7, 'basha', 1, 80000),
+(8, 'ravi', 3, 50000)
+
+query:
+
+WITH managers AS (
+select e2.emp_name as 'Employee_Name',e1.emp_name as 'Manager_Name', e2.salary as Employee_Salary,
+  e1.salary as 'Manager_Salary' from employees_details e1 , employees_details e2
+where e1.emp_id=e2.mgr_id ),
+new AS (
+select *, CASE When (m.Employee_Name=m.Manager_Name and m.Employee_Name=m.Manager_Name) THEN 1 ELSE 0 End as 'vals'   from managers m
+group by m.Employee_Name,m.Manager_Name,m.Employee_Salary,m.Manager_Salary)
+select Employee_Name ,Manager_Name ,Employee_Salary, Manager_Salary from new;
+
+31) objective: how to get the balance against the credit and debit column
+
+Create table balance (name varchar(100), type vachar(100), amount int);
+INSERT INTO balance VALUES ('Ankit', 'Credit',5000);
+INSERT INTO balance VALUES ('Ankit', 'Debit',2000);
+INSERT INTO balance VALUES ('Amrit', 'Credit',5000);
+INSERT INTO balance VALUES ('Amrit', 'Credit',2689);
+INSERT INTO balance VALUES ('Amrit', 'Credit',378);
+INSERT INTO balance VALUES ('Ankush', 'Credit',5000);
+INSERT INTO balance VALUES ('Ankush', 'Debit',3000);
+INSERT INTO balance VALUES ('Ankush', 'Credit',5000);
+
+
+query:
+
+32) objective: how to get the values.
+
+create table too (name nvarchar(100),from_date date,code nvarchar(100), sub_code nvarchar(100))
+
+INSERT INTO too VALUES ('Ankit Madan',2023-01-03,'bn','shj'); 
+INSERT INTO too VALUES ('Ankit Madan',2023-01-04,'bn','sa');
+INSERT INTO too VALUES('Ankit Madan',2023-02-06,'bn','shddj');
+INSERT INTO too VALUES ('Ankit Madan',2023-04-03,'bn','seu');
+INSERT INTO too VALUES ('Ankit Madan',2023-08-13,'bn','xyz');
+INSERT INTO too VALUES('Sameer',2023-01-07,'cn','shj');
+INSERT INTO too VALUES('Sameer',2023-07-02,'cn','sa');
+INSERT INTO too VALUES('Sameer',2023-08-06,'cn','shddj');
+INSERT INTO too VALUES('Sameer',2023-09-03,'cn','seu');
+INSERT INTO too VALUES('Sameer',2023-01-13,'cn','xyz');
+INSERT INTO too VALUES('Amit',2023-01-03,'ob','shj');
+INSERT INTO too VALUES('Amit',2023-01-04,'ob','sa');
+INSERT INTO too VALUES('Amit',2023-02-06,'ob','shddj');
+INSERT INTO too VALUES('Neha',2023-04-03,'xo','seu');
+INSERT INTO too VALUES('Neha',2023-08-13,'xo','xyz');
+
+
+33) Objective : return the row_id which is having two null in a column.
+
+create table uber( row_id int,a nvarchar(10),b nvarcha(10),c nvarchar(10), d nvarchar(10))
+INSERT INTO uber VALUES(1,'','b','c','');
+INSERT INTO uber VALUES(2,'a','','c','d');
+INSERT INTO uber VALUES(3,'a','','','');
+INSERT INTO uber VALUES(4,'a','','','d');
+INSERT INTO uber VALUES(5,'a','b','c','d');
+
+solution:
+
+select *,
+(CASE WHEN a = '' THEN 1  ELSE 0 END + CASE WHEN b = ''  THEN 1  ELSE 0 END + CASE WHEN c = ''  THEN 1  ELSE 0 END +
+CASE WHEN d='' THEN 1 ELSE 0 END ) as 'ff' from uber
+
+34) write an sql query to 
+
+a) highest salary of dept who is working more than 2 year
+b) 
+
+create table [employees_details] (
+    emp_id int,
+    emp_name varchar(50),
+    dept_id int,
+    hire_date date,
+    salary int
+);
+
+insert into [employees_details] values (1, 'yogesh', 1, '2025-09-02',45000);
+insert into [employees_details] values (2, 'ravi', 3, '2024-02-01',50000);
+insert into [employees_details] values (3, 'mahesh', 2,'2023-12-02', 63000);
+insert into [employees_details] values (4, 'mahi', 2, '2022-01-01',28000);
+insert into [employees_details] values (5, 'lakshay', 3, '2023-11-11',75000);
+insert into [employees_details] values (6, 'deepak', 3, '2021-10-28',75000);
+insert into [employees_details] values (7, 'neha', 3, '2019-08-19',85000);
+
+
+create table [dept] (dept_id int, dept_name nvarchar(100));
+
+
+INSERT INTO [dept] VALUES (1,'HR');
+INSERT INTO [dept] VALUES (2,'Finance');
+INSERT INTO [dept] VALUES (3,'IT');
+
+o/p:
+
+with cte_salary as (
+select distinct d.dept_name,
+SUM(e.salary) OVER (partition by d.dept_name ) as 'salary_dept'
+from [JCPCOPA].[employees_details] e INNER JOIN [JCPCOPA].[dept] d ON e.dept_id =d.dept_id
+where e.hire_date<=DATEADD(YEAR,-2,getdate())
+group by d.dept_name,e.salary)
+,
+highest_salary as (
+select *,row_number() OVER ( order by salary_dept desc ) as 'rank' from cte_salary
+)
+
+select dept_name from highest_salary where rank<=1
+
+
+
+col<=DATEADD(YEAR,-2,getdate())
+
+
+
+
+--- ----
+
+Transcript
+o/p
+name, from_date
+
+ankit , 2023-01-03, 2023-08-13, bn, shj
+neha, 
+
+
+people : 
+
+INSERT INTO Statement 
+
+INSERT INTO [JCPCOPA].[TW_MS_MI_UOA_Backup]
+SELECT YEARMONTH,	BUSINESS_LINE,	SUB_BUSINESS_LINE,	GEOUNIT,	SUB_GEOUNIT,	OPERATIONID,	WBS,	UoA,	
+LAST_UPD_DATE,'' as [Consumption Type],'' as [Revenue Type]
+FROM [JCPCOPA].[TW_MS_MI_UOA];
+
+select * from 
+SUM(amount) OVER ( order by date rows between 6 preceding and current row) as rolling_sum from table_name
+
+
+ -- how to get the 6 rolling sum for product wise.
+sum(amount) over (order by date rows between 6 preceding and current row) as 'rolling sum' from table_name
+
+
+sum(amount) over ( order by date rows between 6 preceding and current row)
+
+where timestamp<=DATEADD(MONTH,-6,getdate())
+
+datediff()
+
+how to get all column name from sql
+
+SELECT COLUMN_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'YourTableName'
+ORDER BY ORDINAL_POSITION;
+
+ALTER TABLE table_name
+ALTER COLUMN float NULL
+
+
+Scalar Value
+
+
+-- to get every record from table with average salary.
+
+1)
+
+select employee_name , 
+(select AVG(salary) from employee_table ) as 'avg_salary' from table_name
+
+2) substring_Index
+
+select SUBSTRING_INDEX('A,B,C,D',',',-2)
+
+o/p - D
+
+3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

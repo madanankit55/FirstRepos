@@ -1,0 +1,3168 @@
+
+customer postal address : ADDRESSLOCATIONID
+ need to add column in view and target 
+
+customer contact information : ELECTRONICADDRESSID ( view , target table , masking view)
+
+349axuatsqlavg.lan.in.pallasfoods.eu
+AX6_UAT1
+D365DataMigration
+Dew23£212@qw232
+
+
+Entity wise D365
+Employee
+Vendor 
+Customer
+Product
+
+employee - titles,jobs,employeev2
+
+
+Srivarshini.Bolisetti@sysco.com - cyberark request (DL - )
+
+word file url: https://sysco.sharepoint.com/:w:/s/SyscoInternationalD365/IQBgRvmjn6iSRLwIPfgGazHGAa6aYgjhOHJhCN8FoR4Mc_c?e=itW68n
+word file password : KcIHO956qORSOA
+
+passwrd : PGh1l**gMrcAva60ygvnUnYvmuR2bbe1SF5*JOW% 
+
+(servername): eu-d365-datamigdev-azsqlsrv-neu-np-01.database.windows.net 
+ 
+db/schema : eu-d365-medinadev-azsqldb-neu-np-01 (old)
+	    eu-d365-ecofiskdev-azsqldb-neu-np-01(new)
+ 
+UserName : SQL_D365EUIDMCSA
+connection name: eu-d365-datamigdev-azsqlsrv-neu-np-01.database.windows.net
+
+Username For Medina DEV: SQL_D365EUIDMCSA 
+
+Connection name for Non Prod - eu-d365-medinadev-azsqldb-neu-np-01
+
+Connection name for Prod - eu-d365-medina-azsqldb-neu-prd-01
+
+Username for AX Prep - d365user
+
+Connection name - medina_uat2_src_sql_connection
+
+Username for AX Prod - d365user
+
+Connection name - medina_prod_src_sql_connection
+
+Account name for ADLS landing DEV - eud365landdevadlsneunp01
+
+Connection name - conn_azdev_med_adls_landing
+
+Account name for ADLS landing Prod - eud365landadlsneuprd01
+
+Connection name - conn_azprod_med_adls_landing
+
+db password : PGh1l**gMrcAva60ygvnUnYvmuR2bbe1SF5*JOW%
+
+data archictecture principals
+
+design and implement the data integration solution
+
+data modelling and database design
+
+-- IDMC 
+
+https://github.com/SyscoCorporation/idmc-eu-etl-platform-artifacts
+
+portal access : (CyberArk users)
+account access : IDMC-CyberArk-Access
+nbel0868 ,adim0955 , nnay0953 , limt0881 , spaul0985 , jlak0954 , amad0952 and kken1002
+
+REQ000001404809
+ 
+saheen.sawooth@sysco.com
+ 
+mayuran.sivasothy@sysco.com
+ 
+Bobbi.Weatherill@sysco.com
+
+
+amad0952@stg - IDMC
+
+vendor, customer and product - stibo
+
+dynamics.com/data/$metadata?download=1
+
+url
+
+ sandbox : https://sysco-func-test.sandbox.operations.eu.dynamics.com
+
+sharepoint url 
+
+https://sysco.sharepoint.com/sites/SyscoInternationalD365/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FSyscoInternationalD365%2FShared%20Documents%2FGeneral%2FData%20Migration%20Workstream%2FData%20Migration%20Documents%2FMapping%5FTemplate%2FDM%5FWorkshops%2F2%2E%20Customer&p=true&ct=1744715788014&or=Teams%2DHL&ga=1&LOF=1
+
+
+https://sysco.sharepoint.com/sites/SyscoInternationalD365/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FSyscoInternationalD365%2FShared%20Documents%2FGeneral%2FData%20Migration%20Workstream%2FMedina%5FKT%5FDocs%5FInfy2CapG&p=true&ga=1&LOF=1
+
+service now Sysco 
+
+https://sysco.service-now.com/sp?id=sc_cat_item&sys_id=61b7466c3bf6aa50a034709c24e45af9
+
+-- workspace
+https://sysco.workspaceoneaccess.com/catalog-portal/ui#/apps
+
+
+server name: mi590idmcsa01.na.sysco.net (prd)
+
+mi590idmcsa01d.na.sysco.net( non prod )
+
+servername in workspace: 596-win11-dvm-prd
+
+Informatica URL : https://dm-em.informaticacloud.com/identity-service/home
+
+
+Azure Portal 
+GitHub Sysco
+
+https://github.com/SyscoCorporation/idmc-eu-etl-platform-artifacts
+
+username: ankitmadansysco
+
+User ID: amad0952 
+Temporary Password: 4fw4d3iUTV
+Sysco Email: Ankit.Madan@sysco.com 
+Employee Number: 91000952 
+
+---
+
+indrajeet.pal@capgemini.com (fabrics)
+
+-- credential
+
+db
+sql-admin / DESdatamigration01
+
+schema define
+
+CREATE TABLE [Data].[Data_Test_TGT](
+	[Division Code] [nvarchar](max) NULL,
+	[Geounit Code] [nvarchar](max) NULL,
+	[P1] [nvarchar](max) NULL,
+	[Business_Line_Code] [nvarchar](max) NULL,
+	[Sub_Business_Line_Code] [nvarchar](max) NULL,
+	[YEARMONTH] [nvarchar](max) NULL,
+	[Amount] [decimal](20, 3) NULL,
+	[Amount_Value] [int] NULL,
+	[percentage] [nvarchar](max) NULL,
+	[LoadTimestamp] [nvarchar](max) NULL,
+	[LoadID] [nvarchar](max) NULL
+) 
+
+
+--- rate calculator ---
+
+ADF
+Name:
+M&S
+PL_MS_POWERAPP_CALCULATE_RATE
+TLM
+PL_TLM_POWERAPP_CALCULATE_RATE
+ERC
+PL_ERC_POWERAPP_CALCULATE_RATE
+
+ select distinct(YEARMONTH) from [JCPCOPA].[TW_M&S_WIT_UoA]
+ order by YEARMMONTH Desc
+
+
+SELECT * FROM JCPCOPA.[TW_M&S_PROCESS_RATE_CONFIGURATION]
+where RATE_ID=8812
+ORDER BY RATE_ID DESC
+ 
+SELECT * FROM JCPCOPA.[TW_M&S_INTERMEDIATE_CALCULATED_VALUES]
+ORDER BY RATE_ID DESC
+ 
+SELECT * FROM JCPCOPA.[TW_M&S_CALCULATED_RATES]
+where
+DIVISION='WEC'
+and BUSINESS_LINE='WCF' and
+SUB_BUSINESS_LINE='WIT'
+ORDER BY RATE_ID DESC
+
+
+
+select
+*
+from
+[JCPCOPA].[TW_M&S_PROCESS_DEFINITION]
+
+order by method  
+desc
+
+ select distinct(YEARMONTH) from [JCPCOPA].[TW_M&S_WIT_UoA]
+
+configuration detils
+
+hiearch : Current hierarchy 
+
+wef-wit : all geounit
+wec-wcm:all geounit
+rpf
+groupa
+ABC,ACE,APG,AZT,BRZ,CAL,CHG,EAG,ECP,EMG,ESG,EUR,GTC,ING,INM,IRQ,KSA,KWT,KZU,MCA,NAF,NAO,NAW,OPG,QTG,SCA,USL
+business:RPE,RPI
+sub_business:DHT,TWL,WLES,WLPS,SLKN
+
+dsecptio:validation data adding for april 2025 till 2025 june.
+rpf
+groupb
+business:RPS,RPI
+sub_business:TCPF,SWT,PSV,XCS,WIS,WPS
+
+TLM
+a)
+WIT Rate calculator
+division: WEC
+business line: WCF
+sub business line: WIT
+Method Name: TLM WEC GU Level
+geounit_list:All
+rate_name: WEC WCF WIT
+Geounitlist: All
+hiearch : Current hierarchy
+ 
+testing value RATE_ID=1432
+
+b)
+WCM RC
+division: WEC
+business line: WCM
+sub business line: DMHT,DMHV,TDBM
+Methdod Name: TLM WEC Brand Level
+rate_name: WEC WCM 
+Geounitlist: All
+hiearch : Current hierarchy
+
+testing value RATE_ID=1433
+
+
+c) RPF Group A Rate Calculator
+division: RPF
+business line: RPE,RPI
+sub business line: DHT,TWL,WLES,WLPS,SLKN
+Methdod Name: OE Count Based Rate
+rate_name RPF Group A TLM
+Geounitlist: ABC,ACE,APG,AZT,BRZ,CAL,CHG,EAG,ECP,EMG,ESG,EUR,GTC,ING,INM,IRQ,KSA,KWT,KZU,MCA,NAF,NAO,NAW,OPG,QTG,SCA,USL
+hiearch : Current hierarchy
+
+testing value RATE_ID=1436
+
+d) RPF Group B Rate Calculator
+
+division: RPF
+business line: RPS,RPI
+sub business line: TCPF,SWT,PSV,XCS,WIS,WPS
+Methdod Name: Sub Business Line UoA Based Rate
+rate_name: RPF Group B TLM 
+Geounitlist: ABC,ACE,APG,AZT,BRZ,CAL,CHG,EAG,ECP,EMG,ESG,EUR,GTC,ING,INM,IRQ,KSA,KWT,KZU,MCA,NAF,NAO,NAW,OPG,QTG,SCA,USL
+hiearch : Current hierarchy
+
+testing value RATE_ID=1435
+
+required table: 
+
+select * from [JCPCOPA].[TW_TLM_PROCESS_DEFINITION]
+
+SELECT * FROM JCPCOPA.[TW_TLM_PROCESS_RATE_CONFIGURATION] where RATE_ID
+
+ERC Rate Calculator
+
+required table:  select * from [JCPCOPA].[TW_ERC_PROCESS_DEFINITION]
+ select * FROM JCPCOPA.[TW_ERC_PROCESS_RATE_CONFIGURATION] 
+
+a) RPF COST POOL / AVAILABLE DAYS 
+
+
+division: RPF
+business line: WCF
+sub business line: WIT
+Method Name: COST POOL / AVAILABLE DAYS
+geounit_list:All
+rate_name: WEC WCF WIT
+Geounitlist: All
+hiearch : Current hierarchy
+
+testing value RATE_ID=1437
+
+b)
+
+ERC DEPRECIATION WIT / TOOL DAYS WIT
+
+division: WEC
+business line: WCF
+sub business line: WIT
+Method Name: ERC DEPRECIATION WIT / TOOL DAYS WIT
+geounit_list:All
+rate_name: WEC WCF WIT
+Geounitlist: All
+hiearch : Current hierarchy
+
+testing value RATE_ID=1438
+
+---- 
+PRC
+
+a) 
+
+----fdp  data upload for 2024/1 - 2024/12
+
+SELECT 
+   G.JOB_CATEGORY,
+   G.SAP_ACTIVITY_TYPE,
+   J.JOB_CODE,
+   J.CLOCKED_FLAG,
+   J.HEADCOUNT_TYPE
+FROM JCPCOPA.TW_PRC_CONFIG_RATE_JOBCODE_MAPPING J
+JOIN JCPCOPA.TW_PRC_CONFIG_RATE_JOBCATEGORY_MAPPING G ON J.JOB_CATEGORY_id=g.ID
+WHERE RATE_CODE_ID=31
+
+
+-- update on view --
+
+6059451_BPI_VW
+
+-- rate load --
+
+SELECT TOP 1* FROM JCPCOPA.[TW_TLM_PUBLISHED_RATES]
+ 
+SELECT TOP 1* FROM JCPCOPA.[TW_M&S_PUBLISHED_RATES]
+ 
+SELECT TOP 1* FROM JCPCOPA.[TW_ERC_PUBLISHED_RATES]
+
+checking the duplicate record.
+
+SELECT
+    HIERARCHY_ID, GEOUNIT, DIVISION, BUSINESS_LINE, SUB_BUSINESS_LINE,
+    RATE_TYPE, RATE_DRIVER, BPI_GROUP, HIERARCHY_GROUPING_LEVEL, 
+    --GEOUNIT_RATE, GLOBAL_RATE, FINAL_RATE, FINAL_ADJUSTED_RATE    
+    PERIOD_FROM, PERIOD_TO, PUBLISHED_BY,
+    -- LAST_UPD_DATE, 
+    count(SUB_BUSINESS_LINE)
+FROM JCPCOPA.[TW_M&S_PUBLISHED_RATES] (nolock)
+Where 
+    period_from = '2024/05'
+group by 
+    HIERARCHY_ID, GEOUNIT, DIVISION, BUSINESS_LINE, SUB_BUSINESS_LINE,
+    RATE_TYPE, RATE_DRIVER, BPI_GROUP, HIERARCHY_GROUPING_LEVEL, 
+    --GEOUNIT_RATE, GLOBAL_RATE, FINAL_RATE, FINAL_ADJUSTED_RATE    
+    PERIOD_FROM, PERIOD_TO, PUBLISHED_BY--, LAST_UPD_DATE
+having count(SUB_BUSINESS_LINE) > 1
+order by GEOUNIT, SUB_BUSINESS_LINE 
+
+--m&s  driver --
+
+WITH  CTE AS (
+select *,
+CASE  WHEN  Consumption_Type ='NEW'  THEN 0 ELSE SUM(CAST(UOA as Decimal(20,3))) END AS 'BASE REPAIR',
+CASE  WHEN  Consumption_Type ='USED'  THEN 0 ELSE SUM(CAST(UOA as Decimal(20,3))) END AS 'Base M&S Repair'
+
+from [JCPCOPA].[VW_M&S_ALLOCATION_BASED_ON_UOA] 
+where   SUB_BUSINESS_LINE ='SMB'
+group by PERIOD,DIVISION,BUSINESS_LINE,SUB_BUSINESS_LINE,GEOUNIT,UoA_Geo,SUB_GEOUNIT,UoA_SUbGeo,UoA,WBS_JOB_ID,PS_POSID,WBS_UoA,TOTAL,BASE_ALLOCATION,BASE_UoA,split_UoA,Total_Allocation,Consumption_Type,Revenue_Type )
+select *,UOA/[BASE REPAIR] as 'Allocation % 1',UOA/[Base M&S Repair] as  '% Allocation_No_Repair'
+from CTE
+
+
+
+-- FP Charts ---
+
+
+ select   A.Bl_XI,A.ORG_XI,A.PERIOD_XI,A.PPLCOST_XI,A.GIN_NUMBER,A.job_number,A.Period,A.sap_wbs_number,A.SUB_BUSINESS_LINE,A.SUB_GEOUNIT,
+			  A.jcp_employee_group,A.FDP_DAYS,A.LOADCHART_DAYS,A.OP_XI,A.OPACT_XI,A.LAST_UPD_DATE, BL.BUSINESS_LINE_CODE, ORG.GEOUNIT_CODE, NULL AS LEVEL1			 
+			  from  [JCPCOPA].[TFJCPCOPAFDPCREWDAYS] A
+			  LEFT JOIN JCPCOPA.DIM_SLB_ORGANIZATION ORG ON ORG.ORG_XI=A.ORG_XI
+			  LEFT JOIN JCPCOPA.DIM_BUSINESS_LINES BL ON BL.BL_XI=A.BL_XI
+			  LEFT JOIN LoadChart_Share.VW_LCO_WELLSITE_GIN_COUNT LC ON LC.[Division (Code)]=BL.DIVISION_Code
+			  AND LC.[Business Line (Code)]=BL.BUSINESS_LINE_CODE and LC.[GIN]=A.[GIN_NUMBER] and LC.YearMonth=A.Period
+			  where A.Period IN ('2025/01','2025/02','2025/03','2025/04','2025/05','2025/06') and LC.[Business Line (Code)] IN ('WCF','WCM') and
+			  ORG.GEOUNIT_CODE='EUR' and A.SUB_BUSINESS_LINE='DMHT'
+			  group by A.Bl_XI,A.ORG_XI,A.PERIOD_XI,A.PPLCOST_XI,A.GIN_NUMBER,A.job_number,A.Period,A.sap_wbs_number,A.SUB_BUSINESS_LINE,A.SUB_GEOUNIT,
+			  A.jcp_employee_group,A.FDP_DAYS,A.LOADCHART_DAYS,A.OP_XI,A.OPACT_XI,A.LAST_UPD_DATE,BL.BUSINESS_LINE_CODE,ORG.GEOUNIT_CODE
+			  ,LC.[Division (Code)]
+
+
+--- inscope mapping updates --
+
+
+1) table update : JCPCOPA.TW_NewInscope_Mapping
+
+2) ADF Pipeline Run 
+
+3) all dim & fact 2025/05,
+
+1.Dim Customer remove dulicate
+   2.Ad Hoc Fact Load
+   3. Dim Mapping Load (After Fact load hi karna hai.The reason is Fact XI values get added to the Dim mapping table)
+
+
+   4.Fact Refresh and dim MApping refresh
+
+select * from JCPCOPA.TW_NewInscope_Mapping where [Division_Code] ='PRS' and [SL_PRODUCT_LINE_CODE]='CPS' and sl_geomarket_code IN('ING','EMG')
+and [SL_SUB_PRODUCT_LINE_CODE] IN ('AGL','CCM','CMC','MSS','SAN')
+
+
+ttestingquery
+
+SELECT 
+	[Division Code] = E.[Division_Code]
+		,[K$] = 
+	CAST(SUM(A.GROUP_CURRENCY) * (CASE WHEN min(B.SortP2) = 'P2-01' THEN -1 ELSE 1 END)  / 1000 AS DECIMAL (20,3))
+ 
+	,[USD_K$] = 
+	CAST(ROUND(SUM(A.GROUP_CURRENCY) * (CASE WHEN min(B.SortP2) = 'P2-01' THEN -1 ELSE 1 END)  / 1000,0) AS INT)  
+	,[%] =
+	CASE WHEN 
+	SUM(A.GROUP_CURRENCY) * (CASE WHEN min(B.SortP2) = 'P2-01' THEN -1 ELSE 1 END) / 
+	(SELECT COUNT(*) FROM JCPCOPA.Dim_NIS_Hierarchy WHERE P2 = 'Total Revenue') > 1 
+	THEN 
+	CONCAT(CAST(ROUND(1 * 100, 0) as INT) , '%')
+ 
+	WHEN 
+	SUM(A.GROUP_CURRENCY) * (CASE WHEN MIN(B.SortP2) = 'P2-01' THEN -1 ELSE 1 END) / 
+	(SELECT COUNT(*) FROM JCPCOPA.Dim_NIS_Hierarchy WHERE P2 = 'Total Revenue') < -1 
+	THEN 
+	CONCAT(CAST(ROUND(-1 * 100, 0) as INT)  , '%')
+ 
+	ELSE 
+	CONCAT(CAST(
+	(SELECT COUNT(*) FROM JCPCOPA.Dim_NIS_Hierarchy WHERE P2 = 'Total Revenue') * 100.0 / 
+	(SELECT SUM(COUNT(*)) OVER() FROM JCPCOPA.Dim_NIS_Hierarchy WHERE P2 = 'Total Revenue')    
+	AS INT)
+	,'%')
+	END
+ 
+	FROM [JCPCOPA].[Fact_COPA_Metrics] A WITH(NOLOCK)
+	LEFT JOIN JCPCOPA.Dim_NIS_Hierarchy B WITH(NOLOCK) ON A.NISHrchy_XI = b.NISHRCY_XI 
+	LEFT JOIN JCPCOPA.Dim_Rig C WITH(NOLOCK) ON A.RIG_XI = C.RIG_XI 
+	LEFT JOIN JCPCOPA.Dim_Well D WITH(NOLOCK) ON A.WELL_XI = D.WELL_XI 
+	LEFT JOIN JCPCOPA.Dim_Business_Lines E WITH(NOLOCK) ON A.SEG_XI = E.BL_XI
+	LEFT JOIN JCPCOPA.Dim_Date F WITH(NOLOCK) ON A.PERIOD_XI = F.PERIOD_XI
+	LEFT JOIN JCPCOPA.Dim_SLB_Organization G WITH(NOLOCK) ON A.ORG_XI = G.ORG_XI
+	LEFT JOIN JCPCOPA.Dim_Operations H WITH(NOLOCK) ON A.OP_XI = H.OP_XI
+	LEFT JOIN JCPCOPA.Dim_Operations_Activity I WITH(NOLOCK) ON A.OPACT_XI = I.OPACT_XI
+	LEFT JOIN JCPCOPA.Dim_wbs J WITH(NOLOCK) ON A.WBS_XI = J.WBS_XI
+	LEFT JOIN JCPCOPA.Dim_IPM_Project K WITH(NOLOCK) ON A.IPM_XI = K.IPM_XI
+	LEFT JOIN JCPCOPA.Dim_Customer L WITH(NOLOCK) ON A.CUST_XI = L.CUST_XI
+	LEFT JOIN JCPCOPA.Dim_Contracts M WITH(NOLOCK) ON A.CONT_XI = M.CONT_XI
+	WHERE 
+	 B.P2 IN ('Total Revenue') and G.Implemented_in_COPA='Y' and E.Implemented_in_COPA='Y' 
+	 AND F.[YEARMONTH] IN ('2025/01','2025/02','2025/03','2025/04','2025/05','2025/06','2025/07') AND
+	 	  E.[Sub_Business_Line_Code] IN
+	 ('IPSP','ASNS','AGL','ALSHQ','ASNS2','CCM','CMC','CPSHQ','DAIHQ','DHT','DMHT','DMHV','ESP','HPS','IDPM','IDR','IDSE','IDSP',
+	 'IDSS','IDST','IFS','IGWCHQ','INE','IPSE','IPSPM','IPSS','IPST','ISME','ISMPM','ISMS','LABR','MDS','MSS','OPMS','PCP','PDP','PH2','PHE',
+	 'PSV','RPE_HQ','RPEHQ','RPF_HQ','RPFHQ','RPI_HQ','RPIHQ','RPS_HQ','RPSHQ','RTAL','RXTRE','SAN','SLKN','SMB','SPO','SRP','TALS','TCPF','TCPL',
+	 'TDBM','TSPR' ,'TSW','TTPS','TWL','TWS','WBPC','WIT','WIS','WLEL','WLES','WLPS','WPS','XCS')
+	 and E.[Business_Line_Code] IN ('IWGC','IPS','ALS','CPS','RPE','RPF_DHQ','RPFHQ','RPI','RPS','WCD','WCF','WCM')
+	GROUP BY 
+	E.[Division_Code]
+
+
+
+-- New task for m&S -- 
+
+COPA KSL - Allocation/Cost
+COPA MSL - Cost Driver
+TW_M&S_PUSBLISHED_RATES Rate - From excels
+ 
+Allocation/Cost = Cost Driver*Rate
+
+-- IWC ---
+
+Revenue $K = DIVIDE([Total Revenue],1000)
+
+Total Revenue = CALCULATE([Metric Value],'Dim NIS Hierarchy'[P1] in
+ {"Service Revenue","Product Revenue","Reimbursable Revenue"}) * -1
+
+Metric Value = ROUND(SUM('Fact Metrics'[Group Currency]),2)
+
+[JCPCOPA].[Fact_COPA_Metrics]
+
+
+-- data mapping --
+
+ select * from JCPCOPA.TW_NewInscope_Mapping where Division_Code='PRS' and sl_geomarket_code IN ('ING','EMG')
+and SL_PRODUCT_LINE_CODE='CPS'
+ 
+
+
+-- cross schema --
+
+JCPCOPA_SHARE.FACT_BPI_Integration
+
+where condition for P2. IN 'Total Variance'
+
+new branch name  : 5988300_bpi_inti
+
+branch name: 5936610_crosschema
+
+
+-- TLM ---
+
+source query
+ 
+SELECT * FROM JCPCOPA.[VW_TLM_dRIVERS]
+
+WHERE DIVISION = 'WEC'
+
+AND BUSINESSLINE = 'WCF'
+
+AND SUBBUSINESSLINE = 'WIT'
+ 
+Sink - SELECT TOP 10* FROM JCPCOPA.[TW_TLM_WIT_UOA]
+ 
+--- M&S  ----
+
+business line: WCD
+sub business line : SMB
+
+table name: [JCPCOPA].[TW_MS_MI_UOA]
+View name : VW_M&S_ALLOCATION_BASED_ON_UOA
+dependent view name :  VW_M&S_Drivers 
+
+query :
+select *
+from [JCPCOPA].[TW_MS_MI_UOA] 
+where YEARMONTH='2024/10' and BUSINESS_LINE = 'WCF' and SUB_BUSINESS_LINE = 'SMB'
+
+geounit ='ING'
+
+INSERT INTO [JCPCOPA].[TW_MS_MI_UOA] (YEARMONTH,BUSINESS_LINE,SUB_BUSINESS_LINE,GEOUNIT,SUB_GEOUNIT,OPERATIONID,WBS,UoA,LAST_UPD_DATE,
+Consumption_Type,Revenue_Type)
+select YEARMONTH,BUSINESS_LINE,SUB_BUSINESS_LINE,GEOUNIT,SUB_GEOUNIT,
+OPERATIONID,WBS,sum(CAST(UoA AS INT)) as UoA,LAST_UPD_DATE,Consumption_Type,Revenue_Type
+ from [JCPCOPA].[TW_MS_MI_UOA_Backup] where YearMonth ='2025/04' and SUB_BUSINESS_LINE = 'SMB' 
+group by YEARMONTH,BUSINESS_LINE,SUB_BUSINESS_LINE,GEOUNIT,SUB_GEOUNIT,
+OPERATIONID,WBS,LAST_UPD_DATE,Consumption_Type,Revenue_Type 
+
+
+
+Missing Wells
+
+-- actionable item report
+
+5884790_actionable
+
+
+--- Monitoring BPI People --
+
+power bi branch : 5872629_monitoring
+
+allocation table  
+select top 10 * from [JCPCOPA].[Fact_COPA_CrewDays]
+
+
+testing query
+
+WITH SAP_RATES AS 
+(
+SELECT DISTINCT A.YEARMONTH,A.[ACTIVITY TYPE],A.RATES,A.[RATE_CATEGORY],B.[Sub Geounit Code],B.[Sub Business Line Code] FROM 
+(SELECT [FISCAL YEAR],YEARMONTH,[ACTIVITY TYPE],[COST CENTER],RATES,[RATE_CATEGORY]
+FROM JCPCOPA.VW_CPF_SDI_ACTIVITY_RATES) A
+JOIN (select DISTINCT [COST CENTER],[Sub Geounit Code],[Sub Business Line Code] from jcpcopa.vw_csks) B
+ON A.[COST CENTER]=B.[COST CENTER]
+)
+,
+BPI_RATES AS 
+(SELECT DISTINCT PERIOD,jcp_employee_group,sub_business_line,sub_geounit,rate,geounit FROM JCPCOPA.VW_PEOPLE_PUBLISHED_RATES
+where  PERIOD ='2025/05'  and geounit ='EAG')
+
+
+SELECT  A.[MAPPED VALUE],
+B.PERIOD,B.jcp_employee_group,B.sub_business_line,B.sub_geounit,B.rate [BPI People Rate],B.geounit
+,C.YEARMONTH,C.[ACTIVITY TYPE],C.RATE_CATEGORY,C.RATES [SAP RATE],C.[Sub Geounit Code],C.[Sub Business Line Code],
+CASE WHEN C.RATES IS NULL THEN 'No'
+     else 'Yes' end as [Rates Assigned] FROM
+JCPCOPA.VW_CONFIG_RATE_ACTIVITY_TYPE_MAPPING A JOIN BPI_RATES  B
+ON A.[MAPPED VALUE]=jcp_employee_group
+left JOIN SAP_RATES C ON A.[ACTIVITY TYPE]=C.[ACTIVITY TYPE] AND B.PERIOD=C.YEARMONTH AND B.sub_business_line=C.[Sub Business Line Code]
+AND B.sub_geounit=C.[Sub Geounit Code]
+where A.[MAPPED VALUE] ='FE' and C.[Sub Business Line Code]='DHT' and C.[Sub Geounit Code]='VNM' 
+and [RATE_CATEGORY]='TKG005'
+
+
+--- 
+
+WITH SAP_RATES AS 
+(
+SELECT DISTINCT A.YEARMONTH,A.[ACTIVITY TYPE],A.RATES,A.[RATE_CATEGORY],B.[Sub Geounit Code],B.[Sub Business Line Code] FROM 
+(SELECT [FISCAL YEAR],YEARMONTH,[ACTIVITY TYPE],[COST CENTER],RATES,[RATE_CATEGORY]
+FROM JCPCOPA.VW_CPF_SDI_ACTIVITY_RATES) A
+JOIN (select DISTINCT [COST CENTER],[Sub Geounit Code],[Sub Business Line Code] from jcpcopa.vw_csks) B
+ON A.[COST CENTER]=B.[COST CENTER]
+)
+select * from SAP_RATES C
+where C.[Sub Business Line Code]='DHT' and C.[Sub Geounit Code]='VNM' and RATE_CATEGORY='TKG001' and YEARMONTH='2025/01' 
+and C.[ACTIVITY TYPE] ='JCPEFE'
+
+--and
+--[COST CENTER] IN ( 'PA100127','PA100158','VN100009','PA100142','PA100151','PA100159','PA100144','PA100153','PA100160',
+--'PA100156')
+--and RATES =625.81
+
+with rts as (
+SELECT  [FISCAL YEAR],YEARMONTH,[ACTIVITY TYPE],[COST CENTER],RATES,[RATE_CATEGORY]
+FROM JCPCOPA.VW_CPF_SDI_ACTIVITY_RATES C  where 
+C.RATE_CATEGORY='TKG001' and C.YEARMONTH='2025/01' 
+and C.[ACTIVITY TYPE] ='JCPEFE'  ),
+copa as (
+select DISTINCT [COST CENTER],[Sub Geounit Code],[Sub Business Line Code] from jcpcopa.vw_csks )
+
+select * from rts r inner join copa c ON r.[COST CENTER]=c.[COST CENTER]
+where C.[Sub Business Line Code]='DHT' and C.[Sub Geounit Code]='VNM'
+
+select  * from jcpcopa.vw_csks C where C.[Sub Business Line Code]='DHT' and C.[Sub Geounit Code]='VNM'
+
+main query
+
+WITH SAP_RATES AS 
+(
+SELECT DISTINCT A.YEARMONTH,A.[ACTIVITY TYPE],A.RATES,A.[RATE_CATEGORY],B.[Sub Geounit Code],B.[Sub Business Line Code] FROM 
+(SELECT [FISCAL YEAR],YEARMONTH,[ACTIVITY TYPE],[COST CENTER],RATES,[RATE_CATEGORY]
+FROM JCPCOPA.VW_CPF_SDI_ACTIVITY_RATES) A
+JOIN (select DISTINCT [COST CENTER],[Sub Geounit Code],[Sub Business Line Code] from jcpcopa.vw_csks) B
+ON A.[COST CENTER]=B.[COST CENTER]
+)
+,
+BPI_RATES AS 
+(SELECT DISTINCT PERIOD,jcp_employee_group,sub_business_line,sub_geounit,rate FROM JCPCOPA.VW_PEOPLE_PUBLISHED_RATES
+where period >= '2021/01')
+
+SELECT  A.[ACTIVITY TYPE],
+A.[MAPPED VALUE],
+B.PERIOD,B.jcp_employee_group,B.sub_business_line,B.sub_geounit,B.rate [BPI People Rate]
+,C.YEARMONTH,C.[ACTIVITY TYPE]
+,C.RATE_CATEGORY,
+C.RATES [SAP RATE],
+C.[Sub Geounit Code]
+,C.[Sub Business Line Code],
+CASE WHEN C.RATES IS NULL THEN 'No'
+     else 'Yes' end as [Rates Assigned] FROM
+JCPCOPA.VW_CONFIG_RATE_ACTIVITY_TYPE_MAPPING A JOIN BPI_RATES  B
+ON A.[MAPPED VALUE]=jcp_employee_group
+left JOIN SAP_RATES C ON A.[ACTIVITY TYPE]=C.[ACTIVITY TYPE] AND B.PERIOD=C.YEARMONTH AND B.sub_business_line=C.[Sub Business Line Code]
+AND B.sub_geounit=C.[Sub Geounit Code];
+ 
+
+
+
+
+Target Utilization
+
+-- OE | STage ----
+
+replace :oa :: (oe + stage) OE|Stage
+
+__*FP20_Service Revenue / Total OA = DIVIDE([Service Revenue $K],[__*Total OA],0)
+
+total OE|Stage = oe + satge
+
+__*FP20_Service Revenue / Total  = DIVIDE([Service Revenue $K],[__total OE|Stage],0)
+
+Operating new charft color :orage similar to people chart
+
+workforce (card name: Effective Deployment, Deployment Target)
+
+new workforce : variance : details columns (Target Deployment (D), %Effective Deployment (G=E/C))
+
+Fact metrics[target utlilization]
+Fact People cost[% actual utlilization]  
+
+one more task : table :
+
+Fact Metrics [Switch Value Monthly K$] *1000
+
+1) Rev/OA Chart
+
+__*FP20_Service Revenue / Total OA = DIVIDE([Service Revenue $K],[__*Total OA],0) 
+
+
+__*FP20_Total Revenue / Total OA = DIVIDE([Total Revenue PE],[__*Total OA],0)
+
+New Measure 
+
+Current Month OA
+
+a) _NewOECount = CALCULATE('Fact OEStage'[OE Count],'Dim Mappings'[Business Line] IN {"RPE","RPI"})
+
+b) _NewStageCount = CALCULATE('Fact OEStage'[OE Count],'Dim Mappings'[Business Line] IN {"RPS"})
+
+c) __NewStage Count = SUM('Fact OEStage'[Stage Count Actual])
+
+c) Existing Measure [__*Total OE_Stage] =[OE Count] + [Stage Count]
+
+[__*Total OE_Stage] = [_NewOECount] + [__NewStage Count]
+
+d) [__*FP20_Service Revenue / Total OE | Stage] = DIVIDE([Service Revenue $K],[__*Total OE_Stage],0) 
+	column name in power bi 
+	Existing : SR / OA
+	New 	 :SR / OE|Stage
+	
+
+e) [__*FP20_Revenue Revenue / Total OE | Stage] = DIVIDE([Total Revenue PE],[__*Total OE_Stage],0)
+	
+	column name in power bi  
+	Existing : TR / OA
+	New      : TR / OE|Stage
+
+2) NT Revenue/OA Chart
+
+Existing :
+
+__*FP20_NT1 / Total OA = DIVIDE([NT1 Revenue],[__*Total OA],0)
+
+__*FP20_Technology Value Basket / Total OA = DIVIDE([Technology Value Basket Revenue],[__*Total OA],0)
+
+a) [__*FP20_NT1 / Total OE| Stage] = DIVIDE([NT1 Revenue],[__*Total OE_Stage],0)
+	
+	colum name in power bi 
+	Existing : NT1 / OA 
+	New      : NT1/ OE|Stage
+
+b) [__*FP20_Technology Value Basket / Total OE| Stage] =  DIVIDE([Technology Value Basket Revenue],[__*Total OE_Stage],0)
+
+	colum name in power bi 
+	Existing : TVB / OA
+	New      :TVB/ OE|Stage
+
+3) People Cost / CellMonth chart
+
+Existing :
+
+__*FP20_People Cost Allocated / CellMonth = DIVIDE([People Cost Allocated PE],[CellMonth],0)
+
+__*FP20_People Cost Incurred / CellMonth = DIVIDE([Cost Incurred People Cost PE],[CellMonth],0)
+
+
+a) [__*FP20_People Cost Allocated / OE| Stage] = DIVIDE([People Cost Allocated PE],[__*Total OE_Stage],0)
+	colum name in power bi 
+	Existing : Allocated
+	New      :Allocated OE Stage
+
+b) [__*FP20_People Cost Incurred / OE| Stage] = DIVIDE([Cost Incurred People Cost PE],[__*Total OE_Stage],0)
+
+	colum name in power bi 
+	Existing : Incurred  
+	New      :Incurred   OE Stage
+
+4) Other Delivery Chart
+
+Existing : 
+
+[__*FP20_Total ODC Allocated / CellMonth] = DIVIDE([Other Delivery Cost Allocated PE],[CellMonth],0)
+
+[__*FP20_Total ODC Incurred / CellMonth] = DIVIDE([Cost Incurred Delivery Cost PE],[CellMonth],0)
+
+
+a) [__*FP20_People Cost Allocated / OE| Stage] = DIVIDE([Other Delivery Cost Allocated PE],[__*Total OE_Stage],0)
+
+coumn name in powe bi 
+	Existing : Allocated OE Stage
+	New      : Allocated OE Stage
+
+b) [__*FP20_People Cost Incurred / OE| Stage] = DIVIDE([Cost Incurred Delivery Cost PE],[__*Total OE_Stage],0)
+
+coumn name in powe bi 
+	Existing :  Incurred   
+	New      :  Incurred  OE Stage
+
+c) L& R Cell Month
+
+Existing :
+
+__*FP20_Total ODC Allocated / CellMonth = DIVIDE([Other Delivery Cost Allocated PE],[CellMonth],0)
+
+__*FP20_Total ODC Incurred / CellMonth = DIVIDE([Cost Incurred Delivery Cost PE],[CellMonth],0)
+
+New Measures
+
+[__*FP20_Total ODC Allocated / OE| Stage] = DIVIDE([Other Delivery Cost Allocated PE],[__*Total OE_Stage],0)
+
+[__*FP20_Total ODC Incurred / OE| Stage] = DIVIDE([Cost Incurred Delivery Cost PE],[__*Total OE_Stage],0)
+
+5) Also updated the Card values.
+
+a) Current month Card - done
+
+b) Previous Month OA 
+
+
+Switch Value Monthly K$
+
+Switch Value Monthly K$ = 
+--Financials
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="Financials" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="PM",FORMAT([Metric Value K$ Previous Month],"#,0"),
+
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="Financials" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="CM",FORMAT([PeriodicValueK$],"#,0"),
+
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="Financials" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="Delta",FORMAT([Delta Monthly K$],"#,0"),
+
+--$'k per Cost Driver
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="$'k per Cost Driver" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="PM" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([K per Activity Driver K$ Previous Month],"#,0.00"),
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="$'k per Cost Driver" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="CM" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([K per Activity Driver K$],"#,0.00"),
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="$'k per Cost Driver" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="Delta" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([K per Activity Driver Delta Monthly K$],"#,0.00"),
+
+/*
+--$'k per UoA
+IF(SELECTEDVALUE('Column Hierarchy'[Parent])="$'k per UoA" && SELECTEDVALUE('Column Hierarchy'[Child])="CM" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([_*K per UoA K$],"#,0"),
+IF(SELECTEDVALUE('Column Hierarchy'[Parent])="$'k per UoA" && SELECTEDVALUE('Column Hierarchy'[Child])="PM" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([_*K per UoA Previous Month K$],"#,0"),
+IF(SELECTEDVALUE('Column Hierarchy'[Parent])="$'k per UoA" && SELECTEDVALUE('Column Hierarchy'[Child])="Delta" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([_*K per UoA Delta Monthly K$],"#,0"),
+*/
+
+--$'k per OA
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="$'k per OA" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="CM" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([K per OA K$],"#,0.00"),
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="$'k per OA" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="PM" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([K per OA Previous Month K$],"#,0.00"),
+IF(SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level1])="$'k per OA" && SELECTEDVALUE('HEADERS_HIERARCHY_CONFIG'[Header Level2])="Delta" && SELECTEDVALUE('Dim NIS Hierarchy'[P2])<>"Total Variance",FORMAT([K per OA Delta Monthly K$],"#,0.00"),
+
+
+BLANK())))))))))
+
+
+Metric Value K$ Previous Month = CALCULATE([PeriodicValueK$],PREVIOUSMONTH('Dim Date'[Month (Date)]))
+
+__Metric Value K Previous Month = CALCUALTE([PeriodicValue],PREVIOUSMONTH('Dim Date'[Month (Date)]))
+
+
+__
+
+-- BPA Scan --
+
+5697511_BPA_Scan
+
+Release_17062025
+
+
+https://slb001.sharepoint.com/:x:/r/sites/JobProfitabilityTaskForce/_layouts/15/Doc.aspx?sourcedoc=%7BEF1279C3-4587-4C21-8E23-BBA6C27BC446%7D&file=PRE-PROD%20Checklist%205727972_LDS_20052025.xlsx&action=default&mobileredirect=true
+
+Cost Per Head Impact K$
+
+["VW_SECURITY_ORGANIZATION","TW_SECURITY_ORGANIZATION","VW_
+_PRODUCT_LINES","TW_SECURITY_PRODUCT_LINES"]
+
+
+[{ "tableName": "VW_SECURITY_ORGANIZATION" },{ "tableName": "TW_SECURITY_ORGANIZATION" },{ "tableName": "VW_SECURITY_PRODUCT_LINES" },
+{ "tableName": "TW_SECURITY_PRODUCT_LINES" } ]
+
+
+jsonCopyEdit[{ "tableName": "VW_SECURITY_ORGANIZATION" },{ "tableName": "TW_SECURITY_ORGANIZATION" },{ "tableName": "VW_SECURITY_PRODUCT_LINES" }, { "tableName": "TW_SECURITY_PRODUCT_LINES" } ]
+
+
+jsonCopyEdit[{ "tableName": "VW_SECURITY_ORGANIZATION" },{ "tableName": "TW_SECURITY_ORGANIZATION" },{ "tableName": "VW_SECURITY_PRODUCT_LINES" }, { "tableName": "TW_SECURITY_PRODUCT_LINES" } ]
+
+-- COPA Refresh Validation --
+
+Account missing current  - 732
+contract missing current - 5 
+
+5730629_Copa_Refresh
+
+Wells 
+
+35<=25
+
+DIM Well - available in dim well table but showing is not available in report.
+
+select WELLBOREDESC,SAPITT_ID  from [JCPCOPA].[VW_TDJCPCOPAWELL]
+
+select [Wellbore Desc],[SAPITT ID]  from [JCPCOPA].[Dim_Well]
+
+select vw.SAPITT_ID,w.[SAPITT ID] from [JCPCOPA].[VW_TDJCPCOPAWELL] vw INNER JOIN [JCPCOPA].[Dim_Well] w
+ON vw.SAPITT_ID=w.[SAPITT ID]
+
+DIM Rig - available in dim rig table but showing is not available in report.
+
+-- security refresh 50  -- 
+
+ADF Pipeline Name: ValidatingSourceTarget
+
+table name : JCPCOPA.TABLECONFIGURATION
+branch name: 5730450_SecurityTables
+ADF branch name:  
+
+
+ADW Branch Name   5730450_TableSchema
+
+
+
+
+ADF Name: PL_JCPCOPA_LDS_Security_Refresh (source) and PL_L4_JCPCOPA_INT_LOAD_COSTDRIVERS_CONSOLIDATION ( reference) 
+
+1) select count(*) from [JCPCOPA].[VW_SECURITY_ORGANIZATION] --  [SVTSEC].[SECURITY_VIEW_BUSINESS_TEAM]
+2) select count(*) from [JCPCOPA].[VW_SECURITY_PRODUCT_LINES] -- [SVTSEC].[SECURITY_VIEW_BUSINESS_VIEW]
+
+1) select   count(*) from [JCPCOPA].[VW_SECURITY_ORGANIZATION] 
+2) select count(*) from [JCPCOPA].[TW_SECURITY_ORGANIZATION] (truncate , copy from vw to tw_so)
+3) select count(*) from [JCPCOPA].[TW_SECURITY_PRODUCT_LINES] (truncate , copy from vw to tw_so)
+4) select count(*) from [JCPCOPA].[VW_SECURITY_PRODUCT_LINES]
+5) select * from [JCPCOPA].[TW_SECURITY_SYNC_CONFIGURATION]
+6) select * from [JCPCOPA].[TW_Refresh_SecurityLogs]
+
+
+select * from [JCPCOPA].[TW_SECURITY_SYNC_CONFIGURATION]
+select * from [JCPCOPA].[TW_SECURITY_SYNC_CONFIGURATION_Test]
+
+select * from [JCPCOPA].[TW_SECURITY_ORGANIZATION_Test]
+select * from [JCPCOPA].[TW_SECURITY_PRODUCT_LINES_Test]
+
+INSERT INTO [JCPCOPA].[TW_SECURITY_SYNC_CONFIGURATION] VALUES ('VW_SECURITY_ORGANIZATION','TW_SECURITY_ORGANIZATION',25,1,'2025-05-13 17:23:05.097');
+INSERT INTO [JCPCOPA].[TW_SECURITY_SYNC_CONFIGURATION] VALUES ('VW_SECURITY_PRODUCT_LINES','TW_SECURITY_PRODUCT_LINES',25,1,'2025-05-13 17:23:05.097');
+
+-- UX Design for PRC ---
+
+points need to be worked.
+
+1) emp group : column sq payroll, total payroll 
+2) available card link for clocked empl : BPI 
+3) need to bring columns for available days in detail page : Add job code description , job group and  Clocked(Y/N) and sequence arranging of columns also.
+4) people rate: visual update with all details from division till jcp employee group.
+5) published rate.
+
+branch name: 5650345_PRC
+
+select * from [JCPCOPA].[TW_PRC_TRACK_TOTAL_PAYROLL]
+where division = 'RPF' and run_parameters_id=56
+
+
+__Rate Code = IF(ISFILTERED('PRC CONFIG RATE CODE'[JCP Rate Code]),VALUES('PRC CONFIG RATE CODE'[JCP Rate Code]),"")
+
+1) parameter page once rate code is selected than value should be shown.
+
+PRC Config rate code : [JCPCOPA].[TW_PRC_CONFIG_RATE_CODE]
+
+PRC Config rate cost pool : [JCPCOPA].[TW_PRC_CONFIG_RATE_COSTPOOL]
+
+PRC Config rate jobcategory mapping : [JCPCOPA].[TW_PRC_CONFIG_RATE_JOBCATEGORY_MAPPING]
+ 
+PRC Config rate jobcode mapping : [JCPCOPA].[TW_PRC_CONFIG_RATE_JOBCODE_MAPPING]
+
+RUN Parameter : [JCPCOPA].[TW_PRC_TRACK_RATE_RUN_PARAMETERS]
+
+Cost Pool : TW_PRC_TRACK_COST_POOL
+
+Total Cost Pool : TW_PRC_TRACK_TOTAL_COST_POOL
+
+Relationship between payroll() and dim organization (id)
+
+Payroll : [JCPCOPA].[TW_PRC_TRACK_PAYROLL]
+
+Total Payroll : [JCPCOPA].[TW_PRC_TRACK_TOTAL_PAYROLL]
+
+Dim Product Line : [JCPCOPA].[Dim_Business_Lines]
+
+Scope : [JCPCOPA].[TW_NewInscope_Mapping]
+
+testing query:
+
+select distinct c.jcp_rate_code,c.BPI_RATE_ID,tr.rate_code_id,p.run_parameters_id  from [JCPCOPA].[TW_PRC_TRACK_PAYROLL] p 
+INNER JOIN [JCPCOPA].[TW_PRC_TRACK_RATE_RUN_PARAMETERS] tr ON
+p.run_parameters_id =tr.id
+INNER JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_CODE] c ON tr.rate_code_id=c.BPI_RATE_ID
+
+
+query: payroll for jcp rate
+
+select distinct c.jcp_rate_code,c.BPI_RATE_ID  from [JCPCOPA].[TW_PRC_TRACK_PAYROLL] p 
+INNER JOIN [JCPCOPA].[TW_PRC_TRACK_RATE_RUN_PARAMETERS] tr ON
+p.run_parameters_id =tr.id
+INNER JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_CODE] c ON tr.rate_code_id=c.BPI_RATE_ID
+
+query : total payroll for jcp rate
+
+
+query : cost pool for jcp rate
+
+query : job code for total payroll (testing query)
+
+select distinct c.jcp_rate_code,jn.job_code,p.period_From ,p.period_to,p.division,p.business_line,p.sub_business_line,p.geounit
+,p.sub_geounit,p.total_payroll_cost,p.total,p.percentage,p.jcp_employee_group
+from [JCPCOPA].[TW_PRC_TRACK_TOTAL_PAYROLL] p 
+INNER JOIN [JCPCOPA].[TW_PRC_TRACK_RATE_RUN_PARAMETERS] tr ON p.run_parameters_id =tr.id
+INNER JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_CODE] c ON tr.rate_code_id=c.BPI_RATE_ID
+INNER JOIn [JCPCOPA].[TW_PRC_CONFIG_RATE_JOBCATEGORY_MAPPING] jm ON jm.rate_code_id =c.BPI_RATE_ID
+INNER JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_JOBCODE_MAPPING] jn ON jm.id=jn.job_category_id
+
+requird
+ select run_parameters_id,period_from,period_to,division,business_line,sub_business_line,geounit,sub_geounit,jcp_employee_group,total_payroll_cost,total,percentage,LAST_UPD_DATE from [JCPCOPA].[TW_PRC_TRACK_TOTAL_PAYROLL]
+
+query : job code for available days.(48 rate code)
+
+select  distinct e.Job_Group,e.Job,jm.clocked_flag,
+ta.run_parameters_id,ta.period,ta.division,ta.business_line,ta.sub_business_line,ta.geounit,ta.sub_geounit,ta.jcp_employee_group,ta.job_code,days_off,ta.days_on,ta.core_headcount,ta.non_core_headcount,ta.month_days,ta.available_days,ta.avg_jcp_employee_group_working_pattern,
+ta.adjusted_available_days,ta.LAST_UPD_DATE from  [JCPCOPA].[TW_PRC_TRACK_AVAILABILITY] ta
+INNER JOIN [JCPCOPA].[TW_PRC_H2R_JCP_EXTRACT] e ON ta.job_code=e.Job_Code
+INNER JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_JOBCODE_MAPPING] jm ON jm.job_code=ta.job_code
+
+query : cost pool
+
+SELECT	A.[run_parameters_id],	A.[period],
+	A.[functional_area],	A.[profit_center],	A.[cost_center],	A.[account_number],	A.[division],	A.[business_line],
+	A.[sub_business_line],	A.[geounit],	A.[sub_geounit],	A.[balance],	A.[LAST_UPD_DATE],	B.[Account_Desc]
+FROM	[JCPCOPA].[TW_PRC_TRACK_COST_POOL] AS A
+		INNER JOIN JCPCOPA.Dim_NIS_Hierarchy AS B
+			ON A.account_number = B.Base_Cost_Element
+
+query: rates
+
+select * from [TW_PRC_TRACK_RESULTS]
+
+
+
+5683749 - modified the naming conventions for local measures for people tables.
+
+-- local Measure ---
+
+new release branch :   Release_20052025
+
+5727972_LDS_Hotfix and Release_15052025
+
+1) WEC New Feature
+
+Hotfix URL Master
+
+https://slb-it.visualstudio.com/es-global-reporting-infrastructure/_git/biedw-std-jcp-aaspbi/pullrequest/652989
+
+-- people rate calculator ---
+
+branch name for dataset
+
+1) 5632730_Geounit_level
+
+2) 5650371_PRC 
+
+5632730_MgtCountry
+
+pbix file
+
+https://slb-it.visualstudio.com/es-global-reporting-infrastructure/_releaseProgress?_a=release-pipeline-progress&releaseId=57120
+
+
+__Mgt Country = 
+VAR geounit_leveL = SELECTEDVALUE('Published Rates'[geounit_level])
+RETURN
+IF(geounit_leveL = "Sub_Geounit", max('Published Rates'[Mgt Country]), BLANK())
+
+
+ 
+1) when rate_code_id not available in parameter table , only published.
+
+2) when rate_code_id is  available in parameter table ,then it calculated and published
+ 
+
+update query
+
+WITH  publishedrate AS (SELECT 
+    PR.*,
+    TU.target_utilization	
+FROM JCPCOPA.VW_PEOPLE_PUBLISHED_RATES PR
+LEFT JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_JOBCATEGORY_MAPPING] JM ON JM.rate_code_id = PR.rate_code_id 
+                                                                AND JM.job_category = PR.jcp_employee_group
+LEFT JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_TARGETUTILIZATION_MAPPING] TU ON JM.id = TU.job_category_id
+                                                                        AND TU.geounit = PR.geounit 
+                                                                        AND TU.sub_geounit = PR.sub_geounit
+JOIN(
+    SELECT DISTINCT 
+        SL_GEOMARKET_CODE,
+        SUB_GEOMARKET_CODE,
+        DIVISION_CODE,
+        SL_PRODUCT_LINE_CODE,
+        SL_SUB_PRODUCT_LINE_CODE,
+        'In Scope' As [Scope]
+    FROM JCPCOPA.[TW_NewInscope_Mapping]
+    WHERE Implemented_in_COPA = 'Y') M ON M.SL_GEOMARKET_CODE = PR.geounit
+                                            AND M.SUB_GEOMARKET_CODE = PR.sub_geounit
+                                            AND M.DIVISION_CODE = PR.division
+                                            AND M.SL_PRODUCT_LINE_CODE = PR.business_line
+                                            AND M.SL_SUB_PRODUCT_LINE_CODE = PR.sub_business_line 
+											)
+											
+											,
+  para as (
+select  * from [JCPCOPA].TW_PRC_TRACK_RATE_RUN_PARAMETERS  )
+
+select distinct r.period,r.division,r.business_line,r.sub_business_line,r.geounit,r.sub_geounit,r.rate_code_id,r.jcp_rate_code,r.jcp_employee_group,
+r.job_code,r.headcount_type,r.clocked_flag,r.rate,r.target_utilization,p.geounit_level from publishedrate r
+INNER JOIN para p ON r.rate_code_id=p.rate_code_id 
+
+how to determine the rate published  for geo unit and sub geounit
+
+
+5577029 - I've added the details for sales account for customer pages in all RPF Report
+
+-- customer sales with sales account --- 5577029 - i've added the column for sale account name particular all tabs for Customer
+
+3) WEC PROD
+
+i) page name: customer to sub BL (financials by customer)
+ii) page name: div to customer (financials by customer)
+i11) page name: customer to sub GU (financials by customer)
+iv) page name: Geo to customer (financials by customer) 
+v) page name: details()
+vi) page name: details (ops margin details)
+vii) Page name: WF Customer S Rev (workforce - customer)
+viii) page name: WF Customer T Rev (workforce - customer)
+ix) page name: WF Env T Rev (workforce - environment)
+x) Page name: WF Env S Rev (workforce - environment)
+xi) page name: Eq. Customer SRev WEC (equipment - customer) no chanages required
+xii) page name: Eq. Customer TRev WEC (equipment - customer) no chanages required
+xiii) page name: M&S Customer WCM (M&S - customer) no chanages required
+xiv) page name: M&S Customer WCF (M&S - customer) no chanages required
+xv) page name:  TLM Customer WCM (TLM Workforce - customer) no changes required
+xvi) page name:  TLM Customer WCF (TLM Workforce - customer) no changes required
+xvii) page name: Reim Customer (Product - customer)
+xviii) page name: ODC Cust SRev ( other delivery - customer) no changes required
+xix) page name: ODC Cust SRev ( other delivery - customer) no changes required
+xx)  page name:  PCPR(product - customer)
+xxi)page name: Revenue Insight (revenue - customer)
+
+4) RPF PROD
+
+i) page name: customer to sub BL (financials by customer)
+ii) page name: div to customer (financials by customer)
+i11) page name: customer to sub GU (financials by customer)
+iv) page name: Geo to customer (financials by customer) 
+v) page name: OpsAnalysis-Cust ()
+vi)  Page name: WF Customer S Rev (workforce - customer)
+vii) page name: WF Customer T Rev (workforce - customer)
+viii) page name: WF Env T Rev (workforce - environment)
+ix) Page name: WF Env S Rev (workforce - environment)
+x) page name: Equipment Cost by Customer New (equipment - customer) no changes required
+xi) page name: Equipment Cost By Customer New S rev(equipment - customer) no changes required
+xii) page name: Equipment Cost by customer New Strategic (equipment - customer) no changes required
+xiii) page name: Equipment Cost By Customer New S rev Strateg (equipment - customer) no changes required
+xiv) page name: Equipment Cost by Customer New Non Strag (equipment - customer) no changes requird
+xv) page name: Equipment Cost by Customer New S rev Non Strat  (equipment - customer) no changes required
+xvi) page name: M&S Customer SRev RPF (M&S - customer ) no changes required
+xvii) page name: M&S Customer TRev RPF (M&S - customer ) no changes required
+xviii) page name: M&S Customer SRev RPF GroupA (M&S - customer) no changes required
+xix) page name: M&S Customer SRev RPF GroupB (M&S - customer) no changes required
+xx) page name: M&S Customer TRev RPF GroupA (M&S - customer) no changes required
+xxi) page name: M&S Customer TRev RPF GroupB (M&S - customer) no changes required
+xxii) page name: TLM Customer SRev RPF (TLM - customer) no changes required
+xxiii) page name: TLM Customer TRev RPF (TLM - customer) no changes required
+xxiv) page name: TLM Customer SRev RPF GroupA (TLM - customer) no changes required
+xxv) page name: TLM Customer SRev  RPF GroupB (TLM - customer) no changes required
+xxvi) page name: TLM Customer TRev  RPF GroupA (TLM - customer) no changes required
+xxvii)  page name: TLM Customer TRev  RPF GroupB (TLM - customer) no changes required
+xxviii) page name: PCPR Customer (product - customer)
+xxix) page name: Reim Customer (reimbursable - customer)
+xxx) page name: ODC Cust SRev ( other delivery - customer)
+xxxi) page name: ODC Cust TRev ( other delivery - customer)
+xxxii) page name: details ()
+xxxiii) page name: Revenue Insight (revenue - customer)
+xxiv) page name: 
+
+
+
+1) WEC PRE _ PROD 
+
+i) page name: details (ops margin details)
+ii) page name: customer to sub BL (financials by customer)
+iii) page name: div to customer (financials by customer)
+iv) page name: customer to sub GU (financials by customer)
+v) page name: Geo to customer (financials by customer) 
+vi) page name: WF Env T Rev (workforce - environment) 
+vii) Page name: WF Env S Rev(workforce - environment)
+viii) Page name: WF Customer S Rev(workforce - customer)
+ix) page name: WF Customer T Rev(workforce - customer)
+x) page name: Eq Customer SRev WEC (equipment - customer)
+xi) page name: Eq Customer TRev WEC (equipment - customer)
+xiii) page name: M&S Customer WCM (M&S - customer) no changes required
+xiv) page name: M&S Customer WCF (M&S - customer) no changes required
+xv) page name:  TLM Customer WCM (TLM Workforce - customer) no changes required
+xvi) page name:  TLM Customer WCF (TLM Workforce - customer) no changes required
+xvii) page name:  PCPR(product - customer)
+xvii) page name: Rein Customer (reimbursable - customer)
+xix) page name: ODC Cust SRev ( other delivery - customer) no changes required
+xx) page name: ODC Cust SRev ( other delivery - customer) no changes required
+xxi) page name: New WF People Customer SRev WEC (new workforce - customer)
+xxii) page name: New WF People Customer TRev WEC (new workforce - customer)
+xxiii) page name: Revenue Insight (revenue - customer)
+
+2) RPF PRE PROD
+
+i) page name: customer to sub BL (financials by customer)
+ii) page name: div to customer (financials by customer)
+i11) page name: customer to sub GU (financials by customer)
+iv) page name: Geo to customer (financials by customer) 
+v) page name: details (ops margin details)
+vi) page name: OpsAnalysis-Cus(Ops margin - customer)
+vii) page name: WF Env T Rev (workforce - environment)
+viii)  Page name: WF Env S Rev(workforce - environment)
+ix) Page name: WF Customer S Rev(workforce - customer)
+x)  page name: WF Customer T Rev(workforce - customer)
+xi) page name: Equipment Cost By Customer New S rev (equipment - customer) no changes required
+xii) page name: Equipment Cost By Customer New (equipment - customer) no changes required
+xiii) page name: Equipment Cost by Customer New Strategic (equipment - customer) no changes required
+xiv) page name: Equipment Cost By Customer New S rev Strateg (equipment - customer) no changes required
+xv)  page name: Equipment Cost By Customer New S rev Non Strateg (equipment - customer) no changes required
+xvi) page name: Equipment Cost by Customer New Non Stra (equipment - customer) no changes required
+xvii) page name: M&S Customer SRev RPF New (M&S - customer) no changes required 
+xviii) page name: M&S Customer TRev RPF New (M&S - customer) no changes required
+xix) page name: M&S Customer SRev RPF GroupA (M&S - customer) no changes required
+xx) page name:  M&S Customer SRev RPF GroupB (M&S - customer)no changes required
+xxi) page name: M&S Customer TRev RPF GroupA (M&S - customer) no changes required
+xxii) page name: M&S Customer TRev RPF GroupB (M&S - customer)no changes required
+xxiii) page name: TLM Customer SRev RPF (TLM Workforce - customer) no changes required
+xxiv) page name: TLM Customer TRev RPF (TLM Workforce - customer) no changes required
+xv) page name: TLM Customer  SRev  RPF Group A (TLM Workforce - customer) no changes required
+xvi) page name: TLM Customer  SRev  RPF Group B (TLM Workforce - customer) no changes required
+xvii) page name: TLM Customer  TRev  RPF Group A (TLM Workforce - customer) no changes required
+xviii) page name: TLM Customer  TRev  RPF Group B (TLM Workforce - customer) no changes required
+xxix) page name: PCPR(product - customer)
+xxx) page name: Reim Customer (reimbursable - customer)
+xxxi) page name: ODC Cust SRev ( other delivery - customer)
+xxxii) page name: ODC Cust TRev ( other delivery - customer)
+xxxiii) page name: New WF People  Customer SRev RPF(new workforce - customer)
+xxxiv) page name: New WF People Customer TRev RPF(new workforce - customer)
+xxxv) page name: Revenue Insight (revenue - customer)
+
+
+3) IWC
+
+
+
+
+
+-- copa backup table ---
+[JCP_STAGE].[STG_CPF_SDI_COPA_backup_8mar2024]
+ 
+----
+
+
+-- prc --
+Missing Work Pattern Alias
+
+SELECT
+    PR.*,
+    TU.target_utilization	
+FROM JCPCOPA.VW_PEOPLE_PUBLISHED_RATES PR
+LEFT JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_JOBCATEGORY_MAPPING] JM ON JM.rate_code_id = PR.rate_code_id 
+                                                                AND JM.job_category = PR.jcp_employee_group
+LEFT JOIN [JCPCOPA].[TW_PRC_CONFIG_RATE_TARGETUTILIZATION_MAPPING] TU ON JM.id = TU.job_category_id
+                                                                        AND TU.geounit = PR.geounit 
+                                                                        AND TU.sub_geounit = PR.sub_geounit
+JOIN(
+    SELECT DISTINCT 
+        SL_GEOMARKET_CODE,
+        SUB_GEOMARKET_CODE,
+        DIVISION_CODE,
+        SL_PRODUCT_LINE_CODE,
+        SL_SUB_PRODUCT_LINE_CODE,
+        'In Scope' As [Scope]
+    FROM JCPCOPA.[TW_NewInscope_Mapping]
+    WHERE Implemented_in_COPA = 'Y') M ON M.SL_GEOMARKET_CODE = PR.geounit
+                                            AND M.SUB_GEOMARKET_CODE = PR.sub_geounit
+                                            AND M.DIVISION_CODE = PR.division
+                                            AND M.SL_PRODUCT_LINE_CODE = PR.business_line
+                                            AND M.SL_SUB_PRODUCT_LINE_CODE = PR.sub_business_line 
+
+-- cost center and activity ---
+
+;WITH SAP_RATES AS 
+(SELECT DISTINCT A.YEARMONTH,A.[ACTIVITY TYPE],A.RATES,A.[RATE_CATEGORY],B.[Sub Geounit Code],B.[Sub Business Line Code] 
+FROM (SELECT [FISCAL YEAR],YEARMONTH,[ACTIVITY TYPE],[COST CENTER],RATES,[RATE_CATEGORY]
+FROM JCPCOPA.VW_CPF_SDI_ACTIVITY_RATES) A
+JOIN (select DISTINCT [COST CENTER],[Sub Geounit Code],[Sub Business Line Code] from jcpcopa.vw_csks) B
+ON A.[COST CENTER]=B.[COST CENTER] where RATE_CATEGORY LIKE 'TKG%'
+),
+BPI_RATES AS 
+(SELECT YEARMONTH,BPI_GROUP,DIVISION,Business_Line,SUB_BUSINESS_LINE,SUBGEOUNIT,SAP_ACTIVITY_TYPE,RATE_DRIVER,final_rate 
+FROM JCPCOPA.[VW_M&S_PUBLISHED_RATES] )
+SELECT A.[SAP_ACTIVITY_TYPE] AS [ACTIVITY TYPE],B.YEARMONTH,B.BPI_GROUP,B.RATE_DRIVER AS RATE_TYPE,A.DIVISION AS Divison_Code,B.Business_Line as Business_Line_Code,B.SUB_BUSINESS_LINE as sub_business_line_code,
+B.SUBGEOUNIT as sub_geounit_code,
+B.final_rate AS [BPI M&S Rates],C.RATES [SAP RATES],
+	Concat(A.[SAP_ACTIVITY_TYPE],'-',[BPI_GROUP_DESC]) AS SapActivityType_BPIGroupDesc
+FROM JCPCOPA.[CONFIG_ACTIVITYTYPE_MAPPING_M&S] A 
+JOIN BPI_RATES  B ON A.[BPI_GROUP]=B.BPI_GROUP AND A.SAP_ACTIVITY_TYPE = B.SAP_ACTIVITY_TYPE 
+left JOIN SAP_RATES C ON A.[SAP_ACTIVITY_TYPE]=C.[ACTIVITY TYPE] 
+AND B.YEARMONTH=C.YEARMONTH 
+AND B.SUB_BUSINESS_LINE=C.[Sub Business Line Code]
+AND B.SUBGEOUNIT=C.[Sub Geounit Code]
+
+--- workforce values not matching for well name --
+
+Well Name : : HRDH_2519
+contribution margin value: Fact metrics [period/geounit/division valuesK$]
+
+workforce : cost : [JCPCOPA].[Fact_COPA_CrewDays] oct 2024/10
+
+crewdays tables
+table name: [JCPCOPA].[Fact_COPA_CrewDays] , [JCPCOPA].[Dim_Well] and [JCPCOPA].[VW_BPI_DIMESIONS_MAPPING]
+
+fact metrics [JCPCOPA].[Fact_COPA_Metrics] , [JCPCOPA].[Dim_Attribute_Geounit] , [JCPCOPA].[Dim_Attribute_Period], [JCPCOPA].[Dim_Attribute_Division]
+
+query:
+select   * from [JCPCOPA].[Fact_COPA_CrewDays]
+where YEARMONTH_ID ='2024/10' and [Well Name] ='HRDH_2519'
+
+source : 
+s1 : JCPCOPA.TWPRC_COPA_CREWDAYS
+s2 : JCPCOPA.VW_PRC_COPA_AND_NONCOPA_CREW_DAYS
+s3 : JCPCOPA.VW_PRC_COPA_AND_NONCOPA_CREW_DAYS
+s4: TFJCPCOPACREWDAYSCOPA
+s5: JCPCOPA.TWPRC_COPA_CREWDAYS
+s5: LDS Fact_COPA_CrewDays
+
+
+
+-- testing columns alias VNeelaram
+
+5527325 - remove the card for wcf and wcm.  
+
+clocked_flag = Y
+alias <>''
+Employee_Status='Active'
+JOin with inscope table on sub business line & sub geo units
+-
+
+dev - glbbirptsqlsvrdev.database.windows.net        glb_birpt_ADWDB_dev 
+
+UAT - glbbirptsqlsvruat.database.windows.net        glb_birpt_ADWDB_uat
+
+Prod - glbbirptsqlsvrprd.database.windows.net & database name : glb_birpt_ADWDB_prd
+
+
+- data quality --
+
+LDS - FactCountPeople
+
+-- 5456584 added the missing work pattern page for data quality.
+-- 5456584 added the relative date for filter the data.
+
+step 1: adding columns in dev database of sql.
+
+1) ADW 
+ table name: [JCPCOPA].[TFJCPCOPAPEOPLECOUNT_TEMP]
+ table name: [JCPCOPA].[TFJCPCOPAPEOPLECOUNT]
+
+Command details
+
+ALTER Table  [JCPCOPA].[TFJCPCOPAPEOPLECOUNT_TEMP] 
+ADD [Alias] [nvarchar] (100) NULL 
+
+ADD [Employee_Status] [nvarchar](100) NULL
+ADD [Work_Pattern_Code] [nvarchar](100) NULL
+ADD  [Work_Pattern_Ratio] [nvarchar](100) NULL
+
+2) update the mapping in ADF Pipeline Name in dev.
+
+ADF Pipeline Name : FACT_LOAD
+
+Testing the ADF Pipeline for AD_HOC while passing the PERIOD = '2024/06'
+
+3) Again altering the View Name in dev of sql for adding 4 columns like :[Alias], [Work_Pattern_Code] and [Work_Pattern_Ratio]
+
+View Name:[JCPCOPA].[Fact_PeopleCount]
+
+1) dev: 2) jcp 3) prod.
+
+add : 4 columns  : ADF : 
+update the 4 columns: employee_status, alias,work_pattern_code & work_pattern_ratio.
+
+1) TFJCPCOPAPEOPLECOUNT_TEMP
+2) [JCPCOPA].[TFJCPCOPAPEOPLECOUNT]
+
+
+ 
+select * from JCPCOPA.TW_NewInscope_Mapping
+
+WITH CTE AS (
+select Alias,   Employee_Status,  Division_code, Segment_Level_2_Code ,
+ Segment_Level_3_Code ,   GeoUnit_Code , Sub_GeoUnit_Code ,    Work_Pattern_Code, Work_Pattern_Ratio,YearMonth , Employee_Type, Job_Code
+ from BIEDWDLK.VW_NON_CONFIDENTIAL where YearMonth BETWEEN '2023/01' and 'max(YearMonth)' 
+  and Work_Pattern_Code is NULL and Alias <>'' and Employee_Status='Active' and Work_Pattern_Ratio is NULL), 
+  CTE1 AS (
+    SELECT DISTINCT
+          P.[Period]
+          ,R.Division
+          ,J.job_code
+          ,CASE WHEN J.headcount_type='External/Contractor' THEN 'Contractor' ELSE 'Employee' END headcount_type
+          ,J.clocked_flag
+          ,M.job_category
+        FROM JCPCOPA.TW_PRC_CONFIG_RATE_JOBCODE_MAPPING J
+        INNER JOIN JCPCOPA.TW_PRC_CONFIG_RATE_JOBCATEGORY_MAPPING M  ON  J.job_category_id = M.id
+        INNER JOIN JCPCOPA.TW_PRC_CONFIG_RATE_CODE R ON M.rate_code_id = R.id
+        INNER JOIN  (SELECT DISTINCT
+                    [period],
+                    rate_code_id
+                     FROM JCPCOPA.TW_PRC_PUBLISHED_RATE_DETAILS) P ON R.ID=P.rate_code_id
+					 where J.clocked_flag='Yes'
+  )
+  select C1.YearMonth ,C1.Alias,C1.Employee_Status,C1.Division_code,C1.Segment_Level_2_Code ,C1.Segment_Level_3_Code , C1.GeoUnit_Code ,C1.Sub_GeoUnit_Code,
+   C1.Work_Pattern_Code, C1.Work_Pattern_Ratio, C2.clocked_flag , C2.job_category 
+  from CTE C1 INNER JOIN CTE1 C2 ON C1.Division_code=C2.division
+  AND C1.YearMonth=C2.[period]  and C1.Employee_Type = C2.headcount_type and C1.Job_Code = C2.job_code
+ 
+
+
+RKassim , KAllford
+-- drb cost -- 
+
+column header
+
+1)
+2)
+3)
+4)
+5)
+6)
+7)
+8)
+9)
+10)
+11)
+12)
+13)
+14)
+15)
+
+5212900
+
+-- m& s wec details --
+
+5481730 - one created one detail for m&s for wcf along with two measures - wcf and wcm.
+
+M&S Allocation
+
+wcm details for tabular grid.
+
+1) __MnS Pumping Hours  : Pumping Hours
+2) __MnS Allocation Pumping Hours Cost K$ : Pumping Hours Cost K$
+3) __MnS Pumping Hours Rate : Pumping Hours Rate
+4) __MnS Tool Used : Tool Used
+5) __MnS Allocation Tool Used Cost K$ : Tool Used Cost K$
+6) __MnS Tool Used Rate : Tool Used Rate
+7) __MnS Allocation DRB Cost K$ : DRB Cost K$
+8) __MnS Bar Total Cost Allocated K$ : Total Cost K$
+
+__TLM Total Cost Allocated WCF
+
+
+wcf details for tabular grid
+
+1) __MnS MI UoA : MI UoA
+2) __MnS Allocation MI UoA Cost $K : MI UoA Cost $K
+3) __MnS WIT UoA : WIT UoA
+4) __MnS Allocation WIT UoA Cost $K : WIT UoA Cost $K
+5) __MnS Bar Total Cost Allocated K$ : Total Cost K$ 
+
+filter used in wcf details
+
+1) __Cost Incurred Maintenance M&S Cost PE
+2) __Cost Incurred Maintenance M&S Cost PE RPM
+3) __MnS Allocation DRB
+4) __MnS Allocation DRB Cost K$
+5) __MnS Allocation MI UoA
+6) __MnS Allocation MI UoA Cost $K
+7) __MnS Allocation Pumping Hours
+8) __MnS Allocation Pumping Hours Cost K$
+9) __MnS Allocation Tool Used
+10) __MnS Allocation Tool Used Cost K$
+11) __MnS Allocation WIT UoA
+12) __MnS Allocation WIT UoA Cost $K
+13) __MnS Bar Total Cost Allocated
+14) __MnS Bar Total Cost Allocated K$
+15) __MnS Consumption Variance
+16) __MnS Cost Allocated
+17) __MnS Cost Allocated % RPM
+18) __MnS Cost Incurred
+19) __MnS MI UoA
+20) __MnS Provision/Adjustment Variance
+21) __MnS Pumping Hours
+22) __MnS Tool Used
+23) __MnS Total Variance %
+24) __MnS WIT UoA
+
+
+Total Cost K$
+
+SUM('Fact M&S Drivers'[Allocation])
+
+__MnS MI UoA : MI UoA
+
+---bpi monitoring report --- 
+---
+
+drill thru for wcm and wcf details pages.
+
+
+1) _TLM MI UoA
+2) _TLM MI UoA Cost
+3) _TLM Pumping Hours
+4) _TLM Pumping Hours Cost
+5) _TLM Tool Used
+6) _TLM Tool Used Cost
+7) _TLM Total Cost Allocated
+8) _TLM WIT UoA
+9) _TLM WIT UoA Cost
+10) _TLM Cost Incurred
+11) _TLM Variance
+
+
+--
+
+pumping hours : [JCPCOPA].[VW_DRB_COST_ENRICHED] ,  [JCPCOPA].[TW_DRB_COST_ENRICHED_HISTORIC_LOG]
+
+5212900
+
+
+Cost Drivers - Pumping Hours - Tool Used - Tool Days - Dataset
+Cost Drivers - Pumping Hours - Tool Used - Tool Days - Dataset
+
+relationships
+
+1) DRB Cost - Dim SLB Organization
+   SUB_GEOUNIT - Sub_Geounit_Code
+2) DRB Cost - Dim Business Line
+   SUB_BUSINESS_LINE_CODE  - Sub_Business_Line_Code
+3) DRB Cost - Dim Date
+   PERIOD - YearMonth
+4) DRB Cost History Log - Dim SLB Organization
+   SUB_GEOUNIT - Sub_Geounit_Code
+5) DRB Cost History Log - Dim Business Line
+   SUB_BUSINESS_LINE_CODE  - Sub_Business_Line_Code
+6) DRB Cost History Log - Dim Date
+   PERIOD - YearMonth
+
+
+-- TLM WEC  --
+
+Drill through for WCM: 
+_TLM MI UoA, - d
+ _TLM MI UoA Cost,d
+_TLM Pumping Hours , d 
+_TLM Pumping Hours Cost, d
+_TLM Tool Used,d 
+ _TLM Tool Used Cost,d
+_TLM Tool Cost Allocated, d
+_TLM WIT UoA,  d
+_TIM WIT UoA Cost, d
+ _TLM Cost Incurred ,
+ _TLM Variance, d 
+
+drill through for WCF
+_TLM MI UoA
+_TLM MI UoA Cost 
+_TLM Pumping Hours
+_TLM Pumping Hours Cost
+_TLM Tool Used
+_TLM Tool Used Cost
+_TLM Tool Cost Allocated
+_TLM WIT UoA
+_TLM WIT UoA Cost
+_TLM Cost Incurred
+_TLM Variance
+
+column for WCF ; 
+_TLM
+
+
+
+Total Cost $K
+
+5420082 - updated the table grid font size.
+
+5420082 -updated the table grid color for WCF and WCM  and update the format for Total Cost $K
+
+5420082  - added the detail page for wcf  , also created measure like wcf & wcm 
+5420082 - updated the data type for total cost for detail pages of wcf & wcm
+
+5420082 - updated the TLM Pages for drill through page for WCM and WCF navigation.
+
+
+
+
+5420082 - updated the column header name well name for wcm and wcf detail pages. 
+
+added the two measure for blanking the detail page of WCM and WCF.
+
+step1:
+created 4 measures
+
+1) __TLM Total Cost Allocated WCF = [__TLM MI UoA Cost] + [__TLM WIT UoA Cost]
+2) __TLM Total Cost Allocated WCF K$ = DIVIDE([__TLM Total Cost Allocated WCF],1000)
+3) __TLM Total Cost Allocated WCM = DIVIDE([__TLM Pumping Hours Cost] + [__TLM Tool Used Cost],1000,0)
+4) __TLM Total Cost Allocated WCM K$ = DIVIDE([__TLM Total Cost Allocated WCM],1000,0)
+
+
+Testing for M&S WCF Details
+Existing formula
+__MnS Bar Total Cost Allocated = SUM('Fact M&S Drivers'[Allocation])
+Test WCF =  [__MnS Allocation MI UoA Cost $K] + [__MnS Allocation WIT UoA Cost $K]
+
+
+Total Cost K$  
+step2:
+
+update the tabular grid for WCM and WCF
+
+WCM : last column Power bi column name: Total Cost K$  ,backend column name (__TLM Total Cost Allocated WCM K$)
+
+WCF : last column Power bi column name: Total Cost K$  ,backend column name (__TLM Total Cost Allocated WCF K$)
+
+step3: drill through filters
+
+a) WCM : _TLM Pumping Hours Cost, _TLM Tool Used, _TLM Tool Used Cost, __TLM Total Cost Allocated WCM,__TLM Total Cost Allocated WCM K$
+
+b) WCF : _TLM MI UoA,_TLM MI UoA Cost,  __TLM Total Cost Allocated WCF, __TLM Total Cost Allocated WCF K$, _TLM WIT UoA, _TLM WIT UoA Cost
+
+step4: check all visual by visuals
+
+WCM
+
+a) allocation by BL : check the y axis column and update/replace the column with __TLM Total Cost Allocated WCM
+b) 
+
+
+a) TLM Summary WCM
+
+list of visual 
+
+i) Allocation by BL - working fine
+
+ii) Allocation by Trend
+
+iii) Allocation by geography
+
+iv) Drivers Trend
+
+v) Cost Breakdown
+
+vi) Variance Breakdown
+
+b) TLM Summary WCF
+
+list of visual 
+
+i) Allocation by BL
+
+ii) Allocation by Trend
+
+iii) Allocation by geography __TLM Pumping Hours , __TLM Tool Used
+
+iv) Drivers Trend __TLM MI UoA , __TLM WIT UoA
+
+v) Cost Breakdown
+
+__TLM Total Cost Allocated , _TLM Variance , _TLM Cost Incurred
+
+vi) Variance Breakdown
+
+2) 
+ __TLM Pumping Hours Cost , __TLM Tool Used Cost
+
+__TLM MI UoA Cost, __TLM WIT UoA Cost
+
+---
+
+rpf and wec prod
+
+WEC PROD
+
+Change Pattern for code
+
+Favourable #FD625E
+Adverse #008000
+
+Legands changes
+
+sentiments - Favourable : Adverse
+sentiments - Adverse    : Favourable
+
+5407902 - updated the Waterfall visual color code with legends fields for entire report of RPF
+
+---
+
+5301129 - changes made onto the RPF PROD pbix file for all the pages of equipment(Cost breakdown) visual for fact equipment depreciation driver and removed the local measure which were used earlier. 
+
+5301142 - relign the banner for Strategic & non Strategic same processed for 6 pages and updated the water visual color for Favorable & Adverse
+
+Existing Patern
+
+Adverse #FD625E
+Favourable #008000
+
+Change Pattern
+
+Favourable #FD625E
+Adverse #008000
+
+all h 29,w144, ho 904, v 105
+stragetic h 29, w 147, ho 1048, v 105
+non h 29, w 142, ho 1195, v 105
+
+total revwnu h 28, w 215, ho 904, v 134
+serv ren h 28, w 218, ho 1119, v 133
+
+allocation h 30, w 142, ho 18, v 205
+driver h 30,142,160,205
+rate h 30, w 142, h0 302, v 205
+
+filter h 59, w 426, ho 19 , v 247
+
+chart h 386, w 425, ho 21, v 318
+
+1) Eq. Summary New
+2) Eq. Summary New ServRev
+3) Eq. Summary New TotRev Alloc Strateg
+4) Eq. Summary New TotRev Alloc NonStrateg
+5) Eq. Summary New TotRev Drivers	
+6) Eq. Summary New TotRev Rate	
+7) Eq. Summary New TotRev Strateg Drivers
+8) Eq. Summary New TotRev NonStrateg Rate
+9) Eq. Summary New TotRev Strateg Rate -
+10)
+
+
+
+9) Eq. Summary New ServRev Alloc Strat - working done 
+10) Eq. Summary New ServRev Alloc NonStrat - working done
+11) Eq. Summary New ServRev NonStrateg Rate - working done
+12) Eq. Summary New ServRev Strateg Rate - working done
+13) Eq. Summary New ServRev NonStrat Drivers - working done 
+14) Eq. Summary New ServRev Strat Drivers - working done
+15) Eq. Summary New ServRev Rate - working done
+16) Eq. Summary New ServRev Drivers - working done
+
+
+OpsMargin-Environment
+
+
+5352355 - added the tooltip page for contract page and also added the sale page with customer 
+
+OpsMargin-CustSales
+
+5352355
+select SUBJECT_AREA,TABLE_NAME,
+SOURCE_SCHEMA AS DL_SCHEMA_NAME, 
+TARGET_SCHEMA AS RPTR_SCHEMA_NAME,
+DLDATABASE_NAME,LOAD_TYPE FROM JCPCOPA.TPADWAUDIT_T1  
+WHERE 
+SUBJECT_AREA='@{pipeline().parameters.Par_SubjectArea}' AND
+TABLE_ACTIVE_FLAG='Y' AND STAGE_VIEW_FLAG='STAGE'
+AND UPPER(TABLE_SOURCE)='DP' AND TABLE_NAME IN ('STG_CPF_SDI_COPA','STG_CPF_SDI_COPA_ARCHIVE');
+
+
+depreciation driver adf
+
+required tables and views details
+
+data flow
+
+1) EQUIPMENTDEPRDRIVERS oct 2024
+
+step1 : Dataflow source query list of tables/views.
+
+a)  [JCPCOPA].[VW_ERC_EQUIPMENT_DEPRECIATION_DRIVERS] - uat
+
+i) [JCP_STAGE].[STG_CPF_SDI_COPA] - oct 2024 - 
+
+ii) [JCPCOPA].[Dim_Business_Lines]
+JCPCOPA.TDJCPCOPABUSINESSLINE, JCPCOPA.[TW_NewInscope_Mapping], JCPCOPA.TDJCPCOPABUSINESSLINE 
+
+iii) [JCPCOPA].[Dim_SLB_Organization]
+JCPCOPA.TDJCPCOPAORGANIZATION, JCPCOPA.[TW_NewInscope_Mapping]) , JCPCOPA.TDJCPCOPAORGANIZATION
+
+iv) [JCP_STAGE].[STG_CPF_SDI_COPA_ARCHIVE]
+v) [JCPCOPA].[TDJCPCOPANISHRCHY]
+
+vi) [JCP].[config_rate_activitytype_mapping]
+vii) [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY]
+viii) [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY_DETAILS]
+ix) [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY_CONFIGURATION]
+x) [JCPCOPA].[TDJCPCOPABPIEQUIPMENTHIERARCHY]
+xi) [JCP_STAGE].[PRPS]
+xii) [JCPCOPA].[DIM_CUSTOMER] 
+xiii) [JCPCOPA].[Dim_Contracts] 
+xiv) [JCPCOPA].[VW_ERC_PUBLISHED_RATES]
+tables : [JCPCOPA].[DIM_SLB_ORGANIZATION], [JCPCOPA].[DIM_BUSINESS_LINES], [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY_DETAILS], [JCPCOPA].[TW_ERC_PUBLISHED_RATES], [JCPCOPA].[DIM_DATE], [JCPCOPA].[TW_ERC_PUBLISHED_RATES_COMPLEMENTARY_INFORMATION] ,
+[JCPCOPA].[TDJCPCOPABPIEQUIPMENTHIERARCHY],  [JCP].[config_rate_activitytype_mapping]
+
+xv) [JCPCOPA].[VW_EQUIPMENTDEPRECIATION_ALLOCATION_BASED_ON_UOA]
+tables : [JCP_STAGE].[STG_CPF_SDI_COPA], [JCPCOPA].[DIM_NIS_HIERARCHY], [JCPCOPA].[DIM_BUSINESS_LINES],  [JCPCOPA].[DIM_SLB_ORGANIZATION]
+, [JCP_STAGE].[STG_CPF_SDI_COPA_ARCHIVE] , [JCPCOPA].[DIM_NIS_HIERARCHY], [JCPCOPA].[DIM_BUSINESS_LINES],  [JCPCOPA].[DIM_SLB_ORGANIZATION] , [JCP_STAGE].[PRPS], [JCPCOPA].[TW_EQUIPMENT_MI_UoA]  
+
+ 
+b) [JCPCOPA].[TDJCPCOPACONTRACTS]
+
+c) [JCPCOPA].[TDJCPCOPACUSTOMERS]
+
+d) [JCPCOPA].[TDJCPCOPAWELL]
+
+e) [JCPCOPA].[TDJCPCOPARIG]
+
+f) [JCPCOPA].[TW_PARAMETER_TABLE]
+
+g) [JCPCOPA].[TW_CONFIG_AD_HOC_FACT_LOAD]
+
+step2: joining with other list of tables.
+
+[JCPCOPA].[TDJCPCOPAORGANIZATION], TDJCPCOPABUSINESSLINE,TDPERIOD, TDJCPCOPACONTRACTS, TDJCPCOPACUSTOMERS, TDJCPCOPAWELL, TDJCPCOPARIG,
+TDJCPCOPAWBS, TDJCPCOPAOPERATIONS, TDJCPCOPAOPERATIONSACTIVITY, TDJCPCOPAIPMPROJECTBL, TDJCPCOPAIPMPROJECT , TDJCPCOPAIPMPROJECTBL
+
+step3: final storing the data in table : [JCPCOPA].[TFJCPCOPAEQUIPMENTDEPRECIATIONDRIVERS_TEMP]
+
+2) DEPRECIATION COST 
+
+step1 : Dataflow source query list of tables/views.
+
+a) [JCPCOPA].[VW_EQUIPMENTDEPRECIATION_COSTPOOL]
+
+i) [JCP_STAGE].[STG_CPF_SDI_COPA]
+ii) [JCPCOPA].[DIM_NIS_HIERARCHY]
+iii) [JCPCOPA].[DIM_BUSINESS_LINES]
+iv) JCPCOPA].[DIM_SLB_ORGANIZATION]
+v) [JCP_STAGE].[STG_CPF_SDI_COPA_ARCHIVE]
+vi)  [JCPCOPA].[TW_ERC_EQUIPMENT_TOOL_COUNT]
+vii)  [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY]
+viii)  [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY_DESCRIPTION]
+ix)  [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY_DETAILS]
+x)  [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY_CONFIGURATION]
+xi) [JCPCOPA].[TW_TOTALCOSTPOOL]
+xii) [JCPCOPA].[VW_ERC_PUBLISHED_RATES] - already done for depreciation driver
+
+step2 : joining with other list of tables.
+
+ TDJCPCOPAORGANIZATION , TDJCPCOPABUSINESSLINE , TDPERIOD , TDJCPCOPABPIEQUIPMENTHIERARCHY
+
+step3 : final storing the data in table  : TFJCPCOPAEQUIPMENTDEPRECIATION_TEMP
+
+
+
+Analysis Services
+
+powerbi://api.powerbi.com/v1.0/myorg/IT | D&A | GLB BIRPT | BI Studio UAT
+
+powerbi://api.powerbi.com/v1.0/myorg/IT | D&A | GLB BIRPT | BI Studio Dev
+
+powerbi://api.powerbi.com/v1.0/myorg/IT | D&A | BI Studio Production
+ 
+Visual using Measure in Power BI
+
+1) Depreciation Allocation : Equipment Depreciation Driver Allocation(old lds) / same in new lds
+2) Strategic Utilization : _Strategic Utilization(old lds) / Equipment Depreciation Driver Strategic Utilization (new lds)
+3) Non-Strategic Utilization : ___Non-Strategic Utilization (old lds) /  Equipment Depreciation Driver Nonstrategic Utilization
+4) Blank/Invalid : __Variance Utilization Blank/Invalid (old lds) / Equipment Drivers Variance Utilization Blank/Invalid
+5) Others (P&L Delta) : __Others (P&L Delta) / Equipment Drivers Others (P&L Delta)
+6) Depreciation Incurred : Equipment Depreciation (old lds) same in new lds
+
+
+
+Created Measure
+
+	
+
+Modified Measure
+
+Equipment Depreciation Driver Strategic Utilization
+Equipment Depreciation Driver Nonstrategic Utilization
+Equipment Drivers Variance Utilization Blank/Invalid
+Equipment Drivers Non-Strategic -ive Utilization
+Equipment Drivers Non-Strategic +ive Utilization
+Equipment Drivers Strategic -ive Utilization
+Equipment Drivers Strategic +ive Utilization
+
+1) Equipment RPF Impact Utilization = 'Fact Equipment Depreciation Cost'[Equipment Depreciation] - 'Fact Equipment Depreciation Drivers'[Equipment Depreciation Driver Allocation]
+
+ New Column
+
+RPF Equipment Strategic Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="Yes"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[RPF Equipment Impact Utilization])
+RETURN
+SUMX(_temp,[Utilization])
+
+Existing Column
+
+Equipment Depreciation Driver Strategic Utilization = var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="Yes"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[Equipment Depreciation Driver Utilization Impact])
+RETURN
+SUMX(_temp,[Utilization])
+
+
+2) New Column
+
+RPF Equipment Non-Strategic Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="No"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[RPF Equipment Impact Utilization])
+RETURN
+SUMX(_temp,[Utilization])
+
+Existing Column
+
+Equipment Depreciation Driver Nonstrategic Utilization = var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="No"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[Equipment Depreciation Driver Utilization Impact])
+RETURN
+SUMX(_temp,[Utilization])
+
+
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="No"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[__Utilization Impact])
+RETURN
+SUMX(_temp,[Utilization])
+
+3) New Column
+
+ RPF Equipment Utilization Blank/Invalid = CALCULATE([RPF Equipment Impact Utilization],'Dim BPI Equipment Hierarchy'[Level1] IN {"NO_BPIGROUP","NONCLOCKED"})
+
+Existing Column
+
+Equipment Drivers Variance Utilization Blank/Invalid = CALCULATE([Equipment Depreciation Driver Utilization Impact],'Dim BPI Equipment Hierarchy'[Level1] IN {"NO_BPIGROUP","NONCLOCKED"})
+
+CALCULATE([__Utilization Impact],'Dim BPI Equipment Hierarchy'[Level1] IN {"NO_BPIGROUP","NONCLOCKED"})
+
+4) New Column
+
+RPF Equipment Non-Strategic -ive Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="No"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[RPF Equipment Impact Utilization])
+RETURN
+SUMX(FILTER(_temp,[Utilization]>=0),[Utilization])
+
+Existing Column
+
+Equipment Drivers Non-Strategic -ive Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="No"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[Equipment Depreciation Driver Utilization Impact])
+RETURN
+SUMX(FILTER(_temp,[Utilization]>=0),[Utilization])
+
+5) New Column
+
+RPF Equipment Non-Strategic +ive Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="No"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[RPF Equipment Impact Utilization])
+RETURN
+SUMX(FILTER(_temp,[Utilization]<0),[Utilization])
+
+Existing Column
+
+Equipment Drivers Non-Strategic +ive Utilization = var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="No"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[Equipment Depreciation Driver Utilization Impact])
+RETURN
+SUMX(FILTER(_temp,[Utilization]<0),[Utilization])
+
+6) New Column
+
+RPF Equipment Strategic -ive Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="Yes"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[RPF Equipment Impact Utilization])
+RETURN
+SUMX(FILTER(_temp,[Utilization]>=0),[Utilization])
+
+Existing Column
+
+Equipment Drivers Strategic -ive Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="Yes"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[Equipment Depreciation Driver Utilization Impact])
+RETURN
+SUMX(FILTER(_temp,[Utilization]>=0),[Utilization])
+
+7) New Column
+
+RPF Equipment Strategic +ive Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="Yes"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[RPF Equipment Impact Utilization])
+RETURN
+SUMX(FILTER(_temp,[Utilization]<0),[Utilization])
+
+Existing Column
+
+Equipment Drivers Strategic +ive Utilization = 
+var _temp=SUMMARIZE(FILTER('Dim BPI Equipment Hierarchy','Dim BPI Equipment Hierarchy'[Strategic Flag]="Yes"),'Dim BPI Equipment Hierarchy'[Level1],"Utilization",[Equipment Depreciation Driver Utilization Impact])
+RETURN
+SUMX(FILTER(_temp,[Utilization]<0),[Utilization])
+
+9) New Column
+
+RPF Equipment Others (P&L Delta) = [Equipment Depreciation]
+-[RPF Equipment Utilization Blank/Invalid]
+-[RPF Equipment Non-Strategic -ive Utilization]
++ABS([RPF Equipment Non-Strategic +ive Utilization])
+-[RPF Equipment Strategic -ive Utilization]
++ABS([RPF Equipment Strategic +ive Utilization])
+-[Equipment Depreciation Driver Allocation]
+
+Existing Column
+
+Equipment Drivers Others (P&L Delta) = [Equipment Depreciation]
+-[Equipment Drivers Variance Utilization Blank/Invalid]
+-[Equipment Drivers Non-Strategic -ive Utilization]
++ABS([Equipment Drivers Non-Strategic +ive Utilization])
+-[Equipment Drivers Strategic -ive Utilization]
++ABS([Equipment Drivers Strategic +ive Utilization])
+-[Equipment Depreciation Driver Allocation]
+
+New Measure
+
+1) Equipment RPF Impact Utilization
+
+Existing Measure
+
+1) Equipment Depreciation Driver Strategic Utilization
+2) Equipment Depreciation Driver Nonstrategic Utilization
+3) Equipment Drivers Variance Utilization Blank/Invalid
+4) Equipment Drivers Non-Strategic -ive Utilization
+5) Equipment Drivers Non-Strategic +ive Utilization
+6) Equipment Drivers Strategic -ive Utilization
+7) Equipment Drivers Strategic +ive Utilization
+
+
+WITH CTE AS (select  distinct m.[Account Number], m.[Period/Year_ID],m.[Account Summary Description], m.[WBS Element],m.[Reference Document Number],
+m.[Value in Group Currency], m.[SUB_BL_ID],m.[SUB_GEO_ID]
+from [JCPCOPA].[FACT_COPA_GR55_Metrics] m where m.[Account Number]  like '004%' or m.[Account Number] like '005%' or m.[Account Number] 
+like '006%' or m.[Account Number] like '007%' or m.[Account Number] like '008%' )
+,CTE2 AS (SELECT DISTINCT [Base_Cost_Element] FROM [JCPCOPA].[Dim_NIS_Hierarchy]) ,
+CTE3  AS ( select *  from CTE c  where c.[Account Number] not in (SELECT * FROM CTE2) ),
+CTE4 AS (select distinct Sub_Business_Line_Code,Implemented_in_COPA,Business_Line_Code from [JCPCOPA].[Dim_Business_Lines]),
+CTE5 AS (select distinct Geounit_Code,Sub_Geounit_Code from [JCPCOPA].[Dim_SLB_Organization])
+select cs.[Account Number],cs.[Period/Year_ID],cs.[Account Summary Description],cs.[WBS Element],cs.[Reference Document Number],
+cs.[Value in Group Currency],cs.[SUB_BL_ID],cs.[SUB_GEO_ID]
+,ct.Business_Line_Code,ct.Implemented_in_COPA,cm.Geounit_Code from CTE3  cs LEFT JOIN CTE4 ct ON cs.[SUB_BL_ID]=ct.Sub_Business_Line_Code
+LEFT JOIN CTE5 cm ON cs.[SUB_GEO_ID]=cm.Sub_Geounit_Code
+order by [Account Number] asc
+
+Dim_Business_Lines.sql
+
+Dim_SLB_Organization.sql
+
+new query for erc calculations
+
+select  distinct A.RATE_ID,A.PERIOD_FROM,A.PERIOD_TO, A.DIVISION,A.BUSINESS_LINE,A.SUB_BUSINESS_LINE,A.GEOUNIT,A.BPI_GROUP,A.FINAL_RATE 
+,A.RATE_TYPE,A.HIERARCHY_GROUPING_LEVEL,A.GEOUNIT_RATE,A.GLOBAL_RATE,B.STRATEGIC_FLAG
+from [JCPCOPA].[TW_ERC_PUBLISHED_RATES] A 
+LEFT JOIN  [JCPCOPA].[TW_ERC_BPI_EQUIPMENT_HIERARCHY_DETAILS] B ON A.HIERARCHY_ID =B.HIERARCHY_ID 
+LEFT JOIN [JCPCOPA].[TW_ERC_PUBLISHED_RATES_COMPLEMENTARY_INFORMATION] C ON 
+			 A.[DIVISION] = C.[DIVISION] AND  A.GEOUNIT = C.GEOUNIT
+			AND A.[BPI_GROUP] = C.[BPI_GROUP]
+			AND A.[HIERARCHY_GROUPING_LEVEL] = C.[HIERARCHY_GROUPING_LEVEL]
+			AND C.[FIELDNAME] = 'UTILIZATION'
+
+
+New Measures
+
+1) Header Name : M&S Consumption Amount
+
+__MnS Consumption Amount GR55 = CALCULATE('Fact GR55 Metrics'[SAP Total WBS],
+ 'Dim SAP NIS Hierarchy'[Account Number And Desc]="0052000400 - Consumption - M&S")
+
+2) Header Name : 
+
+__Total M&S Spend GR55 = CALCULATE('Fact GR55 Metrics'[SAP Total WBS])
+	
+
+3) Header Name : Other M&S Spend
+
+__Other M&S Spend GR55 = [__Total M&S Spend GR55] - [__MnS Consumption Amount GR55]
+
+
+4) Header Name: M&S Consumption Amount%
+
+__M&S Consumption Amount Test% = DIVIDE([__MnS Consumption Amount GR55],[__Other M&S Spend GR55])
+
+5) Header Name : Other M&S Spend%
+
+__Other M&S Spend GR55% = DIVIDE([__Other M&S Spend GR55],[__Total M&S Spend GR55])
+
+
+ERC works:
+
+query1:
+
+select   A.RATE_ID,A.PERIOD_FROM,A.PERIOD_TO, A.DIVISION,A.BUSINESS_LINE,A.SUB_BUSINESS_LINE,A.GEOUNIT,A.BPI_GROUP,A.FINAL_RATE , C.FIELDVALUE
+from [JCPCOPA].[TW_ERC_PUBLISHED_RATES] A 
+LEFT JOIN  [JCPCOPA].[TW_ERC_PUBLISHED_RATES_COMPLEMENTARY_INFORMATION] C ON A.RATE_ID=C.RATE_ID and A.GEOUNIT=C.GEOUNIT and
+A.DIVISION=C.DIVISION and A.BPI_GROUP = C.BPI_GROUP 
+AND A.GEOUNIT=C.GEOUNIT  where C.FIELDNAME = 'UTILIZATION'
+
+query2:
+
+select   A.RATE_ID,A.PERIOD_FROM,A.PERIOD_TO, A.DIVISION,A.BUSINESS_LINE,A.SUB_BUSINESS_LINE,A.GEOUNIT,A.BPI_GROUP,A.FINAL_RATE 
+,A.RATE_TYPE,A.HIERARCHY_GROUPING_LEVEL,A.GEOUNIT_RATE,A.GLOBAL_RATE
+from [JCPCOPA].[TW_ERC_PUBLISHED_RATES] 
+
+[JCPCOPA].[TW_ERC_PUBLISHED_RATES]
+
+
+ studio details:
+
+powerbi://api.powerbi.com/v1.0/myorg/IT | D&A | BI Studio Production
+
+People Rate Calculator - Dataset
+
+
+M& S Consumption Amount =52000400-Total M&S Cost
+ 
+Other M&S Spent =Total M&S Cost -52000400
+
+115 -
+
+actual spend = m*s cost + total variance (m&s cost variance[1909])
+
+other ms = ms + total variance - 1909(ms cost consumption) = ??
+
+ m&s consumption% = 1909/actual spend
+
+other m&s spend = other /actual spend
+ 
+1)__MnS Consumption Amount = CALCULATE('Fact Metrics'[Period/GeoUnit/Division ValueK$],
+'Dim NIS Hierarchy'[P1] = "M&S Cost Variance", 'Dim NIS Hierarchy'[Account Number And Desc]="0052000400 - Consumption - M&S")
+
+2) Actual M&S Spend = 
+
+
+1) Cost Pool - not done - select top 1* from [JCPCOPA].[TW_PRC_TRACK_COST_POOL] - complete
+
+query: 
+select run_parameters_id,period,functional_area,profit_center,	cost_center,account_number,	division,	business_line,	sub_business_line,	geounit	,sub_geounit,	balance	,LAST_UPD_DATE from [JCPCOPA].[TW_PRC_TRACK_COST_POOL]
+
+power bi query:
+
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period,functional_area,profit_center,#(tab)cost_center,account_number,#(tab)division,#(tab)business_line,#(tab)sub_business_line,#(tab)geounit#(tab),sub_geounit,#(tab)balance#(tab),LAST_UPD_DATE from [JCPCOPA].[TW_PRC_TRACK_COST_POOL]"]),
+    #"Renamed Columns1" = Table.RenameColumns(Source,{{"account_number", "Account Number"}, {"balance", "Balance"}, {"business_line", "Business Line"}, {"cost_center", "Cost Center"}, {"division", "Division"}, {"functional_area", "Functional Area"}, {"geounit", "Geo Unit"}, {"period", "Period"}, {"sub_business_line", "Sub Business Line"}, {"sub_geounit", "Sub Geo Unit"}})
+in
+    #"Renamed Columns1"
+
+
+2) Availability - not done -  select top 1* from  [JCPCOPA].[TW_PRC_TRACK_AVAILABILITY]  - complete
+
+query:
+select run_parameters_id,period,division,business_line,sub_business_line,geounit,sub_geounit,jcp_employee_group,job_code,days_off,days_on,
+core_headcount,non_core_headcount,month_days,available_days,avg_jcp_employee_group_working_pattern,
+adjusted_available_days,LAST_UPD_DATE from  [JCPCOPA].[TW_PRC_TRACK_AVAILABILITY]
+
+power bi query:
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period,division,business_line,sub_business_line,geounit,sub_geounit,jcp_employee_group,job_code,days_off,days_on,#(lf)core_headcount,non_core_headcount,month_days,available_days,avg_jcp_employee_group_working_pattern,#(lf)adjusted_available_days,LAST_UPD_DATE from  [JCPCOPA].[TW_PRC_TRACK_AVAILABILITY]"]),
+
+
+#"Renamed Columns" = Table.RenameColumns(Source,{{"available_days", "Available Days"}, {"core_headcount", "Core Headcount"}, {"non_core_headcount", "Non Core Headcount"}, {"sub_business_line", "Sub Business Line"}, {"geounit", "Geounit"}, {"division", "Division"}, {"business_line", "Business Line"}, {"jcp_employee_group", "JCP Employee Group"}}),
+in
+    #"Renamed Columns"
+
+
+3) Payroll - not done - select top 1* from [JCPCOPA].[TW_PRC_TRACK_PAYROLL] - complete
+
+power bi query:
+
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period,division,business_line,sub_business_line,geounit,sub_geounit,job_code,job_group,jcp_employee_group,#(tab)payroll_cost,LAST_UPD_DATE#(lf) from [JCPCOPA].[TW_PRC_TRACK_PAYROLL]#(lf)#(lf)"])
+in
+    Source
+
+4) Total Cost Pool - done - select top 1* from [JCPCOPA].[TW_PRC_TRACK_TOTAL_COST_POOL]
+
+query:
+
+power bi query:
+
+
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period_from,period_to,#(tab)division,business_line,sub_business_line,#(lf)geounit,sub_geounit,jcp_employee_group,percentage_employee_group,total_cost_pool,cost_pool,total,non_tlm_percentage,#(lf)adjusted_cost_pool,adjusted_total,LAST_UPD_DATE from [JCPCOPA].[TW_PRC_TRACK_TOTAL_COST_POOL]"]),
+
+       #"Renamed Columns" = Table.RenameColumns(Source,{{"cost_pool", "Cost Pool"}, {"adjusted_cost_pool", "Adjusted Cost Pool"}, {"adjusted_total", "Total Adjusted Cost Pool"}, {"jcp_employee_group", "JCP Employee Group"}, {"period_from", "Period From"}, {"period_to", "Period To"}, {"percentage_employee_group", "Employee Group Percentage"}, {"geounit", "Geo Unit"}, {"total_cost_pool", "Total Cost Pool"}, {"non_tlm_percentage", "Non TLM Percentage"}})
+    
+in
+    #"Renamed Columns"
+
+
+
+
+5) Total Availability - not done - select top 1* from [JCPCOPA].[TW_PRC_TRACK_TOTAL_AVAILABILITY] - complete
+
+power bi query:
+
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period_from,period_to,division,business_line,sub_business_line,geounit,sub_geounit,jcp_employee_group,available_days,adjusted_available_days,LAST_UPD_DATE  from [JCPCOPA].[TW_PRC_TRACK_TOTAL_AVAILABILITY]#(lf)#(lf)#(lf)"])
+    
+in
+    #"Source"
+
+6) Total Payroll - done
+
+power bi query:
+
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period_from,period_to,division,business_line,sub_business_line,geounit,sub_geounit,jcp_employee_group,total_payroll_cost,total,percentage,LAST_UPD_DATE from [JCPCOPA].[TW_PRC_TRACK_TOTAL_PAYROLL]"])
+   
+in
+    #"Source"
+
+7) Total Payroll (TLM%) - done
+
+power bi query:
+
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period_from,period_to,division,business_line,sub_business_line,geounit,sub_geounit,job_group,total_payroll_cost,total,percentage,LAST_UPD_DATE from [JCPCOPA].[TW_PRC_TRACK_TOTAL_PAYROLL_WITH_TLM]"])
+in
+    Source
+
+8) Rates - not required 
+
+9) Historical Utilization - not done  - select top 1* from [JCPCOPA].[TW_PRC_TRACK_HISTORICAL_UTILIZATION] - complete
+
+power bi query:
+
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period,division,business_line,sub_business_line,geounit,sub_geounit,gin_number,job_number,job_code,jcp_employee_group,crew_days,district_id,LAST_UPD_DATE from [JCPCOPA].[TW_PRC_TRACK_HISTORICAL_UTILIZATION]"])
+in
+    Source
+
+10) Total Historical Utilization - not done - select top 1* from [JCPCOPA].[TW_PRC_TRACK_TOTAL_HISTORICAL_UTILIZATION] - complete
+
+power bi query:
+
+let
+    Source = Sql.Database("glbbirptsqlsvrdev.database.windows.net", "glb_birpt_ADWDB_dev", [Query="select run_parameters_id,period_from,period_to,division,business_line,sub_business_line,geounit,sub_geounit,jcp_employee_group,crew_days,district_id,LAST_UPD_DATE from [JCPCOPA].[TW_PRC_TRACK_TOTAL_HISTORICAL_UTILIZATION]"])
+in
+    Source
+
+
+11) TRACK RATE PEOPLE DEBUG LOG - no changes required
+
+12) JCPCOPA SECURITY_ORGANIZATION - no changes required
+
+13) JCPCOPA SECURITY_PRODUCT_LINES - no changes required
+
+
+People Rate Calculator - Dataset
+
+
+TW_PRC_TRACK_TOTAL_PAYROLL_WITH_TLM
+
+key :  M3CVC-VNM76-7K622-PRR49-66R8X 
+
+My Pull request is only for Power BI Report for BPI Component,  and this not part of LDS cahnges
+
+step 1: csks -bukrs
+
+master_cc - bukrs join , geo_3,geo_4, geo_1, geo_2 , WAERS(currency)
+
+step 2: master_cc with stg ()  , GLAC_SKAT_TXT50  
+
+1)select top 10 * from [EAR-AA-5457].[CSKS];
+
+2)select top 10 GLAC_SKA1_SAKNR,GLAC_SKAT_TXT50 from [EAR-AA-5457].[STG_MD_SDI_GL_ACCOUNT] 
+
+3) select top 10 * from [EAR-AA-5457].[STG_MD_SDI_GL_ACCOUNT_MASTER_CC] 
+
+4) [JCPCOPA].[FACT_COPA_GR55_Metrics]
+
+5) [JCPCOPA].[Dlm_SLB_Organization] --not required as of now
+
+6)  [JCPCOPA].[Dim_NIS_Hierarchy]
+
+Rates by Target Utilization %s
+
+query 1: 
+
+select   distinct top 1000
+csks.ZZGEO_LEVEL_1,csks.ZZGEO_LEVEL_2,csks.ZZGEO_LEVEL_3,csks.ZZGEO_LEVEL_4,
+mas.GLAM_SAKNR,acc.GLAC_SKAT_TXT50
+--csks.BUKRS,
+from [EAR-AA-5457].[CSKS] as csks LEFT  JOIN [EAR-AA-5457].[STG_MD_SDI_GL_ACCOUNT_MASTER_CC] mas ON 
+csks.BUKRS = mas.GLAM_BUKRS
+LEFT JOIN [EAR-AA-5457].[STG_MD_SDI_GL_ACCOUNT] acc ON mas.GLAM_SAKNR=acc.GLAC_SKA1_SAKNR
+where csks.ZZGEO_LEVEL_3 ='KSA' and csks.ZZGEO_LEVEL_4 ='SAU'
+and  acc.GLAC_SKA1_KTOPL='ATCA'
+
+query 2: 
+select  distinct m.[Account Number], m.[Period/Year_ID],m.[Account Summary Description], m.[WBS Element],m.[Reference Document Number],
+m.[Value in Group Currency], m.[SUB_BL_ID],m.[SUB_GEO_ID]
+from [JCPCOPA].[FACT_COPA_GR55_Metrics] m , [JCPCOPA].[Dim_NIS_Hierarchy] h 
+where m.[Account Number] <>h.[Base_Cost_Element] and 
+m.[Account Number] not like '009%'
+
+
+query 3:
+WITH CTE AS (select  distinct m.[Account Number], m.[Period/Year_ID],m.[Account Summary Description], m.[WBS Element],m.[Reference Document Number],
+m.[Value in Group Currency], m.[SUB_BL_ID],m.[SUB_GEO_ID]
+from [JCPCOPA].[FACT_COPA_GR55_Metrics] m where m.[Account Number] not like '009%' ) 
+,CTE2 AS (SELECT DISTINCT [Base_Cost_Element] FROM [JCPCOPA].[Dim_NIS_Hierarchy]) 
+select *  from CTE c  where c.[Account Number] not in (SELECT * FROM CTE2) 
+
+query 4:
+
+WITH CTE AS (select  distinct m.[Account Number], m.[Period/Year_ID],m.[Account Summary Description], m.[WBS Element],m.[Reference Document Number],
+m.[Value in Group Currency], m.[SUB_BL_ID],m.[SUB_GEO_ID]
+from [JCPCOPA].[FACT_COPA_GR55_Metrics] m where m.[Account Number]  like '004%' or m.[Account Number] like '005%' or m.[Account Number] 
+like '006%' or m.[Account Number] like '007%' or m.[Account Number] like '008%' )
+,CTE2 AS (SELECT DISTINCT [Base_Cost_Element] FROM [JCPCOPA].[Dim_NIS_Hierarchy]) 
+select *  from CTE c  where c.[Account Number] not in (SELECT * FROM CTE2) order by c.[Account Number] asc
+
+
+
+
+gr55 - dim() = 450
+dlake = 1198
+
+450 = re
+
+Account Number : 1
+Gorup Currency : 100
+Year : 2024 ()
+
+1 day : 400 (new)
+2 day : 402 (new)
+
+
+matrix 1 : column : Period,  :  (Account Number)
+
+matrix 2:  column : Period  , row : Geounit
+
+Grid table : account number, description and value in group currency
+
+Formula is (Total of M&S Consumption GL account - 52000400) divided by "Total M&S Spend" (Sum of all M&S Allocation & Variance accounts).
+List of geounits should include everything; not only Implemented in COPA = Y
+A new page is created in Onboarding KPIs report that focuses on RPF M&S Consumption.
+Page should have banner to include:
+
+% of Total M&S Spend
+Total M&S Cost of Sales
+Visualizations should include:
+breakdown by geounit (same as description image)
+Trend over time
+breakdown by Sub-business line
+Filters on page level allowed must include:
+Division
+Geounit
+Period
+Page should have a toggle to show only last 6 months or all months (see current onboarding KPIs)
+
+
+__Total = CALCULATE('Fact Metrics'[Period/GeoUnit/Division ValueK$],
+'Dim NIS Hierarchy'[P1] = "M&S Cost")
+
+
+
+ 1) 1st card :
+
+__MnS Consumption Variance = CALCULATE(SUM('Fact Metrics'[Group Currency]),
+'Dim NIS Hierarchy'[P1] = "M&S Cost Variance",
+'Dim NIS Hierarchy'[Base Cost Element] in {"0052000400", "0054009000", "0075210020"})
+
+allocation= /sum(allocation)
+
+og measure:
+
+__MnS Total = DIVIDE(CALCULATE(SUM('Fact M&S Drivers'[Allocation]),
+'Dim NIS Hierarchy'[Base Cost Element] in {"0052000400"}),CALCULATE(SUM('Fact M&S Drivers'[Allocation]),
+'Dim NIS Hierarchy'[NIS Category] in {"Maintenance M&S"}))
+
+new or measure: 
+
+RPF Measure: 
+__MnS Consumption Variance = CALCULATE(SUM('Fact Metrics'[Group Currency]),
+'Dim NIS Hierarchy'[P1] = "M&S Cost Variance",
+'Dim NIS Hierarchy'[Base Cost Element] in {"0052000400", "0054009000", "0075210020"})
+
+_Total  
+
+2) % of Total M&S Spend
+
+
+__MnS Cost Allocated % = DIVIDE([__MnS Total Cost Allocated], [__MnS Cost Incurred])
+
+__MnS Total Cost Allocated =  [__MnS UoA Cost] + [__MnS OECount Cost]
+
+__MnS UoA Cost = CALCULATE(sum('Fact M&S Drivers'[Allocation]), 'Fact M&S Drivers'[Cost Driver Unit Of Measurement] = "UoA")
+
+__MnS OECount Cost = CALCULATE(sum('Fact M&S Drivers'[Allocation]), 'Fact M&S Drivers'[Cost Driver Unit Of Measurement] = "OE Count")
+
+__MnS Cost Incurred = CALCULATE([Metric Value],'Dim NIS Hierarchy'[P1] in {"M&S Cost","M&S Cost Variance"})
+s
+__MnS Consumption Variance = CALCULATE(SUM('Fact Metrics'[Group Currency]),
+,','Dim NIS Hierarchy'[Base Cost Element] in {"52000400"})/ DIm 
+
+
+'Dim NIS Hierarchy'[NIS Category] in {"Maintenance M&S"},
+
+breakdown by geounit (same as description image) - right bottom chart
+Trend over time left bottom chart 
+breakdown by Sub-business line - right top chart
+
+100994093
+
+a) % of Total M&S Spend =  % Cost Allocated
+
+__% Cost Allocated MnS = DIVIDE([__MnS Cost Allocated], [__MnS Cost Incurred])
+
+__MnS Cost Allocated = CALCULATE([Metric Value],'Dim NIS Hierarchy'[P1]="M&S Cost")
+
+__MnS Cost Incurred = CALCULATE([Metric Value],'Dim NIS Hierarchy'[P1] in {"M&S Cost","M&S Cost Variance"})
+
+
+b) Total M&S Cost of Sales = Cost Incurred K$
+
+__Cost Incurred Maintenance M&S Cost PE = [__Maintenance M&S Cost Allocated PE] + [__Maintenance M&S Cost Variance PE]
+
+__Maintenance M&S Cost Allocated PE = DIVIDE(CALCULATE(SUM('Fact Metrics'[Group Currency]),FILTER(ALL('Dim NIS Hierarchy'),'Dim NIS Hierarchy'[P1]="M&S Cost")),1000)
+
+__Maintenance M&S Cost Variance PE = DIVIDE(CALCULATE(SUM('Fact Metrics'[Group Currency]),FILTER(all('Dim NIS Hierarchy'),'Dim NIS Hierarchy'[P1]="M&S Cost Variance")),1000)
+
+
+
+
+1) RG Group Name : GLB_BIRPT_RG_JCP
+
+2) ADF Name: glbbirptadfstdjcpprod
+
+O.1008917.57
+
+O.1058336.11
+
+where JOB_ID like '%O.1008917.57%';
+
+-- database details --
+	
+dev - glbbirptsqlsvrdev.database.windows.net        glb_birpt_ADWDB_dev 
+
+UAT - glbbirptsqlsvruat.database.windows.net        glb_birpt_ADWDB_uat
+
+Prod - glbbirptsqlsvrprd.database.windows.net & database name : glb_birpt_ADWDB_prd
+
+sap_prod - glbbirptsqlsvrdlprd.database.windows.net
+
+glbbirptsqlsvrdlprd.database.windows.net
+glbbirptsqlsvrdluat.database.windows.net
+glbbirptsqlsvrdl.database.windows.net
+
+Devops Process : 
+
+Normal Process : release step[] +  + testing document() + Peer Review
+
+step1: JCP Integration() [lower environment] 
+
+https://slb-it.visualstudio.com/es-global-reporting-infrastructure/_release?_a=releases&view=mine&definitionId=1024
+
+Release to UAT 
+step2: testing document + test cases testing (uat enviroment)
+step3: Release() [temp release prepared by internal team] deployment date
+step4: Master [other team]
+
+
+Hotfix Deployment: 
+
+Current Working Task List
+
+Task 1
+
+1) View Name 
+
+a) pumping hours:  JCPCOPA.VW_DBM_OUOA_PUMPINGHOURS
+
+analysis : azure analysis services : powerbi://api.powerbi.com/v1.0/myorg/IT | D&A | GLB BIRPT | BI Studio UAT
+
+b) Tool Used: JCPCOPA.VW_WCM_INHOLE_TOOLUSED
+
+c) Tool Days: JCPCOPA.VW_DBM_TOOL_DAYS 
+
+Task 2
+
+New Upcoming up work videos:
+
+1) BPI - M&S + TLM People Rate Calculator-20230209_090132-Meeting Recording.mp4
+
+https://slb001.sharepoint.com/sites/JobProfitabilityTaskForce/_layouts/15/stream.aspx?id=%2Fsites%2FJobProfitabilityTaskForce%2FShared%20Documents%2FGeneral%2FSAP%20COPA%2FBook%20Of%20Knowledge%2FBPI%20Workshop%20%2D%20Q1%20%2D%202023%2FDay%209%20%2D%209th%20Feb%2FBPI%20%2D%20M%26S%20%2B%20TLM%20People%20Rate%20Calculator%2D20230209%5F090132%2DMeeting%20Recording%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2Ec7b83ee3%2D7fe8%2D4c0e%2D9914%2D630a3d35255a
+
+2) TLM People Calculator (RPF)-20240124_080142-Meeting Recording.mp4
+
+https://slb001.sharepoint.com/sites/JobProfitabilityTaskForce/_layouts/15/stream.aspx?id=%2Fsites%2FJobProfitabilityTaskForce%2FShared%20Documents%2FGeneral%2FSAP%20COPA%2FTLM%20People%20Rate%20Calculator%2FRecordings%2FTLM%20People%20Calculator%20%28RPF%29%2D20240124%5F080142%2DMeeting%20Recording%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2Edd805e24%2D2861%2D406e%2Da4d6%2D5033c4786432
+
+3) BPI - M&S + TLM People Rate Calculator-20230208_090740-Meeting Recording.mp4
+
+https://slb001.sharepoint.com/sites/JobProfitabilityTaskForce/_layouts/15/stream.aspx?id=%2Fsites%2FJobProfitabilityTaskForce%2FShared%20Documents%2FGeneral%2FSAP%20COPA%2FBook%20Of%20Knowledge%2FBPI%20Workshop%20%2D%20Q1%20%2D%202023%2FDay%208%20%2D%208th%20Feb%2FBPI%20%2D%20M%26S%20%2B%20TLM%20People%20Rate%20Calculator%2D20230208%5F090740%2DMeeting%20Recording%2Emp4&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2E810c8e52%2D65a0%2D455f%2D8fda%2D14149e21cbef
+
+4) SharePoint for Power BI 
+
+https://slb001.sharepoint.com/sites/JobProfitabilityTaskForce/Shared%20Documents/Forms/AllItems.aspx?csf=1&web=1&e=ko07HR&CID=613c16ed%2Db986%2D4f8a%2Db70f%2D8683e7dfdd81&FolderCTID=0x0120005204DF021BBCB0438E01E766D3D74A77&id=%2Fsites%2FJobProfitabilityTaskForce%2FShared%20Documents%2FGeneral%2FSAP%20COPA%2FInsight%20Mockups%2F2023%20UX%20Design%2FLDS%2F1%2E%20BPI%20Insights%20%28PROD%29
+
+
+
+-- globalprotect- 
+
+ip address - xcap.gateway.slb.com
+
+--ids SLB -- 
+
+employee id/ Email id/userid : 1346482 /AMadan5@slb.com / AMadan5 : Kccqwe@9958691739
+
+
+Azure Data Factory
+
+q - how to 
+
+Control Flow:
+
+1) REST API/ HTTP
+
+step 1: create the rest api/HTTP linked service
+
+type the url , select the anonymous authentication type , select the server certificate as enable and check the auth header and put the API Key.
+
+We can use the external call from data flow activity for
+
+Types of authentication
+
+i) basic authentication
+
+ii) service principal authentication
+
+iii) OAuth2 Client Credential authentication
+
+iv) System assigned managed identity authentication
+
+v) User assigned managed identity authentication
+
+vi) Anonymous authentication
+
+2) Append Activity:
+
+step 1: we drag the set variable, , then go to variables, then create 3 variable like cityName string , listOfCities array [""delhi","noida","ghaziabad","gurugram"]
+,appendedCities array
+
+step 2: drag the append variable, go to variable setting , select the listOfCities  for Name  and put the Value of variable cityName
+
+step 3: set the variable while append, , go to variable setting, select the appendedCities for Name and put the Value of variable listOfCities
+
+step 4: check the output.
+
+3) Filter Activity:
+
+step 1: we create the parameters with listOfCities array ["London",""Lisbon","Mumbai","Delhi","Kolkata","Chennai"]
+
+step 2: drag the filter, go to setting , Item - select the created paramter, Condition - @startwith(item(),'L')
+
+step 3: check the output.
+	
+4)  If Condition:
+
+step 1: create two parameter, listOfCities array - ["London",""Lisbon","Mumbai","Delhi","Chennai"] , cityToSearch string - 'Kolkata'
+
+step 2: create variable string - ifCityExists 
+
+step 3: drag the if condition, go to activities and type in expression- @contains(pipeline().parameters.listOfCities, pipeline().parameters.cityToSearch)
+
+step 4: click on true pencil , then go under TRUE , create the set variable, go to variable, then Name - select the variable  and put the value - 'Yes It Exists'
+
+step 5: click on false pencil , then go under FALSE , create the set variable, go to variable, then Name - select the variable  and put the value - 'No, It Doesn't Exists'
+
+step 6: check the output
+
+5) Copy Activity Optimize Techniques
+
+i) Data Integration Units: we can maximize the data integration units
+
+ii) Degree of copy parallelism: it allow us to copy the data paralley.
+
+iii) saving the target file in compressed file like zip format.
+
+iv) we can check the source and target data , is there any other activity which running at the same time of our adf pipeline runtime.
+
+6) Global Parameters: they are usefull in multiple pipeline with identical parameter names and values.
+
+7) Polybase 
+
+Data Transformation:
+
+1) Aggregate and Filter Condition:
+
+step 1: use the filter  column_name == 'row_number' .
+
+step 2: drag aggregate, go to setting , select the required column_name for group by, then aggregate by column - sum(sales)
+
+step 3: check the output
+
+2) Flatten , Parse and Stingify
+
+3) How to delete duplicate the record 
+
+i) 1st solution - we can use the aggregate column and group by column count() 
+ii) 2nd solution - use select and checked the skip duplicate record
+
+Azure Synapse Analytics
+
+Dedicated SQL Pool support three methods for distributing data.
+
+i) Hash Distribution: Hash Distribution tables, distributed tables rows across the compute node by using hash function to assign each row to one distribution.
+Improves query peformance on large fact tables.
+Where to use hash distribution table when we have an table disk size is more than 2 GB and table is frequently insert, update and delete operations.
+
+Ex - 
+CREATE TABLE [dbo].[FactInternetSales]
+(   [ProductKey]            int          NOT NULL
+,   [OrderDateKey]          int          NOT NULL
+,   [CustomerKey]           int          NOT NULL
+,   [PromotionKey]          int          NOT NULL
+,   [SalesOrderNumber]      nvarchar(20) NOT NULL
+,   [OrderQuantity]         smallint     NOT NULL
+,   [UnitPrice]             money        NOT NULL
+,   [SalesAmount]           money        NOT NULL
+)
+WITH
+(   CLUSTERED COLUMNSTORE INDEX
+,  DISTRIBUTION = HASH([ProductKey],   [OrderDateKey],   [CustomerKey] ,   [PromotionKey])
+);
+
+ii) Round Robin Distribution: Round Robin distribution tables, distributes tables rows evenly across distribution, useful for improving loading speed.
+
+Ex -
+CREATE TABLE [dbo].[HackneyLicense]
+(
+    [HackneyLicenseID] int NOT NULL,
+    [HackneyLicenseBKey] varchar(50)  NOT NULL,
+    [HackneyLicenseCode] varchar(50)  NULL
+)
+WITH
+(
+    DISTRIBUTION = ROUND_ROBIN,
+    CLUSTERED COLUMNSTORE INDEX
+);
+
+iii) Replicated: replicated table has a full copy of the table available on every compute node, queries run fast on replicated.
+
+
+--- SQL ---
+
+1) VIEWS
+
+create or replace VIEW name
+WITH CTE AS (),
+CTE1 AS (select * from CTE)
+select * from CTE1;
+
+2) CTAS Statement: select * INTO target from source;
+
+INSERT INTO Table_name VALUES() SELECT () from table_name;
+
+3)  correlated subqueries
+
+objective: how to get avg salary < salary , two technique are there i) we can use join , ii) we can use where condition 
+
+create table emp
+(empid int, emp_name nvarchar(100), dept_name nvarchar(100),salary int);
+
+INSERT INTO emp VALUES (1,'Ankit Madan' , 'IT', 20000);
+INSERT INTO emp VALUES (2,'Amit' , 'IT', 40000);
+INSERT INTO emp VALUES (3,'Shailesh' , 'HR', 35000);
+INSERT INTO emp VALUES (4,'Vijay' , 'Finance', 45000);
+INSERT INTO emp VALUES (5,'Sonu' , 'Sales', 50000);
+INSERT INTO emp VALUES (6,'Vaibhavi' , 'HR', 60000);
+INSERT INTO emp VALUES (7,'Amar' , 'Finance', 63000);
+INSERT INTO emp VALUES (8,'Sonu' , 'Sales', 43000);
+
+Query:
+
+select * from emp e1 where salary > (select AVG(Salary) from emp e2 where e1.dept_name=e2.dept_name);
+
+
+4) Multiple Row , Multiple column Sub queries.
+
+above table schema we can take.
+
+objective : how to get the highest salary per department wise.
+
+Query:
+
+solution 1
+WITH CTE  AS (select *, DENSE_RANK() OVER (PARTITION by dept_name order by salary desc)  as  'rk' from emp )
+select empid,emp_name,dept_name from CTE where rk=1;
+
+solution 2
+select * from emp where (dept_name,salary) IN (
+select dept_name, MAX(salary) as 'max_salary' from emp group by dept_name);
+
+5) Scalar Subqueries:
+
+use above table schema.
+
+objective: o/p for those employees hows salary is more than average salaries of employees.
+
+Query:
+select * from emp e
+JOIN (select AVG(salary) as 'avg_salary' from emp ) AVG ON e.salary>avg.avg_salary;
+
+WITH CTE AS (
+select emp_name,dept_name,salary, avg(salary) OVER (PARTITION By dept_name order by dept_name) as 'avg' from emp
+group by empid,emp_name,dept_name,salary)
+Select * from CTE where salary>40000;
+
+select *, 
+CASE WHEN e.salary>(select AVG(salary) from emp) THEN 'Above Average Salary' ELSE 'NULL' END as 'Remarks'
+from emp e ;
+
+
+6) how to get the new record in source table , with the help of target table.
+
+create table source (id int , name nvarchar(100));
+
+INSERT INTO source VALUES (1,'ank');
+INSERT INTO source VALUES (2,'sah');
+INSERT INTO source VALUES (3,'aryu8r');
+INSERT INTO source VALUES (4,'4u9h');
+INSERT INTO source VALUES (5,'adhj');
+INSERT INTO source VALUES (6,'dhjk');
+INSERT INTO source VALUES (7,'ahjcc');
+INSERT INTO source VALUES (8,'qiowe');
+INSERT INTO source VALUES (9,'qwetr');
+INSERT INTO source VALUES (10,'tgvrfc');
+INSERT INTO source VALUES (11,'opsqwe');
+
+create table target (id int , name nvarchar(100));
+
+INSERT INTO target VALUES (1,'ank');
+INSERT INTO target VALUES (2,'sah');
+INSERT INTO target VALUES (3,'aryu8r');
+INSERT INTO target VALUES (4,'4u9h');
+INSERT INTO target VALUES (5,'adhj');
+
+Query: 
+
+INSERT INTO target  (id, name)
+select id,name from source s where id NOT IN (select Id from target);
+
+7) cummulative sum
+
+create table os (Date date, Sales int);
+
+INSERT INTO os VALUES ('2024-05-01', 100);
+INSERT INTO os VALUES ('2024-05-02', 200);
+INSERT INTO os VALUES ('2024-05-03', 150);
+
+select *, SUM(Sales) OVER (order by date) as 'sum_cummulative' from os
+
+
+8) airbnb
+
+create table air
+(used_id int, date_search date, filter_room_type nvarchar(300));
+
+INSERT INTO air VALUES (1,'2022-01-01', 'entire home,private room');
+INSERT INTO air VALUES (2,'2022-01-01', 'entire home,shared room');
+INSERT INTO air VALUES (3,'2022-01-01', 'shared home,private room');
+INSERT INTO air VALUES (4,'2022-01-01', 'private room');
+
+Query:
+
+WITH CTE AS (
+select  SUM(CASE WHEN filter_room_type like '%entire%'  THEN 1 ELSE 0 END) as 'en',
+SUM (CASE WHEN filter_room_type like '%private%' THEN 1 ELSE 0 END) as 'pr',
+SUM (CASE WHEN filter_room_type like '%shared%' THEN 1 ELSE 0 END) as 'sh'
+from air)
+select 'Entire Home' as 'Value', en as 'ç' from CTE
+UNION ALL
+select 'Private Room' as 'Value', pr as 'ç' from CTE
+UNION ALL
+select 'Shared Home' as 'Value', sh as 'ç' from CTE
+;
+
+9) objective: how to add '+' , '-' sum 
+
+create table num( id int);
+
+INSERT INTO num VALUES (7);
+INSERT INTO num VALUES (-3) ;
+INSERT INTO num VALUES (6) ;
+INSERT INTO num VALUES (5);
+INSERT INTO num VALUES (-9);
+INSERT INTO num VALUES  (-2);
+
+Query:
+
+WITH CTE AS (select *, CASE WHEN id>0 THEN '+' ELSE '-' END AS 'Flag' from num),
+CTE1 AS (select SUM(id) OVER (PARTITION By Flag ) as 'val' from CTE)
+select min(val) as 'Negative', max(val) as 'Positive' from CTE1;
+
+10) objective: 
+
+create table entries( name nvarchar(100),address nvarchar(100), email nvarchar(50), floor int, resource nvarchar(100));
+
+INSERT INTO entries ('A','Bangalore','a@gmail.com', 1, 'CPU');
+INSERT INTO entries ('A','Bangalore','a1@gmail.com', 1, 'CPU');
+INSERT INTO entries ('A','Bangalore','a2@gmail.com', 2, 'DESKTOP');
+INSERT INTO entries ('B','Bangalore','b@gmail.com', 2, 'DESKTOP');
+INSERT INTO entries ('B','Bangalore','b1@gmail.com', 2, 'DESKTOP');
+INSERT INTO entries ('B','Bangalore','b2@gmail.com', 1, 'MONITOR');
+
+11) objective: find the highest salaried employee from each department who is not a manager.
+
+create table emp (id int, name nvarchar(100), department nvarchar(30), manager_id nvarchar(30), salary int);
+
+INSERT INTO emp VALUES (1,'Virat', 'IT', '', 8000);
+INSERT INTO emp VALUES (2,'Rohit', 'IT', '', 8000);
+INSERT INTO emp VALUES (3,'Pant', 'Finance', 1, 7000);
+INSERT INTO emp VALUES (4,'Rahul', 'Finance', 2, 6000);
+INSERT INTO emp VALUES (5,'Sanju', 'HR', 1, 5000);
+INSERT INTO emp VALUES (6,'Rinku', 'HR', 3, 4000);
+INSERT INTO emp VALUES (7,'Bumrah', 'Admin', '', 7000);
+INSERT INTO emp VALUES (8,'Shami', 'Admin', 7, 6000);
+INSERT INTO emp VALUES (9,'Siraj', 'BPO', 3, 5000);
+INSERT INTO emp VALUES (10,'Axar', 'BPO', 1, 5500);
+
+Query: 
+
+WITH CTE AS (select * from emp e where e.id NOT IN (select manager_id from emp)),
+CTE1 AS (select *, DENSE_RANK() OVER (PARTITION BY department order by salary asc) as 'rnk' from CTE)
+select name as 'Employee_Name', department,salary from CTE1 where rnk=1;
+
+12) objective: find the top employees from each shop who have made the most amount of sales in the 3rd quarter of 2024.
+
+create table shop (employee nvarchar(100), department nvarchar(100), shop_id int, dates_ date, sales_value int);
+
+INSERT INTO shop VALUES ('Rahul','Electronics',1,'2024-07-05',5000);
+INSERT INTO shop VALUES ('Priya','Clothing',1,'2024-07-15',7000);
+INSERT INTO shop VALUES ('Amit','Electronics',1,'2024-08-10',3000);
+INSERT INTO shop VALUES ('Sunita','Clothing',1,'2024-08-20',10000);
+INSERT INTO shop VALUES ('Anjali','Electronics',2,'2024-09-01',2000);
+INSERT INTO shop VALUES ('Ravi','Clothing',2,'2024-09-10',8000);
+INSERT INTO shop VALUES ('Neha','Electronics',2,'2024-07-25',9000);
+INSERT INTO shop VALUES ('Vijay','Clothing',2,'2024-08-30',12000);
+INSERT INTO shop VALUES ('Raj','Electronics',3,'2024-07-22',11000);
+INSERT INTO shop VALUES ('Pooja','Clothing',3,'2024-09-05',6000);
+
+Query: 
+
+WITH CTE AS (select *, DENSE_RANK() OVER (PARTITION by shop_id order by sales_value DESC) as 'rnk'  from shop)
+select employee,shop_id,sales_value,department from CTE  where rnk=1;
+
+
+13) objective: to get the groupid based on status category if New Listing and Relisted values are there then , increase the value by 1 else keep the same value.
+
+create table list (list_id int, homeid nvarchar(100), status nvarchar(100));
+
+INSERT INTO list VALUES (1,'Home A', 'New Listing');
+INSERT INTO list VALUES (2,'Home A', 'Pending');
+INSERT INTO list VALUES (3,'Home A', 'Relisted');
+INSERT INTO list VALUES (4,'Home B', 'New Listing');
+INSERT INTO list VALUES (5,'Home B', 'Under Contract');
+INSERT INTO list VALUES (6,'Home B', 'Relisted');
+INSERT INTO list VALUES (7,'Home C', 'New Listing');
+INSERT INTO list VALUES (8,'Home C', 'Under Contract');
+INSERT INTO list VALUES (9,'Home C', 'Closed');
+
+Query: 
+
+select *, SUM(CASE WHEN  status IN ('New Listing', 'Relisted')  THEN 1 ELSE 0 END) 
+OVER (order by list_id ) as 'GroupingId' from list group by list_id,homeid,status;
+
+14) objective:
+
+create table data (Employee nvarchar(10), Dates date, status nvarchar(100));
+
+INSERT INTO data VALUES ('A1','2024-01-01','Present');
+INSERT INTO data VALUES ('A1','2024-01-02','Present');
+INSERT INTO data VALUES ('A1','2024-01-03','Present');
+INSERT INTO data VALUES ('A1','2024-01-04','Absent');
+INSERT INTO data VALUES ('A1','2024-01-05','Present');
+INSERT INTO data VALUES ('A1','2024-01-06','Present');
+INSERT INTO data VALUES ('A1','2024-01-07','Present');
+INSERT INTO data VALUES ('A1','2024-01-08','Absent');
+INSERT INTO data VALUES ('A1','2024-01-09','Absent');
+INSERT INTO data VALUES ('A1','2024-01-10','Present');
+INSERT INTO data VALUES ('A2','2024-01-06','Present');
+INSERT INTO data VALUES ('A2','2024-01-07','Present');
+INSERT INTO data VALUES ('A2','2024-01-08','Absent');
+INSERT INTO data VALUES ('A2','2024-01-09','Present');
+INSERT INTO data VALUES ('A2','2024-01-10','Absent');
+
+Query:
+
+1) CURRENT ROW, the current row
+2) UNBOUNDED PRECEDING, all rows before the current row -> fixed
+3) UNBOUNDED FOLLOWING, all rows after the current row -> fixed
+4) x PRECEDING, x rows before the current row -> relative
+5) y FOLLOWING, y rows after the current row -> relative
+
+WITH CTE_Present AS (
+select *,
+ROW_NUMBER() OVER (PARTITION By employee order by employee,dates) as 'rn'
+, DATEPART(DAY,Dates) as 'd',
+DATEPART(DAY,Dates)- ROW_NUMBER() OVER (PARTITION By employee order by employee,dates) as 'diff'
+from data where employee='A1' and status='Present'),
+CTE_Absent AS (
+select *,
+ROW_NUMBER() OVER (PARTITION By employee order by employee,dates) as 'rn'
+, DATEPART(DAY,Dates) as 'd',
+DATEPART(DAY,Dates)- ROW_NUMBER() OVER (PARTITION By employee order by employee,dates) as 'diff'
+from data where employee='A1' and status='Absent')
+
+select  first_value(dates) OVER (PARTITION BY employee,diff order by employee,dates) as 'from_date',
+last_value(dates) OVER (PARTITION by employee,diff order by employee, dates 
+                       range BETWEEN unbounded preceding and unbounded following ) as 'last_date', status
+from CTE_Present
+UNION 
+
+select  first_value(dates) OVER (PARTITION BY employee,diff order by employee,dates) as 'from_date',
+last_value(dates) OVER (PARTITION by employee,diff order by employee, dates 
+                       range BETWEEN unbounded preceding and unbounded following ) as 'last_date', status
+from CTE_Absent;
+
+15) objective : 
+examples of windows function and scalar functions
+
+CREATE TABLE table_name (id int, the_value varchar(2), the_date datetime);
+
+INSERT INTO table_name (id,the_value,the_date) VALUES(1 ,'a','1/1/2000');
+INSERT INTO table_name (id,the_value,the_date) VALUES(1 ,'b','2/2/2002');
+INSERT INTO table_name (id,the_value,the_date) VALUES(2 ,'c','1/1/2000');
+INSERT INTO table_name (id,the_value,the_date) VALUES(2 ,'d','3/3/2003');
+INSERT INTO table_name (id,the_value,the_date) VALUES(2 ,'e','3/3/2003');
+
+Query: 
+
+-- window function 
+with CTE AS ( select *, RANK() OVER (PARTITION by id order by the_date desc ) as 'rnk'  from table_name)
+select id,the_value from CTE where rnk=1;
+
+-- scalar function 
+select  id,the_value from table_name  t1 where the_date = (select max(the_date) from table_name t2 where t1.id=t2.id );
+
+16) objective : how to get the consecutive seat free only
+
+create table ss( seat_id int, seat_free int);
+
+INSERT INTO ss VALUES (1,1);
+INSERT INTO ss VALUES (2,0);
+INSERT INTO ss VALUES (3,1);
+INSERT INTO ss VALUES (4,1);
+INSERT INTO ss VALUES (5,1);
+
+query:
+
+solution 1: lead and lag
+
+WITH CTE AS (
+select *, LEAD(seat_free,1)  OVER (order BY seat_id) as 'lead_', LAG(seat_free,1) OVER (order by seat_id) as 'lag_' from ss)
+select seat_id from CTE where seat_free=1 and (lead_=1 or lag_=1)
+
+solution 2: window function
+
+WITH CTE AS (select *,
+ROW_NUMBER() OVER (order by seat_id) as 'rn',
+seat_id- ROW_NUMBER() OVER (order by seat_id) as 'diff'
+from ss where seat_free=1)
+select seat_id from CTE where diff=1
+
+
+17) objective: how to get the caller info with first_caller, second_caller , no_of_times_called, total_call_duration
+
+create table caller (from_id int, to_id int , duration int);
+
+INSERT INTO caller VAlUES (1,2,59);
+INSERT INTO caller VAlUES (2,1,11);
+INSERT INTO caller VALUES (1,3,20);
+INSERT INTO caller VALUES (3,4,100);
+INSERT INTO caller VALUES (3,4,200);
+INSERT INTO caller VALUES (3,4,200);
+INSERT INTO caller VALUES (4,3,499);
+
+Query: 
+
+WITH CTE AS (
+select 
+CASE WHEN from_id<to_id THEN from_id ELSE to_id END as 'First_Caller',
+CASE WHEN from_id>to_id THEN from_id ELSE to_id END as 'Second_Caller', duration
+from caller)
+select First_Caller,Second_Caller, count(*) as call_count, SUM(duration) from CTE
+group by First_Caller,Second_Caller order by First_Caller,Second_Caller;
+
+
+18) objective: how to get the three consecutive values
+
+create table consecutive(id int , dummy_data nvarchar(10));
+
+INSERT INTO consecutive VALUES (1,'a');
+INSERT INTO consecutive VALUES (2,'a');
+INSERT INTO consecutive VALUES (3,'a');
+INSERT INTO consecutive VALUES (4,'b');
+INSERT INTO consecutive VALUES (5,'b');
+INSERT INTO consecutive VALUES (6,'c');
+INSERT INTO consecutive VALUES (7,'b');
+INSERT INTO consecutive VALUES (8,'c');
+INSERT INTO consecutive VALUES (9,'c');
+INSERT INTO consecutive VALUES (10,'c');
+
+query:
+
+WITH CTE AS (select *, ROW_NUMBER() OVER (partition by dummy_data order by dummy_data  ) as 'rn',
+id - ROW_NUMBER() OVER (PARTITION by dummy_data order by dummy_data  ) as 'diff'
+from consecutive ),
+CTE1 AS (select diff, count(*) as 'v', dummy_data from CTE group by diff, dummy_data)
+select dummy_data from CTE1 where v>=3;
+
+19) objective: how to get the consecutive sequence of numbers.
+
+create table sq (sequence int);
+
+INSERT INTO sq VALUES (1);
+INSERT INTO sq VALUES (2);
+INSERT INTO sq VALUES (3);
+INSERT INTO sq VALUES (6);
+INSERT INTO sq VALUES (7);
+INSERT INTO sq VALUES (9);
+INSERT INTO sq VALUES (11);
+INSERT INTO sq VALUES (12);
+INSERT INTO sq VALUES (20);
+INSERT INTO sq VALUES (21);
+INSERT INTO sq VALUES (25);
+INSERT INTO sq VALUES (30);
+
+query:
+
+WITH CTE as (select *, ROW_NUMBER() OVER  (order by sequence)  as 'rnk',
+sequence - ROW_NUMBER() OVER  (order by sequence) as 'sequence_identifier'
+from sq )
+select min(sequence) as min_sequence, max(sequence) as max_sequence from CTE GROUP by sequence_identifier
+having count(*)>1;
+
+20) objective: how to get the second top avg salary for employee , manager pair value
+
+create table employee (
+    empid int,
+    empname varchar(50),
+    mgrid int,
+    salary int
+);
+
+insert into employee  values
+(1, 'mahendra', 2, 25000),
+(2, 'mahi', 5, 20000),
+(3, 'sam', null, 45000),
+(4, 'dev', 1, 20000),
+(5, 'dash', 3, 97000),
+(6, 'pratik', 6, 30000),
+(7, 'singh', 2, 40000),
+(8, 'rao', 5, 80000);
+
+Query: 
+
+WITH CTE AS (select m.empname as 'Employee_Name',e.empname as 'Manager_Name',(m.salary+e.salary)/2 as 'avg'
+from employee e, employee m where e.empid=m.mgrid  ),
+CTE2 AS (select *, DENSE_RANK() OVER ( order by avg ) as 'rnk' from CTE)
+select CONCAT(Employee_Name,':',Manager_Name) as 'm', avg from CTE2  where rnk=4;
+
+
+21) objective: who won the elections.
+
+22) objective: how to get the total working and actual worked hours per day wise for each employees
+
+create table times (employee_id, activity_type nvarchar(100),activity time datetime);
+
+INSERT INTO times VALUES (1, 'login', '2024-07-23 08:00:00.000');
+INSERT INTO times VALUES (1, 'logout', '2024-07-23 12:00:00.000');
+INSERT INTO times VALUES (1, 'login', '2024-07-23 13:00:00.000');
+INSERT INTO times VALUES (1, 'logout', '2024-07-23 17:00:00.000');
+INSERT INTO times VALUES (2, 'login', '2024-07-23 09:00:00.000');
+INSERT INTO times VALUES (2, 'logout', '2024-07-23 11:00:00.000');
+INSERT INTO times VALUES (2, 'login', '2024-07-23 12:00:00.000');
+INSERT INTO times VALUES (2, 'logout', '2024-07-23 15:00:00.000');
+INSERT INTO times VALUES (1, 'login', '2024-07-24 08:30:00.000');
+INSERT INTO times VALUES (1, 'logout', '2024-07-24 12:30:00.000');
+INSERT INTO times VALUES (2, 'login', '2024-07-24 09:30:00.000');
+INSERT INTO times VALUES (2, 'logout', '2024-07-24 10:30:00.000');
+
+query: 
+
+WITH CTE AS (select *, 
+CAST(activity_time as Date) as 'activity_date',
+LEAD(activity_time) OVER (PARTITION by employee_id , CAST(activity_time as Date) order by activity_time) as 'logout_time' from times)
+select employee_id, activity_date,
+DATEDIFF(HOUR,min(activity_time), max(logout_time)) as 'total_hours',
+SUM(DATEDIFF(HOUR,activity_time, logout_time)) as 'inside_hours'
+from CTE 
+where activity_type='login'
+group by employee_id,activity_date; 
+
+23) objective: 
+
+create table intel (order_date date, ship_date date , amount int);
+
+INSERT INTO intel VALUES ('2024-01-01','2024-01-05', 100);
+INSERT INTO intel VALUES ('2024-01-02','2024-01-06', 150);
+INSERT INTO intel VALUES ('2024-01-03','2024-01-07', 200);
+INSERT INTO intel VALUES ('2024-01-04','2024-01-08', 250);
+INSERT INTO intel VALUES ('2024-01-05','2024-01-09', 300);
+
+24) objective : how to print value based on count.
+
+example of recursive cte;
+
+create table item (Item_name nvarchar(100), vals int);
+
+INSERT INTO item VALUES ('Ball',2);
+INSERT INTO item VALUES ('Bat',4);
+INSERT INTO item VALUES ('Golve',1);
+INSERT INTO item VALUES ('Wickets',3);
+
+query: 
+
+declare @count int;
+select @count =  max(vals) from item;
+with cte as (select * from item),
+cte2 AS  (select 1 as numbers
+UNION ALL
+select numbers+1 as 'numbers' from cte2 where numbers<@count)
+select c.item_name,c2.numbers from cte c join cte2 c2 on c.vals>=c2.numbers 
+order by item_name,numbers
+
+power bi questions:
+
+1) how to replace null or blank value in card visual as an '-' Dash Value 
+
+A column - blank
+B Column - blank
+
+create measure
+
+Testing = FORMAT(DIVIDE(SUM(Vals[A]),SUM(Vals[B])),ISTEXT(""))
+
+New Testing = SWITCH (
+    TRUE (),
+    'Vals'[Testing] = "", "-"   
+)
+
+2) how to use filter and keepfilter in power bi dax query.
+
+3) difference b/w calculate column and measure.
+
+       calculated column     			|| Measure
+
+1    stored in memory				not stored in memory
+2	consumes memory				consumes CPU
+3  calculates at time of refresh report     	calculated on fly
+4  row by row calculation 			usually at aggregation
+5  value can be seen in the column tab		value can be seen when adding in the report
+
+
+4) rolling sum 
+
+
+1) GL Account: It will help the team for evaluating and identifying  the new revenue account details which are added recently. Its showcase the Revenue Account details based on Business line , Sub business line , GEO Unit and Sub Geo Unit wise, Created the LDS Model and pages in Power BI Report.
+
+2) WEC : Worked on creating new measure for maintaining the revenue for WEC , adding the contribution margins for WEC updating the visuals for corporate name , account name , customer and rig details.
+
+3) KPI Onboarding : adding the measure for calculating the M&S consumption amount which will enable team to get the correct consumption details for M&S.
+
+4) RPF : updating the calculating measure for total revenue and service revenue in RPF, updating the formulation for contribution margins, 
+updating the visual for bring out the tooltip for corporate name , account name, customer , rig details.
+
+5) People Rate Calculator: Updating the LDS model for bring the rate and target utilization which help team to get the details based on Business line and Sub 
+business line.
+
+6) Equipment Rate Calculator:  Created the rate calculator for ERC which will enable to identify rate based on Business line, Sub business line.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+ 
