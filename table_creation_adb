@@ -1,0 +1,52 @@
+# List catalogs
+display(spark.sql("SHOW CATALOGS"))
+
+# Set correct catalog and schema
+spark.sql("USE CATALOG firstcatalog")
+spark.sql("USE SCHEMA first_schema")
+
+# Create Unity Catalog Delta table
+spark.sql("""
+CREATE TABLE IF NOT EXISTS firstcatalog.first_schema.sales_data (
+    sale_id STRING,
+    product_id STRING,
+    quantity INT,
+    price DOUBLE,
+    sale_date DATE
+)
+USING DELTA
+COMMENT 'Sales data table managed by Unity Catalog'
+TBLPROPERTIES (
+    'delta.enableChangeDataFeed' = 'true',
+    'quality' = 'gold'
+)
+""")
+
+# Insert sample data
+spark.sql("""
+INSERT INTO firstcatalog.first_schema.sales_data VALUES
+('S1', 'P1', 10, 99.99, DATE '2025-07-28'),
+('S2', 'P2', 5, 49.99, DATE '2025-07-27')
+""")
+
+# Create Row Filter Function
+spark.sql("""
+CREATE OR REPLACE FUNCTION firstcatalog.first_schema.rf_sales_p1(product_id STRING)
+RETURN product_id = 'P1'
+""")
+
+spark.sql("""
+ALTER TABLE firstcatalog.first_schema.sales_data
+SET ROW FILTER firstcatalog.first_schema.rf_sales_p1 ON (product_id)
+""")
+
+# Query table
+display(spark.sql("""
+SELECT *, _metadata.file_path AS source_file
+FROM firstcatalog.first_schema.sales_data
+"""))
+
+# Show Delta history
+display(spark.sql("""
+DESCRIBE HISTORY firstcatalog.first_schema.sales_data
+"""))
