@@ -1,0 +1,652 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER VIEW [DVR].[VW_KPI_TGT_VENDORS_V2] AS
+
+--------------------------------------------------------------
+-- Data Validation for Source Data from Stibo and Non Stibo Invoice Vendor
+-- Change History:
+-- Date       | Author        | Description
+-- -----------|---------------|-------------------------------
+--                            | 
+-- 2026-03-25 | NB            | Initial Development / Update based on KPIs provided by Peter
+-- 2026-03-30 | NB            | Updated additional KPIs from Completeness KPI list
+-- 2026-MM-DD | XX            | Updated ...
+-- 2026-MM-DD | XX            | Updated ...
+-- 2026-MM-DD | XX            | Updated ...
+-- -----------|---------------|-------------------------------
+-- TODO:
+    -- 1. Update KPI's related to email and phone purpose.
+    -- 2. Update KPI's related to Trade Agreements
+
+--------------------------------------------------------------
+-- EU / EEA / EFTA Country List for VAT Group Code Mismatch Check
+WITH EU_EEA_EFTA AS (
+              SELECT 'AT' AS COUNTRY_CODE, 'Austria'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'BE' AS COUNTRY_CODE, 'Belgium'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'BG' AS COUNTRY_CODE, 'Bulgaria'     AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'HR' AS COUNTRY_CODE, 'Croatia'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'CY' AS COUNTRY_CODE, 'Cyprus'       AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'CZ' AS COUNTRY_CODE, 'Czechia'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'DK' AS COUNTRY_CODE, 'Denmark'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'EE' AS COUNTRY_CODE, 'Estonia'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'FI' AS COUNTRY_CODE, 'Finland'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'FR' AS COUNTRY_CODE, 'France'       AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'DE' AS COUNTRY_CODE, 'Germany'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'GR' AS COUNTRY_CODE, 'Greece'       AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'HU' AS COUNTRY_CODE, 'Hungary'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'IE' AS COUNTRY_CODE, 'Ireland'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'IT' AS COUNTRY_CODE, 'Italy'        AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'LV' AS COUNTRY_CODE, 'Latvia'       AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'LT' AS COUNTRY_CODE, 'Lithuania'    AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'LU' AS COUNTRY_CODE, 'Luxembourg'   AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'MT' AS COUNTRY_CODE, 'Malta'        AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'NL' AS COUNTRY_CODE, 'Netherlands'  AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'PL' AS COUNTRY_CODE, 'Poland'       AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'PT' AS COUNTRY_CODE, 'Portugal'     AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'RO' AS COUNTRY_CODE, 'Romania'      AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'SK' AS COUNTRY_CODE, 'Slovakia'     AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'SI' AS COUNTRY_CODE, 'Slovenia'     AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    UNION ALL SELECT 'ES' AS COUNTRY_CODE, 'Spain'        AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+    -- Excluding SE as VAT_GROUP_CODE for SE is S-DOM
+    -- UNION ALL SELECT 'SE' AS COUNTRY_CODE, 'Sweden'       AS COUNTRY_NAME, 'EU'   AS MEMBERSHIP 
+
+    -- EEA (non‑EU)
+    -- Excluding EEA as VAT_GROUP_CODE is set as S-INT.
+    -- TODO: Need to confirm in EEA countries should be S-EU
+    -- UNION ALL SELECT 'IS' AS COUNTRY_CODE, 'Iceland'       AS COUNTRY_NAME, 'EEA' AS MEMBERSHIP 
+    -- UNION ALL SELECT 'LI' AS COUNTRY_CODE, 'Liechtenstein' AS COUNTRY_NAME, 'EEA' AS MEMBERSHIP 
+    -- UNION ALL SELECT 'NO' AS COUNTRY_CODE, 'Norway'        AS COUNTRY_NAME, 'EEA' AS MEMBERSHIP 
+
+    -- EFTA (non‑EEA)
+    -- UNION ALL SELECT 'CH' AS COUNTRY_CODE, 'Switzerland'   AS COUNTRY_NAME, 'EFTA' AS MEMBERSHIP
+)
+--------------------------------------------------------------
+-- Vendor Account Type
+, VENDDOR_ACCOUNT_TYPE AS (
+    SELECT 
+        CAST(SUVC AS NVARCHAR) AS VENDORACCOUNTNUMBER
+        , 'INVOICE' AS VENDDOR_ACCOUNT_TYPE
+    FROM 
+        STG_EKF_STIBO.VENDOR_INVOICE
+    
+    UNION
+
+    SELECT 
+        SUVC_ORDERING_SHIPPING AS VENDORACCOUNTNUMBER
+        , 'ORDER_SHIPPING' AS VENDDOR_ACCOUNT_TYPE
+    FROM 
+        STG_EKF_STIBO.VENDOR_ORDER_SHIPPING
+    WHERE 
+        -- Filter Order Shippling acconts which have the same account number as invoice
+        -- These will setup in D365 as a single Invoice account in D365 with multiple invoice and delivery addresses
+        SUVC_ORDERING_SHIPPING NOT IN (SELECT CAST(SUVC AS NVARCHAR) FROM STG_EKF_STIBO.VENDOR_INVOICE)
+)
+-----------------------------------------------
+-- VENDORS_V2
+, TRN_VENDORS_V2 AS (
+    SELECT 
+        tv2.VENDORACCOUNTNUMBER
+        , ( SELECT VENDDOR_ACCOUNT_TYPE
+            FROM VENDDOR_ACCOUNT_TYPE vat 
+            WHERE vat.VENDORACCOUNTNUMBER = CAST(tv2.VENDORACCOUNTNUMBER AS NVARCHAR)
+        ) as VENDDOR_ACCOUNT_TYPE                       
+        ,tv2.VENDORPARTYTYPE
+        ,tv2.VENDORGROUPID
+        ,tv2.LANGUAGEID
+        ,tv2.VENDORORGANIZATIONNAME
+        ,tv2.VENDORSEARCHNAME
+        ,tv2.DEFAULTDELIVERYMODEID
+        ,tv2.DEFAULTDELIVERYTERMSCODE
+        ,tv2.INVOICEVENDORACCOUNTNUMBER
+        ,tv2.DEFAULTPAYMENTTERMSNAME
+        ,tv2.DEFAULTVENDORPAYMENTMETHODNAME
+        ,tv2.BANKACCOUNTID
+        ,tv2.SALESTAXGROUPCODE
+        ,tv2.DEFAULTPURCHASESITEID
+        ,tv2.DEFAULTPROCUMENTWAREHOUSEID
+        ,tv2.CURRENCYCODE
+        ,tv2.ONHOLDSTATUS
+        ,tv2.ISPURCHASEORDERCHANGEREQUESTOVERRIDEALLOWED
+        ,tv2.ISCHANGEMANAGEMENTACTIVATED
+        ,tv2.ISCHANGEMANGEMENTOVERRIDEBYVENDORALLOWED
+        ,tv2.BUYERGROUPID
+        ,tv2.DEFAULTPAYMENTDAYNAME
+        ,tv2.PRICEVENDORGROUPID
+        ,tv2.DEFAULTPURCHASEORDERPOOLID
+        ,tv2.PURCHASEREBATEVENDORGROUPID
+        ,tv2.MAINCONTACTPERSONNELNUMBER
+        ,tv2.DEFAULTLEDGERDIMENSIONDISPLAYVALUE
+        ,tv2.VENDORKNOWNASNAME
+        ,tv2.COMPANYCHAINNAME
+        ,tv2.CREDITLIMIT
+        ,tv2.DEFAULTCASHDISCOUNTUSAGE
+        ,tv2.ORGANIZATIONNUMBER
+        ,tv2.OURACCOUNTNUMBER
+        ,tv2.PURCHASESHIPCALENDARID
+        ,tv2.TAXEXEMPTNUMBER
+        ,tv2.SYY_VENDINVTOTALTOLERANCEGRP
+        ,tv2.SYY_VMI
+        ,tv2.SYY_NOM
+        ,tv2.SYY_CN
+        ,tv2.STIBOVENDSTATUS
+        ,tv2.SYY_IsImportThroughDM
+    FROM 
+        TRN_EKF.VW_VENDORS_V2 tv2
+)
+-----------------------------------------------
+-- VENDOR POSTAL ADDRESS
+, TRN_VENDOR_POSTAL_ADDRESS AS (
+    SELECT 
+        ADDRESSCITY
+        ,ADDRESSCOUNTRYREGIONID
+        ,ADDRESSCOUNTRYREGIONISOCODE
+        ,ADDRESSCOUNTYID
+        ,ADDRESSDESCRIPTION
+        ,ADDRESSLOCATIONROLES
+        ,ADDRESSSTREET
+        ,ADDRESSZIPCODE
+        ,ISROLEBUSINESS
+        ,ISROLEDELIVERY
+        ,ISROLEHOME
+        ,ISROLEINVOICE
+        ,VENDORACCOUNTNUMBER
+        ,VENDORLEGALENTITYID
+    FROM 
+        TRN_EKF.VW_VENDORS_POSTAL_ADDRESSES
+)
+-----------------------------------------------
+-- VENDOR PARTY CONTACTS
+, TRN_VENDOR_CONTACT AS (
+    SELECT 
+        VENDORACCOUNTNUMBER
+        , PARTYNUMBER
+        ,TYPE
+        ,DESCRIPTION
+        ,LOCATOR
+        ,ISPRIMARY
+        ,PURPOSE
+        ,ELECTRONICADDRESSID
+    FROM 
+        TRN_EKF.VW_VENDOR_CONTACT_INFORMATION
+)
+-----------------------------------------------
+-- VENDOR SALES TAX EXEMPT NUMBER
+, TRN_VENDOR_SALES_TAX_NUMBER AS (
+    SELECT
+        tvsten.VATNUM
+        ,tvsten.COUNTRYREGIONID
+        , (SELECT ISOCODE FROM STG_EKF_D365_CONFIG.COUNTRYREGIONS cr 
+        WHERE cr.countryregion = tvsten.COUNTRYREGIONID) AS COUNTRYISOCODE
+        ,tvsten.NAME
+    FROM 
+        TRN_EKF.VW_VENDOR_SALES_TAX_EXEMPT_NUMBER tvsten
+)
+-----------------------------------------------
+-- VENDOR BANK ACCOUNT
+, TRN_VENDOR_BANK_ACCOUNT AS (
+    SELECT 
+        VENDORACCOUNTNUMBER
+        ,VENDORBANKACCOUNTID
+        ,BANKACCOUNTNUMBER
+        ,BANKNAME
+        ,IBAN
+        ,ISDEFAULTBANKACCOUNT
+        ,ROUTINGNUMBER
+        ,SWIFTCODE
+    FROM 
+        TRN_EKF.VW_VENDOR_BANK_ACCOUNT
+)
+-----------------------------------------------
+-- DV_VENDORS
+, DV_VENDORS AS (
+    SELECT
+        tv2.VENDORACCOUNTNUMBER
+        , tv2.VENDDOR_ACCOUNT_TYPE
+        , tv2.VENDORGROUPID
+
+        -- Invalid if VENDORGROUPID is INDIRECT and there are no Order Shipping Vendor associated with it
+        , CASE
+            WHEN 
+                tv2.VENDORGROUPID = 'INDIRECT' 
+                -- Check for Invoice Vendors only
+                AND tv2.VENDDOR_ACCOUNT_TYPE = 'INVOICE'
+                
+                AND (SELECT COUNT(*) FROM TRN_VENDORS_V2 AS tv21 WHERE 
+                -- Filter only Order Shipping Vendors
+                tv21.VENDDOR_ACCOUNT_TYPE = 'ORDER_SHIPPING'
+                and tv21.INVOICEVENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER) > 0 
+            THEN 1
+            ELSE 0
+        END AS PURCHASE_CONTROL_KPI_INVALID_INDIRECT_OS_VENDOR
+
+        -- Invalid if VENDORGROUPID is TRADE and there are NO Order Shipping Vendor associated with it
+        , CASE 
+            WHEN 
+                tv2.VENDORGROUPID in ('TRADE', 'ICO')
+                -- Check for Invoice Vendors only
+                AND tv2.VENDDOR_ACCOUNT_TYPE = 'INVOICE'
+                
+                AND (SELECT COUNT(*) FROM TRN_VENDORS_V2 AS tv21 WHERE
+                -- Filter only Order Shipping Vendors
+                tv21.VENDDOR_ACCOUNT_TYPE = 'ORDER_SHIPPING'
+                and tv21.INVOICEVENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER) = 0 
+            THEN 1
+            ELSE 0 
+        END AS PURCHASE_CONTROL_KPI_INVALID_TRADE_OS_VENDOR
+
+        , tv2.VENDORPARTYTYPE
+        -- Invalid if VENDORPARTYTYPE is not populated
+        , CASE 
+            WHEN tv2.VENDORPARTYTYPE IS NULL OR LTRIM(RTRIM(tv2.VENDORPARTYTYPE)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_VENDORPARTYTYPE
+
+        , tv2.DEFAULTLEDGERDIMENSIONDISPLAYVALUE
+        -- Invalid if VENDORGROUPID is ICO and the DEFAULTLEDGERDIMENSIONDISPLAYVALUE is not populated
+        , CASE 
+            WHEN tv2.VENDORGROUPID = 'ICO' 
+            AND (tv2.DEFAULTLEDGERDIMENSIONDISPLAYVALUE IS NULL 
+            OR LTRIM(RTRIM(tv2.DEFAULTLEDGERDIMENSIONDISPLAYVALUE)) = '' 
+            OR LTRIM(RTRIM(tv2.DEFAULTLEDGERDIMENSIONDISPLAYVALUE)) = '--------') THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_ICO_DIMENSION
+
+        , tv2.LANGUAGEID
+        -- Invalid if LANGUAGEID is not populated
+        , CASE 
+            WHEN tv2.LANGUAGEID IS NULL OR LTRIM(RTRIM(tv2.LANGUAGEID)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_LANGUAGEID
+
+        , tv2.ORGANIZATIONNUMBER
+        , tv2.VENDORORGANIZATIONNAME
+        -- Invalid if Invoice and Order Shipping Account is the same and VENDORORGANIZATIONNAME is different between them
+        , CASE 
+            WHEN 
+            -- Check for a given Invoice Vendors all its assoicated Order Shipping account
+            tv2.VENDDOR_ACCOUNT_TYPE = 'INVOICE' 
+
+            AND (SELECT COUNT(*) FROM TRN_VENDORS_V2 AS tv21 WHERE
+            -- Filter only Order Shipping Vendors
+            tv21.VENDDOR_ACCOUNT_TYPE = 'ORDER_SHIPPING'
+
+            -- Check if the Order Shipping vendors with the same account number have different VENDORORGANIZATIONNAME
+            -- Setting the collation to be case sensitive (SQL_Latin1_General_CP1_CS_AS) instead of the default (SQL_Latin1_General_CP1_CI_AS)
+            AND tv21.VENDORACCOUNTNUMBER = tv2.INVOICEVENDORACCOUNTNUMBER
+            AND tv21.VENDORORGANIZATIONNAME COLLATE SQL_Latin1_General_CP1_CS_AS != tv2.VENDORORGANIZATIONNAME COLLATE SQL_Latin1_General_CP1_CS_AS) <> 0 THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_MISMATCH_IN_ORG_NAMES
+    
+        -- Invalid if VENDORORGANIZATIONNAME is not populated
+        , CASE 
+            WHEN tv2.VENDORORGANIZATIONNAME IS NULL OR LTRIM(RTRIM(tv2.VENDORORGANIZATIONNAME)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_VENDORORGANIZATIONNAME
+
+        , tv2.BUYERGROUPID
+        , tv2.DEFAULTDELIVERYMODEID
+        -- Invalid if DEFAULTDELIVERYMODEID is not populated for Order Shipping Vendor
+        , CASE 
+            -- For Order Shipping Vendor 
+            WHEN tv2.VENDDOR_ACCOUNT_TYPE = 'ORDER_SHIPPING'
+            
+            -- Check if the order shipping vendor has a delivery address 
+            AND (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa 
+                WHERE tvpa.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER and tvpa.ADDRESSLOCATIONROLES = 'Delivery') > 0
+            
+            AND (tv2.DEFAULTDELIVERYMODEID IS NULL OR LTRIM(RTRIM(tv2.DEFAULTDELIVERYMODEID)) = '') THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_DEFAULTDELIVERYMODEID
+
+        , tv2.DEFAULTDELIVERYTERMSCODE
+        -- Invalid if DEFAULTDELIVERYTERMSCODE is not populated for Order Shipping Vendor
+        , CASE 
+            -- For Order Shipping Vendor 
+            WHEN tv2.VENDDOR_ACCOUNT_TYPE = 'ORDER_SHIPPING' 
+
+            -- Check if the order shipping vendor has a delivery address 
+            AND (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa 
+            WHERE tvpa.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER and tvpa.ADDRESSLOCATIONROLES = 'Delivery') > 0
+
+            AND (tv2.DEFAULTDELIVERYTERMSCODE IS NULL OR LTRIM(RTRIM(tv2.DEFAULTDELIVERYTERMSCODE)) = '') THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_DEFAULTDELIVERYTERMSCODE
+
+        , tv2.INVOICEVENDORACCOUNTNUMBER
+        -- Invalid if INVOICEVENDORACCOUNTNUMBER is not populated
+        , CASE 
+            WHEN (tv2.INVOICEVENDORACCOUNTNUMBER IS NULL OR LTRIM(RTRIM(tv2.INVOICEVENDORACCOUNTNUMBER)) = '') THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_INVOICEVENDORACCOUNTNUMBER
+
+        , tv2.DEFAULTPAYMENTTERMSNAME
+        -- Invalid if DEFAULTPAYMENTTERMSNAME is not populated
+        , CASE 
+            WHEN tv2.DEFAULTPAYMENTTERMSNAME IS NULL OR LTRIM(RTRIM(tv2.DEFAULTPAYMENTTERMSNAME)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_DEFAULTPAYMENTTERMSNAME
+
+        , tv2.DEFAULTVENDORPAYMENTMETHODNAME
+        -- Invalid if DEFAULTVENDORPAYMENTMETHODNAME is not populated
+        , CASE 
+            WHEN tv2.DEFAULTVENDORPAYMENTMETHODNAME IS NULL OR LTRIM(RTRIM(tv2.DEFAULTVENDORPAYMENTMETHODNAME)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_DEFAULTVENDORPAYMENTMETHODNAME
+
+        , tv2.TAXEXEMPTNUMBER
+        , LEFT(LTRIM(RTRIM(tv2.TAXEXEMPTNUMBER)), 2) AS VAT_COUNTRY_PREFIX
+        , tv2.SALESTAXGROUPCODE
+
+        -- Invalid when TAXEXEMPTNUMBER country prefix does not align with SALESTAXGROUPCODE configuration
+        -- For prefix of SE in TAXEXEMPTNUMBER, the SALESTAXGROUPCODE should be S-DOM
+        -- For prefix of EU country code in TAXEXEMPTNUMBER, the SALESTAXGROUPCODE should be S-EU
+        -- For prefix of Non EU country code in TAXEXEMPTNUMBER, the SALESTAXGROUPCODE should be S-INT
+        -- Check only for Invoice vendors
+        , CASE 
+            -- For Invoice Vendors
+            WHEN tv2.VENDDOR_ACCOUNT_TYPE = 'INVOICE' THEN
+            CASE 
+                
+                WHEN 
+                    LEFT(LTRIM(RTRIM(tv2.TAXEXEMPTNUMBER)), 2) = 'SE' 
+                    AND (tv2.SALESTAXGROUPCODE <> 'S-DOM' 
+                        -- Validate if the address is also SE
+                        OR (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa 
+                            WHERE tvpa.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+                            AND tvpa.ADDRESSCOUNTRYREGIONISOCODE = 'SE'
+                            ) = 0 
+                    ) 
+                THEN 1
+                
+                WHEN LEFT(LTRIM(RTRIM(tv2.TAXEXEMPTNUMBER)), 2) IN (SELECT COUNTRY_CODE FROM EU_EEA_EFTA) 
+                AND (tv2.SALESTAXGROUPCODE <> 'S-EU' 
+                    -- Validate if the address country matches VAT registration country
+                    OR (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa 
+                            WHERE tvpa.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+                            AND tvpa.ADDRESSCOUNTRYREGIONISOCODE = LEFT(LTRIM(RTRIM(tv2.TAXEXEMPTNUMBER)), 2)
+                            ) = 0
+                ) THEN 1
+                
+                WHEN LEFT(LTRIM(RTRIM(tv2.TAXEXEMPTNUMBER)), 2) NOT IN (SELECT COUNTRY_CODE FROM EU_EEA_EFTA) AND LEFT(LTRIM(RTRIM(tv2.TAXEXEMPTNUMBER)), 2) <> 'SE' 
+                AND (tv2.SALESTAXGROUPCODE <> 'S-INT' 
+                    -- Validate if the address country matches VAT registration country
+                    OR (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa 
+                            WHERE tvpa.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+                            AND tvpa.ADDRESSCOUNTRYREGIONISOCODE = LEFT(LTRIM(RTRIM(tv2.TAXEXEMPTNUMBER)), 2)
+                            ) = 0                
+                ) THEN 1
+                
+                WHEN tv2.TAXEXEMPTNUMBER IS NULL OR LTRIM(RTRIM(tv2.TAXEXEMPTNUMBER)) = '' OR tv2.SALESTAXGROUPCODE IS NULL OR LTRIM(RTRIM(tv2.SALESTAXGROUPCODE)) = '' THEN 1
+                ELSE 0
+            END
+            ELSE 0 
+        END AS COMPLETENESS_KPI_INVALID_VAT_GROUP_CODE_COUNTRY
+
+        , (SELECT LEFT(tvstn.VATNUM, 2) FROM TRN_VENDOR_SALES_TAX_NUMBER tvstn
+            WHERE tvstn.VATNUM = tv2.TAXEXEMPTNUMBER
+        ) AS VATNUM_COUNTRY_PREFIX
+
+        -- Invalid when the SALES TAX EXEMPTNUMBER COUNTRYREGIONID does not align with prefix of VATNUM
+        , CASE 
+            WHEN VENDDOR_ACCOUNT_TYPE = 'INVOICE'
+            AND (SELECT CASE WHEN LEFT(tvstn.VATNUM, 2) = COUNTRYISOCODE THEN 0 ELSE 1 END 
+                FROM TRN_VENDOR_SALES_TAX_NUMBER tvstn
+                WHERE tvstn.VATNUM = tv2.TAXEXEMPTNUMBER) = 1
+            THEN 1 ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_SALES_TAX_COUNTRY
+
+        -- Invalid if SALESTAXGROUPCODE is not populated for a vendor
+        , CASE 
+            WHEN tv2.SALESTAXGROUPCODE IS NULL OR LTRIM(RTRIM(tv2.SALESTAXGROUPCODE)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_SALESTAXGROUPCODE
+
+        , tv2.CURRENCYCODE
+        -- Invalid if CURRENCYCODE is not populated
+        , CASE 
+            WHEN tv2.CURRENCYCODE IS NULL OR LTRIM(RTRIM(tv2.CURRENCYCODE)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_CURRENCYCODE
+
+        , tv2.PURCHASESHIPCALENDARID
+        -- Invalid if PURCHASESHIPCALENDARID is not populated for Order Shipping Vendor
+        , CASE 
+            -- For Order Shipping Vendor 
+            WHEN tv2.VENDDOR_ACCOUNT_TYPE = 'ORDER_SHIPPING' 
+            AND (tv2.PURCHASESHIPCALENDARID IS NULL OR LTRIM(RTRIM(tv2.PURCHASESHIPCALENDARID)) = '') 
+            
+            -- Check if there is a delivery address associated with the account
+            AND (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa 
+                WHERE tvpa.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER and tvpa.ADDRESSLOCATIONROLES = 'Delivery') > 0
+            THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_PURCHASESHIPCALENDARID
+
+        , tv2.STIBOVENDSTATUS
+        -- Invalid if STIBOVENDSTATUS is not populated
+        , CASE 
+            WHEN tv2.STIBOVENDSTATUS IS NULL OR LTRIM(RTRIM(tv2.STIBOVENDSTATUS)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_STIBOVENDSTATUS
+
+        -- String Aggregated multiple vendor addresses rows into one row separated by semicolon
+        , ( SELECT STRING_AGG(tvpa.ADDRESSSTREET, '| ') WITHIN GROUP (ORDER BY tvpa.ADDRESSSTREET)
+            FROM TRN_VENDOR_POSTAL_ADDRESS tvpa
+            WHERE tvpa.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+        ) AS VENDOR_ADDRESSES
+        
+        , ( SELECT STRING_AGG(tvpa.ADDRESSLOCATIONROLES, '| ') WITHIN GROUP (ORDER BY tvpa.ADDRESSLOCATIONROLES)
+            FROM TRN_VENDOR_POSTAL_ADDRESS tvpa
+            WHERE tvpa.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+        ) AS VENDOR_ADDRESS_ROLES
+        
+        -- Invalid if every vendor DOES NOT have atleast 1 address
+        , CASE 
+            WHEN 
+                (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa WHERE tvpa.VENDORACCOUNTNUMBER  = tv2.VENDORACCOUNTNUMBER) = 0
+            THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_NO_VENDOR_ADDRESS
+
+        -- Invalid if the Vendor is a TRADE or ICO vendor and there is no delivery address associated with the vendor account
+        -- For Invoice Account - validate if the child Order shipping account has a delivery address.
+        , CASE 
+            WHEN VENDORGROUPID in ('TRADE', 'ICO')
+                AND tv2.VENDDOR_ACCOUNT_TYPE = 'ORDER_SHIPPING'
+                AND (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa WHERE 
+                    tvpa.VENDORACCOUNTNUMBER  = tv2.VENDORACCOUNTNUMBER
+                    AND tvpa.ADDRESSLOCATIONROLES = 'Delivery' ) = 0
+            THEN 1
+
+            WHEN VENDORGROUPID in ('TRADE', 'ICO')
+                AND tv2.VENDDOR_ACCOUNT_TYPE = 'INVOICE'
+                AND (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa WHERE 
+                    tvpa.VENDORACCOUNTNUMBER IN 
+                    (SELECT VENDORACCOUNTNUMBER FROM TRN_VENDORS_V2 tv21 WHERE 
+                    tv21.INVOICEVENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER)
+                    AND tvpa.ADDRESSLOCATIONROLES = 'Delivery') = 0
+            THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_NO_DELIVERY_ADDRESS
+
+        -- Invalid if the vendor is INDIRECT and there is a delivery address associated with it. 
+        -- For Invoice Account - Invalid when there are Child Order Shipping accounts
+        , CASE 
+            WHEN VENDORGROUPID = 'INDIRECT'
+            AND tv2.VENDDOR_ACCOUNT_TYPE = 'INVOICE'
+            AND (SELECT COUNT(*) FROM TRN_VENDOR_POSTAL_ADDRESS tvpa WHERE 
+                    tvpa.VENDORACCOUNTNUMBER  = tv2.VENDORACCOUNTNUMBER
+                    AND tvpa.ADDRESSLOCATIONROLES = 'Delivery' ) <> 0
+            THEN 1
+
+            WHEN VENDORGROUPID = 'INDIRECT'
+            AND tv2.VENDDOR_ACCOUNT_TYPE = 'ORDER_SHIPPING'
+            THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_INDIRECT_VENDOR
+
+        -- String Agg multiple Vendor Contact information separated by pipe
+        , ( SELECT STRING_AGG(tvci.LOCATOR, ' | ') WITHIN GROUP (ORDER BY tvci.LOCATOR)
+            FROM TRN_VENDOR_CONTACT tvci
+            WHERE tvci.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+            AND tvci.TYPE = 'Email Address' 
+        ) AS VENDOR_CONTACT_EMAILS
+
+        -- String Agg multiple Vendor Contact information separated by pipe
+        , ( SELECT STRING_AGG(tvci.PURPOSE, ' | ') WITHIN GROUP (ORDER BY tvci.LOCATOR)
+            FROM TRN_VENDOR_CONTACT tvci
+            WHERE tvci.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+            AND tvci.TYPE = 'Email Address' 
+        ) AS VENDOR_CONTACT_EMAIL_PURPOSE
+
+        -- String Agg multiple Vendor Contact information separated by pipe
+        , ( SELECT STRING_AGG(tvci.LOCATOR, ' | ') WITHIN GROUP (ORDER BY tvci.LOCATOR)
+            FROM TRN_VENDOR_CONTACT tvci
+            WHERE tvci.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+            AND tvci.TYPE = 'Phone' 
+        ) AS VENDOR_CONTACT_PHONES
+
+        -- String Agg multiple Vendor Contact information separated by pipe
+        , ( SELECT STRING_AGG(tvci.PURPOSE, ' | ') WITHIN GROUP (ORDER BY tvci.LOCATOR)
+            FROM TRN_VENDOR_CONTACT tvci
+            WHERE tvci.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+            AND tvci.TYPE = 'Phone' 
+        ) AS VENDOR_CONTACT_PHONES_PURPOSE
+
+        -- Invalid if the Vendor does not have a Contact email with Purpose
+        -- TODO: Need to update based on KPI requirements
+
+        , ( SELECT STRING_AGG(tvci.DESCRIPTION, ' | ') WITHIN GROUP (ORDER BY tvci.DESCRIPTION)
+            FROM TRN_VENDOR_CONTACT tvci
+            WHERE tvci.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+        ) AS VENDOR_CONTACT_DESCRIPTION
+
+        -- Invalid when the description is NULL
+        , CASE
+            WHEN ( SELECT STRING_AGG(tvci.DESCRIPTION, ' | ') WITHIN GROUP (ORDER BY tvci.DESCRIPTION)
+            FROM TRN_VENDOR_CONTACT tvci
+            WHERE tvci.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER) IS NULL THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_VENDOR_CONTACT_DESCRIPTION
+
+        -- Invalid when Vendor Contact IS PRIMARY is not marked as 1 for each vendor and contact type
+        , CASE 
+            WHEN (SELECT 
+                    CASE 
+                        WHEN COUNT (DISTINCT TYPE) <> SUM(CASE WHEN ISPRIMARY='Yes' THEN 1 ELSE 0 END) 
+                        THEN 1 
+                        ELSE 0 
+                    END AS MISSING_PRIMARY
+                FROM TRN_VENDOR_CONTACT tvci
+                WHERE tvci.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER
+            ) = 1 THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_VENDOR_CONTACT_ISPRIMARY
+
+        -- Invalid if a Vendor does not have atleast 1 bank account
+        , CASE 
+            WHEN (SELECT COUNT(*) FROM TRN_VENDOR_BANK_ACCOUNT tvba WHERE tvba.VENDORACCOUNTNUMBER = tv2.VENDORACCOUNTNUMBER) = 0 THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_NO_BANK_ACCOUNT
+
+        -- Invalid if VENDORACCOUNTNUMBER is NOT populated
+        , CASE 
+            WHEN tv2.VENDORACCOUNTNUMBER IS NULL OR LTRIM(RTRIM(tv2.VENDORACCOUNTNUMBER)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_VENDORACCOUNTNUMBER
+
+        -- Invalid if VENDORGROUPID is NOT populated
+        , CASE 
+            WHEN tv2.VENDORGROUPID IS NULL OR LTRIM(RTRIM(tv2.VENDORGROUPID)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_VENDORGROUPID
+
+        -- Invalid if VENDORSEARCHNAME is NOT populated
+        , CASE 
+            WHEN tv2.VENDORSEARCHNAME IS NULL OR LTRIM(RTRIM(tv2.VENDORSEARCHNAME)) = '' THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_VENDORSEARCHNAME
+
+        -- Invalide when the ORGANIZATIONNUMBER is same but VENDORORGANIZATIONNAME is different
+        , CASE 
+            WHEN tv2.ORGANIZATIONNUMBER IS NOT NULL AND LTRIM(RTRIM(tv2.ORGANIZATIONNUMBER)) <> '' 
+            AND (SELECT COUNT(DISTINCT VENDORORGANIZATIONNAME) FROM TRN_VENDORS_V2 tv21 
+                WHERE tv21.ORGANIZATIONNUMBER = tv2.ORGANIZATIONNUMBER) > 1 THEN 1
+            ELSE 0
+        END AS COMPLETENESS_KPI_INVALID_ORG_NUMBER_MISMATCH_ORG_NAME
+
+    FROM 
+        TRN_VENDORS_V2 tv2
+)
+-----------------------------------------------
+-- Main Select
+    SELECT 
+        -- Calculate sum of Invalid checks that failed for each record    
+        (   PURCHASE_CONTROL_KPI_INVALID_INDIRECT_OS_VENDOR
+            + PURCHASE_CONTROL_KPI_INVALID_TRADE_OS_VENDOR
+            + COMPLETENESS_KPI_INVALID_VENDORPARTYTYPE
+            + COMPLETENESS_KPI_INVALID_ICO_DIMENSION
+            + COMPLETENESS_KPI_INVALID_LANGUAGEID
+            + COMPLETENESS_KPI_INVALID_MISMATCH_IN_ORG_NAMES
+            + COMPLETENESS_KPI_INVALID_VENDORORGANIZATIONNAME
+            + COMPLETENESS_KPI_INVALID_DEFAULTDELIVERYMODEID
+            + COMPLETENESS_KPI_INVALID_DEFAULTDELIVERYTERMSCODE
+            + COMPLETENESS_KPI_INVALID_INVOICEVENDORACCOUNTNUMBER
+            + COMPLETENESS_KPI_INVALID_DEFAULTPAYMENTTERMSNAME
+            + COMPLETENESS_KPI_INVALID_DEFAULTVENDORPAYMENTMETHODNAME
+            + COMPLETENESS_KPI_INVALID_VAT_GROUP_CODE_COUNTRY
+            + COMPLETENESS_KPI_INVALID_SALES_TAX_COUNTRY
+            + COMPLETENESS_KPI_INVALID_SALESTAXGROUPCODE
+            + COMPLETENESS_KPI_INVALID_CURRENCYCODE
+            + COMPLETENESS_KPI_PURCHASESHIPCALENDARID
+            + COMPLETENESS_KPI_INVALID_STIBOVENDSTATUS
+            + COMPLETENESS_KPI_INVALID_NO_VENDOR_ADDRESS
+            + COMPLETENESS_KPI_INVALID_NO_DELIVERY_ADDRESS
+            + COMPLETENESS_KPI_INVALID_INDIRECT_VENDOR
+            + COMPLETENESS_KPI_INVALID_VENDOR_CONTACT_DESCRIPTION
+            + COMPLETENESS_KPI_INVALID_VENDOR_CONTACT_ISPRIMARY
+            + COMPLETENESS_KPI_INVALID_VENDORACCOUNTNUMBER
+            + COMPLETENESS_KPI_INVALID_VENDORGROUPID
+            + COMPLETENESS_KPI_INVALID_VENDORSEARCHNAME
+            + COMPLETENESS_KPI_INVALID_ORG_NUMBER_MISMATCH_ORG_NAME
+        ) AS INVALID_CHECK_FAILURE_COUNT
+
+        -- Concatenate all failed checks into a list of validation failures seperated by pipe for each record
+        , RTRIM(CONCAT(   
+            CASE WHEN PURCHASE_CONTROL_KPI_INVALID_INDIRECT_OS_VENDOR = 1             THEN 'PURCHASE_CONTROL_KPI_INVALID_INDIRECT_OS_VENDOR | '           ELSE '' END
+            , CASE WHEN PURCHASE_CONTROL_KPI_INVALID_TRADE_OS_VENDOR = 1              THEN 'PURCHASE_CONTROL_KPI_INVALID_TRADE_OS_VENDOR | '              ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_VENDORPARTYTYPE = 1                  THEN 'COMPLETENESS_KPI_INVALID_VENDORPARTYTYPE | '                  ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_ICO_DIMENSION = 1                    THEN 'COMPLETENESS_KPI_INVALID_ICO_DIMENSION | '                    ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_LANGUAGEID = 1                       THEN 'COMPLETENESS_KPI_INVALID_LANGUAGEID | '                       ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_MISMATCH_IN_ORG_NAMES = 1            THEN 'COMPLETENESS_KPI_INVALID_MISMATCH_IN_ORG_NAMES | '            ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_VENDORORGANIZATIONNAME = 1           THEN 'COMPLETENESS_KPI_INVALID_VENDORORGANIZATIONNAME | '           ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_DEFAULTDELIVERYMODEID = 1            THEN 'COMPLETENESS_KPI_INVALID_DEFAULTDELIVERYMODEID | '            ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_DEFAULTDELIVERYTERMSCODE = 1         THEN 'COMPLETENESS_KPI_INVALID_DEFAULTDELIVERYTERMSCODE | '         ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_INVOICEVENDORACCOUNTNUMBER = 1       THEN 'COMPLETENESS_KPI_INVALID_INVOICEVENDORACCOUNTNUMBER | '       ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_DEFAULTPAYMENTTERMSNAME = 1          THEN 'COMPLETENESS_KPI_INVALID_DEFAULTPAYMENTTERMSNAME | '          ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_DEFAULTVENDORPAYMENTMETHODNAME = 1   THEN 'COMPLETENESS_KPI_INVALID_DEFAULTVENDORPAYMENTMETHODNAME | '   ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_VAT_GROUP_CODE_COUNTRY = 1           THEN 'COMPLETENESS_KPI_INVALID_VAT_GROUP_CODE_COUNTRY | '           ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_SALES_TAX_COUNTRY = 1                THEN 'COMPLETENESS_KPI_INVALID_SALES_TAX_COUNTRY | '                ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_SALESTAXGROUPCODE = 1                THEN 'COMPLETENESS_KPI_INVALID_SALESTAXGROUPCODE | '                ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_CURRENCYCODE = 1                     THEN 'COMPLETENESS_KPI_INVALID_CURRENCYCODE | '                     ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_PURCHASESHIPCALENDARID = 1                   THEN 'COMPLETENESS_KPI_PURCHASESHIPCALENDARID | '                   ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_STIBOVENDSTATUS = 1                  THEN 'COMPLETENESS_KPI_INVALID_STIBOVENDSTATUS | '                  ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_NO_VENDOR_ADDRESS = 1                THEN 'COMPLETENESS_KPI_INVALID_NO_VENDOR_ADDRESS | '                ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_NO_DELIVERY_ADDRESS = 1              THEN 'COMPLETENESS_KPI_INVALID_NO_DELIVERY_ADDRESS | '              ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_INDIRECT_VENDOR = 1                  THEN 'COMPLETENESS_KPI_INVALID_INDIRECT_VENDOR | '                  ELSE '' END  
+            , CASE WHEN COMPLETENESS_KPI_INVALID_VENDOR_CONTACT_DESCRIPTION = 1       THEN 'COMPLETENESS_KPI_INVALID_VENDOR_CONTACT_DESCRIPTION | '       ELSE '' END          
+            , CASE WHEN COMPLETENESS_KPI_INVALID_VENDOR_CONTACT_ISPRIMARY = 1         THEN 'COMPLETENESS_KPI_INVALID_VENDOR_CONTACT_ISPRIMARY | '         ELSE '' END                       
+            , CASE WHEN COMPLETENESS_KPI_INVALID_VENDORACCOUNTNUMBER = 1              THEN 'COMPLETENESS_KPI_INVALID_VENDORACCOUNTNUMBER | '              ELSE '' END      
+            , CASE WHEN COMPLETENESS_KPI_INVALID_VENDORGROUPID = 1                    THEN 'COMPLETENESS_KPI_INVALID_VENDORGROUPID | '                    ELSE '' END
+            , CASE WHEN COMPLETENESS_KPI_INVALID_VENDORSEARCHNAME = 1                 THEN 'COMPLETENESS_KPI_INVALID_VENDORSEARCHNAME | '                 ELSE '' END  
+            , CASE WHEN COMPLETENESS_KPI_INVALID_ORG_NUMBER_MISMATCH_ORG_NAME = 1     THEN 'COMPLETENESS_KPI_INVALID_ORG_NUMBER_MISMATCH_ORG_NAME | '     ELSE '' END
+        )) AS VALIDATION_FAILURES_LIST
+
+        -- Get rest of the columns
+        , dv_v2.*
+    FROM 
+        DV_VENDORS dv_v2
+
+GO
