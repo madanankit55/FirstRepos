@@ -1,7 +1,4 @@
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 ALTER VIEW [DVR].[VW_KPI_TGT_VENDORS_V2] AS
 
 --------------------------------------------------------------
