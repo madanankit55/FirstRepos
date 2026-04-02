@@ -1,3 +1,13 @@
+1) How to do total amount in pyspark 
+
+i)  w_total_amount = Window.partitionBy()
+ii) total = df.agg(F.sum(col("amount"))).first[0]
+	df=df.withColumn("total_amount",F.lit(total))
+
+iii) total_df = df.agg(F.sum("Amount").alias("total"))
+	 df = df.crossJoin(total_df)
+
+
 How do you check if two DataFrames are exactly identical?
  
 equals() method.
@@ -194,6 +204,8 @@ ii) df_new= (df.withColumn("min_value",row_number().over(w_min))
 
 from pyspark.sql import window
 from pyspark.sql.functions import col,sum,when,lit,max,min,concat_ws
+
+
 
 
 -- how to total sum for salary amount_val
