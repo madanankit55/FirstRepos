@@ -1,3 +1,5 @@
+-- Learning Path for Pyspark --- 
+
 1) How to do total amount in pyspark 
 
 i)  w_total_amount = Window.partitionBy()
@@ -7,16 +9,34 @@ ii) total = df.agg(F.sum(col("amount"))).first[0]
 iii) total_df = df.agg(F.sum("Amount").alias("total"))
 	 df = df.crossJoin(total_df)
 
+2) How do you check if two DataFrames are exactly identical?
 
-How do you check if two DataFrames are exactly identical?
+# Step 1: Compare schema
+df1.schema == df2.schema
+
+# Step 2: Quick size check
+df1.count() == df2.count()
+
+# Step 3: Deep equality
+df1.exceptAll(df2).count() == 0 and df2.exceptAll(df1).count() == 0
+
+3) equals() method.
+
+used for comparing in column equality , schema equality , row equality , 
  
-equals() method.
+4) How would you find the differences between two DataFrames, highlighting only the differing cells?
+
+answer could be based on dataframe comparing the schema , columns in dataframe and then just printing the non matching schema details.
  
-How would you find the differences between two DataFrames, highlighting only the differing cells?
+5) How can you find rows present in one DataFrame but not in another?
+
+i) left anti join
+ii) exceptAll
+iii) subtract
  
-How can you find rows present in one DataFrame but not in another?
- 
-Explain the difference between df1 == df2 and df1.equals(df2).
+6) Explain the difference between df1 == df2 and df1.equals(df2).
+
+
  
 How do you handle missing values (NaNs) when comparing DataFrames?
  
