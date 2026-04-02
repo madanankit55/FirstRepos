@@ -36,9 +36,22 @@ iii) subtract
  
 6) Explain the difference between df1 == df2 and df1.equals(df2).
 
+df1==df2
+PySpark does NOT compare DataFrames.
 
- 
-How do you handle missing values (NaNs) when comparing DataFrames?
+It does NOT check number of rows
+It does NOT check row order
+It does NOT check schema
+It does NOT check full DataFrame equality
+
+df1.equals(df2) checks:
+
+same column names
+same column order
+same data types
+same nullability
+
+7) How do you handle missing values (NaNs) when comparing DataFrames?
  
 
 
