@@ -55,7 +55,42 @@ same nullability
 7) How do you handle missing values (NaNs) when comparing DataFrames?
  
 
+8) How to get count per column wise in pyspark ?
 
+from pyspark.sql import functions as F, Window
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+df_spark = spark.createDataFrame(
+    [
+        (1,'Ankit Madan','Ghaziabad','2025-01-20',263767),
+        (2,'Ramehs','Noida','2025-01-20',44443),
+        (3,'Ankit Madan','Ghaziabad','2025-01-20',78783),
+        (4,'XYB','Ghaziabad','2025-01-20',368767)
+    ],
+    # [
+    #     (1,'Ankit Madan','Ghaziabad','2025-01-20',263767),
+    #   (1,'Ankit Madan','Ghaziabad','2025-01-20',263767),
+    #     (1,'Ankit Madan','Ghaziabad','2025-01-20',263767),
+    #    (1,'Ankit Madan','Ghaziabad','2025-01-20',263767),
+    # ],
+    "id int, employee_name string, employee_city string, employee_date string, employee_salary double"
+)
+
+df_spark = df_spark.withColumn("employee_date", F.to_date("employee_date"))
+df_spark.show()
+duplicate=(df_spark
+           .groupBy('employee_city')
+           .count()
+           .filter(F.col('count') > 1)
+        #   .withColumnRenamed('count','Dup_count')
+)
+
+
+duplicate.show()
+
+9) 
 1) how to create the dataframe in pyspark
 
 data =[('Ankit Madan',25),('Vishal Sharma',20),('Mahesh Babu',26),('Chaman',30)]
