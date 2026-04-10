@@ -1,0 +1,112 @@
+ [UTL].[USP_GENERATE_PROFILING_RESULTS]
+    @v_SchemaName NVARCHAR(500)
+AS
+/*###################################### SPECIFICATIONS ###########################################
+DESCRIPTION :   This procedure is used to create Data Profiling results of all tables in a schema
+PARAMETERS  :  
+    INPUT   :   @v_SchemaName -> Schema Name
+    OUTPUT  :    
+RETURNS     :   SQL Error Number. 0 indicates success, anything else is failure
+CALLS       :   None
+CALLED BY   :   Manual Trigger or ETL Tool
+CREATED BY  :   Sourav Paul
+CREATED ON  :   18-Feb-2026
+#################################################################################################*/
+BEGIN
+    DECLARE
+        @v_TableName VARCHAR(500),
+        @v_ColumnName VARCHAR(500),
+        @v_DataType NVARCHAR(128),
+        @v_SQL NVARCHAR(MAX),
+        @v_CurrentTimestamp DATETIME,
+        @v_FullTableName NVARCHAR(500)
+ 
+    BEGIN
+        -- Set the current timestamp
+        SET @v_CurrentTimestamp = GETUTCDATE()
+ 
+ 
+        --DELETE Old records from profiling table
+        DELETE FROM [UTL].[DATA_PROFILING_RESULTS] WHERE SCHEMA_NAME=@v_SchemaName
+ 
+        DECLARE TableCursor CURSOR FOR
+        SELECT DISTINCT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=@v_SchemaName
+ 
+ 
+ 
+        OPEN TableCursor;
+        FETCH NEXT FROM TableCursor INTO @v_TableName
+ 
+   
+ 
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            PRINT 'Table: '+@v_TableName
+ 
+            DECLARE ColumnCursor CURSOR FOR
+            SELECT COLUMN_NAME, DATA_TYPE
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA=@v_SchemaName AND TABLE_NAME=@v_TableName
+            ORDER BY ORDINAL_POSITION;
+ 
+            OPEN ColumnCursor;
+            FETCH NEXT FROM ColumnCursor INTO @v_ColumnName, @v_DataType
+ 
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+               
+                SET @v_FullTableName = QUOTENAME(@v_SchemaName) + '.' + QUOTENAME(@v_TableName)
+                Print 'Table: '++@v_TableName+'---- Column: '+@v_ColumnName
+ 
+                SET @v_SQL = N'
+                    INSERT INTO [UTL].[DATA_PROFILING_RESULTS]
+                        (SCHEMA_NAME, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TOTAL_ROWS, POPULATED_ROWS, BLANK_ROWS, NULL_ROWS, MIN_VALUE, MAX_VALUE, MIN_LENGTH, MAX_LENGTH,
+                            DISTINCT_VALUES, UNIQUE_VALUES, TIMESTAMP)
+                    SELECT
+                        ''' + @v_SchemaName + ''',
+                        ''' + @v_TableName + ''',
+                        ''' + @v_ColumnName + ''',
+                        ''' + @v_DataType + ''',
+                        COUNT(*) AS TOTAL_ROWS,
+                        COUNT([' + @v_ColumnName + ']) AS POPULATED_ROWS,
+                        SUM(CASE WHEN [' + @v_ColumnName + '] IS NOT NULL AND LTRIM(RTRIM([' + @v_ColumnName + '])) = '''' THEN 1 ELSE 0 END) AS BLANK_ROWS,
+                        SUM(CASE WHEN [' + @v_ColumnName + '] IS NULL THEN 1 ELSE 0 END) AS NULL_ROWS,
+                        MIN(CAST([' + @v_ColumnName + '] AS NVARCHAR(MAX))) AS MIN_VALUE,
+                        MAX(CAST([' + @v_ColumnName + '] AS NVARCHAR(MAX))) AS MAX_VALUE,
+                        MIN(LEN(LTRIM(RTRIM([' + @v_ColumnName + '])))) AS MIN_LENGTH,
+                        MAX(LEN(LTRIM(RTRIM([' + @v_ColumnName + '])))) AS MAX_LENGTH,  
+                    (SELECT COUNT(*) FROM (
+                            SELECT DISTINCT [' + @v_ColumnName + '] FROM ' + @v_FullTableName + '
+                        ) AS DistinctSubquery) AS DISTINCT_VALUES,
+                        (SELECT COUNT(*) FROM (
+                            SELECT [' + @v_ColumnName + '], COUNT(*) AS cnt
+                            FROM ' + @v_FullTableName + '
+                            GROUP BY [' + @v_ColumnName + ']
+                            HAVING COUNT(*) = 1
+                        ) AS UniqueSubquery) AS UNIQUE_VALUES,
+                        ''' + CONVERT(NVARCHAR, @v_CurrentTimestamp, 121) + ''' AS TIMESTAMP
+                    FROM
+                        ' + @v_FullTableName + ';';
+ 
+           
+                -- Execute the dynamic SQL
+                EXEC sp_executesql @v_SQL
+ 
+                FETCH NEXT FROM ColumnCursor INTO @v_ColumnName, @v_DataType
+ 
+            END
+ 
+            CLOSE ColumnCursor;
+            DEALLOCATE ColumnCursor;
+ 
+ 
+            FETCH NEXT FROM TableCursor INTO @v_TableName;
+        END
+ 
+        CLOSE TableCursor;
+        DEALLOCATE TableCursor;
+    END
+ 
+ 
+ 
+END
