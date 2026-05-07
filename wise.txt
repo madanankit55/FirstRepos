@@ -1,4 +1,4 @@
-
+URL for Databricks : https://databrickslabs.github.io/dqx/docs/demos/
 customer postal address : ADDRESSLOCATIONID
  need to add column in view and target 
 
