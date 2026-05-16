@@ -1,3 +1,5 @@
+MLV URL : https://data-mozart.com/materialized-lake-views-in-microsoft-fabric-when-your-medallion-fits-in-a-select-statement/?utm_source=feedly&utm_medium=rss&utm_campaign=materialized-lake-views-in-microsoft-fabric-when-your-medallion-fits-in-a-select-statement
+
 URL for Databricks : https://databrickslabs.github.io/dqx/docs/demos/
 customer postal address : ADDRESSLOCATIONID
  need to add column in view and target 
