@@ -200,41 +200,62 @@ df = df.withColumn("running_total",
 
 df.show()
 CASE VI CUMMULATIVE SUM WITH TOTAL AMOUNT , RUNNING TOTAL , CUMMULATIVE PERCENTAGE and CASE CONDITION
-from pyspark.sql import functions as F,Window
+
+from pyspark.sql import functions as F, Window
 from pyspark.sql import SparkSession
 
-spark=SparkSession.builder.getOrCreate()
+spark =SparkSession.builder.getOrCreate()
 
-df_spark =spark.createDataFrame(
+df_spark = spark.createDataFrame(
     [
-        ('A','2024-01-01',100),
-        ('A','2024-01-02',200),
-        ('A','2024-01-03',300),
-        ('B','2024-01-01',50),
-        ('B','2024-01-02',150)
-
-    ],"cust_id string, cust_date string, amount bigint"
+       ("A","2024-01-01",100),
+        ("A","2024-01-02",200),
+        ("A","2024-01-03",300),
+        ("B","2024-01-01",50),
+        ("B","2024-01-02",100) 
+    ],
+ "cust_id string, cust_date string, amount bigint"
 )
-df_spark.show()
 
-df_spark= df_spark.withColumn("cust_date",F.to_date("cust_date"))
+df_spark=df_spark.withColumn("cust_date",F.to_date("cust_date"))
 
-window_total = Window.partitionBy("cust_id")
+df_spark.printSchema()
 
-df_total =df_spark.withColumn("total_amount",F.sum("amount").over(window_total))
+total_sum = (
+    df_spark
+    .agg(F.sum("amount").alias("total_sum"))
+    .collect()[0]["total_sum"]
+)
 
-window_running = Window.partitionBy("cust_id").orderBy("cust_date")
+w_running_total = Window.partitionBy("cust_id").orderBy("cust_date").rowsBetween(Window.unboundedPreceding,Window.currentRow)
 
-df_total =df_total.withColumn("running_total",F.sum("amount").over(window_running))
+df_total =(
+    df_spark.withColumn(
+    "running_total", 
+    F.sum("amount").over(w_running_total)
+    )
+    .withColumn(
+        "Total_sum",
+        F.lit(total_sum)
+    )
+    .withColumn(
+        "cummulative_percentage",
+        F.round(F.col("running_total") / F.col("Total_sum") ,2)
+    )
+    .withColumn(
+        "parento_flag",
+        F.when(
+            F.col("cummulative_percentage")>=0.8,
+        "Top 80%")
+        .otherwise("rest")        
 
-df_total=df_total.withColumn("cummulative_percentage",F.round((F.col("running_total")/F.col("total_amount")) ,2))                                                     
-           
-df_total.show()
+    )
+)
+df_total.display()
 
-df_total=df_total.withColumn("pareto_flag",F.when(F.col("cummulative_percentage") <= 0.8, "Top 80%").otherwise("Rest"))
 
-df_total.show()
 
+CASE VII
 PERFORMANCE MANAGING THRU repartition and sort partition 
 from pyspark.sql import functions as F,Window
 from pyspark.sql import SparkSession
