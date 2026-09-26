@@ -289,40 +289,50 @@ df_spark.show()
 
 
 CASE VIII CUMMULATIVE REVENUE WITH GAPS WHEN DAYS GAPS MORE THAN 7 DAYS THEN WE WILL RESET THE FLAG DO CUMMULATIVE SUMMATION
-from pyspark.sql import functions as F,Window
+
+from pyspark.sql import functions as F, Window
 from pyspark.sql import SparkSession
-
-spark=SparkSession.builder.getOrCreate()
-
-df =spark.createDataFrame(
+spark = SparkSession.builder.getOrCreate()
+df_spark =spark.createDataFrame(
     [
-        ('A','2024-01-01',100),
-        ('A','2024-01-02',200),
-        ('A','2024-01-10',300),
-        ('B','2024-01-01',50),
-        ('B','2024-01-09',150)
-
-    ],"cust_id string, date string, amount bigint"
+         ("A","2024-01-01",100),
+        ("A","2024-01-02",200),
+        ("A","2024-01-10",300),
+        ("B","2024-01-01",50),
+        ("B","2024-01-09",100) 
+    ],
+    "cust_id string, cust_date string , amount bigint"
 )
-df.show()
+df_spark.printSchema()
+window_spec = Window.partitionBy("cust_id").orderBy("cust_date")
+df_spark =(
+    df_spark
+        .withColumn(
+                    "cust_date",F.to_date("cust_date")
+                   )
+        .withColumn(
+                    "previous_date",F.lag("cust_date").over(window_spec)
+                   )
+        .withColumn(
+                   "gap", F.datediff(F.col("cust_date"),F.col("previous_date"))
+                   )
+        .withColumn(
+                    "reset_flag",F.when(F.col("gap") >=7 ,1)
+                    .otherwise(0)
+                    )
+        .withColumn(
+                    "group", F.sum(F.col("reset_flag")).over(window_spec)
+                   )
+)
+window_grp = Window.partitionBy("cust_id","group").orderBy("cust_date")
+df_spark =(
+    df_spark
+         .withColumn(
+                    "running_total", F.sum("amount").over(window_grp.rowsBetween(Window.unboundedPreceding,Window.currentRow))
+                    )
+)
+df_spark.display()
 
-df=df.withColumn("date",F.to_date("date"))
-
-window_spec = Window.partitionBy("cust_id").orderBy("date")
-
-df = df.withColumn("prev_date", F.lag("date").over(window_spec))
-
-df = df.withColumn("gap", F.datediff(F.col("date"),F.col("prev_date")))
-
-df = df.withColumn("reset_flag",F.when(F.col("gap") > 7, 1).otherwise(0))
-
-df = df.withColumn("grp",F.sum("reset_flag").over(window_spec))
-
-window_grp = Window.partitionBy("cust_id", "grp").orderBy("date")
-
-df = df.withColumn("running_total",F.sum("amount").over(window_grp))
-
-df.show()
 JOINS IN PYSPARK
 CASE I Normal Joins
 from pyspark.sql import functions as F, Window
